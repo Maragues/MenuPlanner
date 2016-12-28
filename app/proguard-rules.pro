@@ -18,3 +18,7 @@
 
 #retrolambda
 -dontwarn java.lang.invoke.*
+
+#firebase
+-keepattributes Signature
+-keepattributes *Annotation*
