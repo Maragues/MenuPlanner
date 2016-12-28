@@ -1,4 +1,4 @@
-package com.maragues.menu_planner;
+package com.maragues.menu_planner.ui.week;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
+import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.list.MenuRecyclerViewAdapter;
 import com.maragues.menu_planner.model.MenuSlot;
 

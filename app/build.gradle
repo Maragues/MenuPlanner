@@ -14,6 +14,11 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
+
+Properties firebaseProperties = new Properties()
+firebaseProperties.load(project.rootProject.file('firebase.properties').newDataInputStream())
+def firebaseServerId = firebaseProperties.getProperty('firebase.serverId')
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -24,6 +29,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "SERVER_CIENT_ID", '"'+firebaseServerId+'"'
     }
     buildTypes {
         release {
@@ -50,6 +57,8 @@ dependencies {
     compile 'com.android.support:design:' + rootProject.ext.supportLibVersion
 
     compile 'com.google.firebase:firebase-database:' + rootProject.ext.playServicesVersion
+    compile 'com.google.firebase:firebase-auth:' + rootProject.ext.playServicesVersion
+    compile 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion
 
     compile 'com.github.quivr:android-week-view:2.0.2'
 
@@ -101,3 +110,5 @@ dependencies {
         exclude group: 'com.android.support'
     }
 }
+
+apply plugin: 'com.google.gms.google-services'
