@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.list;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.ui.recipe.EditRecipeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,5 +72,6 @@ public class DisplayableViewHolder extends RecyclerView.ViewHolder {
 
   @OnClick(R.id.header_add)
   void onAddClicked() {
+    headerHolder.getContext().startActivity(new Intent(headerHolder.getContext(), EditRecipeActivity.class));
   }
 }

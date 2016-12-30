@@ -1,5 +1,8 @@
 package com.maragues.menu_planner.model;
 
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.Exclude;
 
@@ -15,37 +18,41 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 public abstract class Recipe implements ISynchronizable {
+  @Nullable //so that we can create before having a key. The server won't accept empty id
   public abstract String id();
 
   public abstract String uid();
 
   public abstract String name();
 
+  @Nullable
   public abstract String url();
 
+  @Nullable
   public abstract String description();
 
+  @Nullable
   public abstract List<Ingredient> ingredients();
 
-  static Builder builder() {
+  public static Builder builder() {
     return new AutoValue_Recipe.Builder();
   }
 
   @AutoValue.Builder
-  abstract static class Builder {
-    abstract Builder setName(String value);
+  public abstract static class Builder {
+    public abstract Builder setName(String value);
 
-    abstract Builder setId(String value);
+    public abstract Builder setId(String value);
 
-    abstract Builder setUid(String value);
+    public abstract Builder setUid(String value);
 
-    abstract Builder setUrl(String value);
+    public abstract Builder setUrl(String value);
 
-    abstract Builder setDescription(String value);
+    public abstract Builder setDescription(String value);
 
-    abstract Builder setIngredients(List<Ingredient> ingredients);
+    public abstract Builder setIngredients(List<Ingredient> ingredients);
 
-    abstract Recipe build();
+    public abstract Recipe build();
   }
 
   public abstract Recipe withName(String name);
@@ -54,6 +61,8 @@ public abstract class Recipe implements ISynchronizable {
 
   public abstract Recipe withDescription(String description);
 
+  public abstract Recipe withId(String id);
+
   public abstract Recipe withIngredients(List<Ingredient> ingredients);
 
   @Exclude
@@ -61,8 +70,12 @@ public abstract class Recipe implements ISynchronizable {
     HashMap<String, Object> result = new HashMap<>();
     result.put("uid", uid());
     result.put("name", name());
-    result.put("url", url());
-    result.put("description", description());
+
+    if (!TextUtils.isEmpty(url()))
+      result.put("url", url());
+
+    if (!TextUtils.isEmpty(description()))
+      result.put("description", description());
 
     return result;
   }
@@ -71,7 +84,9 @@ public abstract class Recipe implements ISynchronizable {
   public Map<String, Object> toSummaryMap() {
     HashMap<String, Object> result = new HashMap<>();
     result.put("name", name());
-    result.put("shortDescription", description());
+
+    if (!TextUtils.isEmpty(description()))
+      result.put("shortDescription", shortDescription());
 
     return result;
   }
@@ -79,5 +94,9 @@ public abstract class Recipe implements ISynchronizable {
   private String shortDescription() {
     //TODO return short description
     return description();
+  }
+
+  public boolean validates() {
+    return !TextUtils.isEmpty(name());
   }
 }
