@@ -18,4 +18,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="recipe_description_label">Description</string>
+    <string name="recipe_title_label">Title</string>
+    <string name="recipe_title_example">Pasta carbonara</string>
 </resources>

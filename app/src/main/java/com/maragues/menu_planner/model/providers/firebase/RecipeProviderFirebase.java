@@ -26,9 +26,11 @@ public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> impleme
 //  public Observable<Recipe> create(@NonNull Recipe recipe) {
     String key = getReference().child(RECIPES_KEY).push().getKey();
 
+    recipe = recipe.withId(key);
+
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + RECIPES_KEY + "/" + key, recipe.toMap());
-    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.uid() + "/" + key, recipe.toSummaryMap());
+//    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.uid() + "/" + key, recipe.toSummaryMap());
 
     getReference().updateChildren(childUpdates);
 
@@ -56,5 +58,5 @@ public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> impleme
   }
 
   static final String RECIPES_KEY = "recipes";
-  static final String USER_RECIPES_KEY = "user-recipes";
+  static final String USER_RECIPES_KEY = "recipes_user";
 }
