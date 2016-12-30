@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.maragues.menu_planner.dagger.AppComponent;
+import com.maragues.menu_planner.dagger.AppModule;
+import com.maragues.menu_planner.dagger.DaggerAppComponent;
 
 /**
  * Created by maragues on 05/12/2016.
@@ -27,8 +29,8 @@ public class App extends Application {
   }
 
   protected void initDagger() {
-    /*appComponent = DaggerAppComponent.builder()
+    appComponent = DaggerAppComponent.builder()
             .appModule(new AppModule(this))
-            .build();*/
+            .build();
   }
 }

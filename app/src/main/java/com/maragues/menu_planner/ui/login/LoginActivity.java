@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -20,12 +22,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.BaseActivity;
 import com.maragues.menu_planner.ui.week.WeekActivity;
 
+import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by miguelaragues on 28/12/16.
@@ -40,6 +46,11 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
   private FirebaseAuth mAuth;
 
   private FirebaseAuth.AuthStateListener mAuthListener;
+
+  @BindView(R.id.login_progress)
+  ProgressBar progressBar;
+
+  Disposable disposable;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,27 +70,43 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     mAuth = FirebaseAuth.getInstance();
 
-    mAuthListener = new FirebaseAuth.AuthStateListener() {
-      @Override
-      public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-          // User is signed in
-          Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-          startActivity(new Intent(LoginActivity.this, WeekActivity.class));
-
-          finish();
-        } else {
-          // User is signed out
-          Log.d(TAG, "onAuthStateChanged:signed_out");
-        }
-        // ...
+    mAuthListener = firebaseAuth -> {
+      FirebaseUser user = firebaseAuth.getCurrentUser();
+      if (user != null) {
+        disposable = App.appComponent.userProvider()
+                .create(user)
+                .doOnSuccess(this::onUserSignedIn)
+                .doOnError(Throwable::printStackTrace)
+                .subscribe();
+      } else {
+        // User is signed out
+        Log.d(TAG, "onAuthStateChanged:signed_out");
       }
+      // ...
     };
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    if (disposable != null && !disposable.isDisposed())
+      disposable.dispose();
+  }
+
+  private void onUserSignedIn(User user) {
+    progressBar.setVisibility(View.GONE);
+
+    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.id());
+    startActivity(new Intent(LoginActivity.this, WeekActivity.class));
+
+    finish();
   }
 
   @OnClick(R.id.sign_in_button)
   void signIn() {
+    progressBar.setVisibility(View.VISIBLE);
+
     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
     startActivityForResult(signInIntent, RC_SIGN_IN);
   }
@@ -96,7 +123,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         GoogleSignInAccount account = result.getSignInAccount();
         firebaseAuthWithGoogle(account);
       } else {
-        Log.d(TAG, "status "+result.getStatus().getStatusCode());
+        Log.d(TAG, "status " + result.getStatus().getStatusCode());
 
         // Google Sign In failed, update UI appropriately
         // ...
@@ -132,6 +159,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
               @Override
               public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+                //AuthStateListener has been invoked at this point or after
 
                 // If sign in fails, display a message to the user. If sign in succeeds
                 // the auth state listener will be notified and logic to handle the
