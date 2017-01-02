@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity android:name="com.maragues.menu_planner.recipe.EditRecipeActivity"/>
+    </application>
+</manifest>

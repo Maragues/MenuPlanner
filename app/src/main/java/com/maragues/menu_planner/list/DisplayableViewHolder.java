@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.ui.recipe.EditRecipeActivity;
+import com.maragues.menu_planner.ui.activity.recipe.EditRecipeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -29,7 +29,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".ui.recipe.EditRecipeActivity"
+            android:name=".ui.activity.recipe.EditRecipeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop">
         </activity>
