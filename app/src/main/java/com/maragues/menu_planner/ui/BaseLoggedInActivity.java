@@ -8,11 +8,14 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import net.grandcentrix.thirtyinch.TiPresenter;
+import net.grandcentrix.thirtyinch.TiView;
+
 /**
  * Created by miguelaragues on 28/12/16.
  */
 
-public abstract class BaseLoggedInActivity extends BaseActivity {
+public abstract class BaseLoggedInActivity<P extends TiPresenter<V>, V extends TiView> extends BaseActivity<P, V> {
   private static final String TAG = BaseLoggedInActivity.class.getSimpleName();
 
   private FirebaseAuth firebaseAuth;

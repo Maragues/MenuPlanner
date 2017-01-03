@@ -29,6 +29,8 @@ import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.BaseActivity;
 import com.maragues.menu_planner.ui.week.WeekActivity;
 
+import net.grandcentrix.thirtyinch.TiPresenter;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
@@ -172,5 +174,11 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 // ...
               }
             });
+  }
+
+  @NonNull
+  @Override
+  public TiPresenter providePresenter() {
+    return null;
   }
 }

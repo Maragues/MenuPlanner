@@ -1,15 +1,12 @@
 package com.maragues.menu_planner.ui.recipe;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.BaseLoggedInActivity;
 
 import butterknife.BindView;
@@ -18,12 +15,20 @@ import butterknife.BindView;
  * Created by miguelaragues on 30/12/16.
  */
 
-public class EditRecipeActivity extends BaseLoggedInActivity {
+public class EditRecipeActivity
+        extends BaseLoggedInActivity<EditRecipePresenter, IEditRecipeView>
+        implements IEditRecipeView {
   @BindView(R.id.recipe_title)
   TextInputEditText titleEditText;
 
   @BindView(R.id.recipe_description)
   TextInputEditText descriptionEditText;
+
+  @NonNull
+  @Override
+  public EditRecipePresenter providePresenter() {
+    return new EditRecipePresenter();
+  }
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,9 +46,7 @@ public class EditRecipeActivity extends BaseLoggedInActivity {
     if (!parentResult) {
       switch (item.getItemId()) {
         case android.R.id.home:
-          attemptSave();
-
-          finish();
+          getPresenter().onHomeClicked();
 
           return true;
       }
@@ -54,24 +57,19 @@ public class EditRecipeActivity extends BaseLoggedInActivity {
 
   @Override
   public void onBackPressed() {
-    attemptSave();
+    getPresenter().onBackPressed();
 
     super.onBackPressed();
   }
 
-  private void attemptSave() {
-    if (validates()) {
-      Recipe recipe = Recipe.builder()
-              .setName(titleEditText.getText().toString())
-              .setDescription(descriptionEditText.getText().toString())
-              .setUid(FirebaseAuth.getInstance().getCurrentUser().getUid())
-              .build();
 
-      App.appComponent.recipeProvider().create(recipe);
-    }
+  @Override
+  public String getRecipeTitle() {
+    return titleEditText.getText().toString();
   }
 
-  private boolean validates() {
-    return !TextUtils.isEmpty(titleEditText.getText());
+  @Override
+  public String getRecipeDescription() {
+    return descriptionEditText.getText().toString();
   }
 }
