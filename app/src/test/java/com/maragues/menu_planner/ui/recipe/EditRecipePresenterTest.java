@@ -7,7 +7,9 @@ import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
 
   @Test
   public void validation_titleWithContentPasses() {
-    doReturn("dada").when(view).getRecipeTitle();
+    doReturn("my title").when(view).getRecipeTitle();
 
     assertTrue(presenter.validates());
   }
@@ -55,11 +57,47 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
 
   @Test
   public void attemptSave_SaveIfValidates() {
+    ensureRecipeBasicContent();
     doReturn(true).when(presenter).validates();
 
     presenter.attemptSave();
 
-    verify(App.appComponent.recipeProvider(), never()).create(any(Recipe.class));
+    verify(App.appComponent.recipeProvider()).create(any(Recipe.class));
+  }
+
+  @Test
+  public void attemptSave_UsesNameProvidedByView() {
+    String expectedName = "crema de puerros";
+    doReturn(expectedName).when(view).getRecipeTitle();
+    doReturn(true).when(presenter).validates();
+
+    ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+
+    presenter.attemptSave();
+
+    verify(App.appComponent.recipeProvider()).create(captor.capture());
+
+    assertEquals(expectedName, captor.getValue().name());
+  }
+
+  @Test
+  public void attemptSave_UsesDescriptionProvidedByView() {
+    String expectedDescription = "Partir puerros, echar bien de pera y a comer";
+    doReturn(expectedDescription).when(view).getRecipeDescription();
+    ensureRecipeBasicContent();
+    doReturn(true).when(presenter).validates();
+
+    presenter.attemptSave();
+
+    ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+
+    verify(App.appComponent.recipeProvider()).create(captor.capture());
+
+    assertEquals(expectedDescription, captor.getValue().description());
+  }
+
+  private void ensureRecipeBasicContent() {
+    doReturn("dada").when(view).getRecipeTitle();
   }
 
   @Test
@@ -73,6 +111,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
 
   @Test
   public void onHomeClicked_FinishIfValidates() {
+    ensureRecipeBasicContent();
     doReturn(true).when(presenter).validates();
 
     presenter.onHomeClicked();

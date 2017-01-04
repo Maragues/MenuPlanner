@@ -1,8 +1,10 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,6 +74,15 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
       }
     })
             .subscribeOn(Schedulers.computation());
+  }
+
+  @Override
+  @Nullable
+  public String getUid() {
+    if (FirebaseAuth.getInstance() == null || FirebaseAuth.getInstance().getCurrentUser() == null)
+      return null;
+
+    return FirebaseAuth.getInstance().getCurrentUser().getUid();
   }
 
   static final String USERS_KEY = "users";

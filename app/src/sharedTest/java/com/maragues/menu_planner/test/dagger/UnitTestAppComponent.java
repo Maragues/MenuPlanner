@@ -2,7 +2,6 @@ package com.maragues.menu_planner.test.dagger;
 
 
 import com.maragues.menu_planner.dagger.AppComponent;
-import com.maragues.menu_planner.dagger.ProvidersModule;
 
 import javax.inject.Singleton;
 
@@ -15,7 +14,7 @@ import dagger.Component;
 @Component(
         modules = {
                 UnitTestAppModule.class,
-                ProvidersModule.class
+                TestProvidersModule.class
         }
 )
 public interface UnitTestAppComponent extends AppComponent {

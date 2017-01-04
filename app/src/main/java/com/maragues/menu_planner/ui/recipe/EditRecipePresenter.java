@@ -1,6 +1,5 @@
 package com.maragues.menu_planner.ui.recipe;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
@@ -21,7 +20,7 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipeView> {
       Recipe recipe = Recipe.builder()
               .setName(getView().getRecipeTitle())
               .setDescription(getView().getRecipeDescription())
-              .setUid(FirebaseAuth.getInstance().getCurrentUser().getUid())
+              .setUid(App.appComponent.userProvider().getUid())
               .build();
 
       App.appComponent.recipeProvider().create(recipe);
