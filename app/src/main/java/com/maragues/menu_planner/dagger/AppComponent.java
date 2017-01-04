@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.maragues.menu_planner.model.providers.IRecipeProvider;
 import com.maragues.menu_planner.model.providers.IUserProvider;
+import com.maragues.menu_planner.utils.LocalTextUtils;
 
 import javax.inject.Singleton;
 
@@ -23,4 +24,6 @@ public interface AppComponent {
 
   IRecipeProvider recipeProvider();
   IUserProvider userProvider();
+
+  LocalTextUtils textUtils();
 }

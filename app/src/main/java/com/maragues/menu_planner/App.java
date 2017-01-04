@@ -7,6 +7,9 @@ import com.maragues.menu_planner.dagger.AppComponent;
 import com.maragues.menu_planner.dagger.AppModule;
 import com.maragues.menu_planner.dagger.DaggerAppComponent;
 
+import net.grandcentrix.thirtyinch.TiConfiguration;
+import net.grandcentrix.thirtyinch.TiPresenter;
+
 /**
  * Created by maragues on 05/12/2016.
  */
@@ -22,6 +25,12 @@ public class App extends Application {
     initTimezones();
 
     initDagger();
+
+    initThirtyInch();
+  }
+
+  private void initThirtyInch() {
+    TiPresenter.setDefaultConfig(TiConfiguration.DEFAULT);
   }
 
   protected void initTimezones() {

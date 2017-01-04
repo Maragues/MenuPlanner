@@ -1,7 +1,5 @@
 package com.maragues.menu_planner.ui.recipe;
 
-import android.text.TextUtils;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
@@ -31,7 +29,8 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipeView> {
   }
 
   boolean validates() {
-    return getView() != null && !TextUtils.isEmpty(getView().getRecipeTitle());
+    return getView() != null
+            && !App.appComponent.textUtils().isEmpty(getView().getRecipeTitle());
   }
 
   void onBackPressed() {

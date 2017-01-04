@@ -6,6 +6,8 @@ import com.maragues.menu_planner.ui.BasePresenter;
 import com.maragues.menu_planner.ui.IBaseview;
 
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -14,11 +16,12 @@ import static org.mockito.Mockito.spy;
 /**
  * Created by miguelaragues on 3/1/17.
  */
-
+@RunWith(MockitoJUnitRunner.class)
 public abstract class BasePresenterTest<V extends IBaseview, P extends BasePresenter<V>>
         extends BaseUnitTest {
 
   protected final P presenter;
+
   protected final V view;
 
   public BasePresenterTest(Class<V> viewClass) {
