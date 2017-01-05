@@ -21,15 +21,17 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="recipe_description_label">Description</string>
-    <string name="recipe_title_label">Title</string>
-    <string name="recipe_title_example">Pasta carbonara</string>
     <string name="title_activity_edit_recipe_tabbed">EditRecipeTabbedActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
     <!-- CREATE RECIPE -->
+    <string name="recipe_title_label">Title</string>
+    <string name="recipe_title_example">Pasta carbonara</string>
+    <string name="recipe_description_label">Description</string>
+    <string name="recipe_url_label">Url of the recipe</string>
     <string name="recipe_info">Info</string>
     <string name="recipe_ingredients">Ingredients</string>
     <string name="recipe_instructions">Instructions</string>
     <string name="recipe_missing_title">Enter the recipe title</string>
+    <string name="recipe_wrong_url">Is a valid url?</string>
 </resources>

@@ -32,6 +32,10 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
     return new EditRecipePresenter();
   }
 
+  /*
+  VALIDATION
+   */
+
   @Test
   public void validation_emptyTitleFails() {
     doReturn("").when(view).title();
@@ -47,6 +51,55 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
   }
 
   @Test
+  public void validation_emptyTitleShowsError() {
+    presenter.validateOrNotifyErrors();
+
+    verify(view).showTitleMissingError();
+  }
+
+  @Test
+  public void validation_emptyUrlValidates() {
+    ensureBasicValidation();
+
+    assertTrue(presenter.validateOrNotifyErrors());
+  }
+
+  @Test
+  public void validation_wrongUrl_doesNotValidate() {
+    ensureBasicValidation();
+
+    //the value we return doesn't make a difference, we are mocking the validation response
+    doReturn("my url").when(view).url();
+    doReturn(false).when(presenter).isValidUrl();
+
+    assertFalse(presenter.validateOrNotifyErrors());
+  }
+
+  @Test
+  public void validation_wrongUrl_showsError() {
+    ensureBasicValidation();
+
+    //the value we return doesn't make a difference, we are mocking the validation response
+    doReturn("my url").when(view).url();
+    doReturn(false).when(presenter).isValidUrl();
+
+    presenter.validateOrNotifyErrors();
+
+    verify(view).showWrongUrlError();
+  }
+
+  @Test
+  public void validation_validUrlValidates() {
+    ensureBasicValidation();
+
+    //the value we return doesn't make a difference, we are mocking the validation response
+    doReturn("my url").when(view).url();
+    doReturn(true).when(presenter).isValidUrl();
+
+    assertTrue(presenter.validateOrNotifyErrors());
+  }
+
+  @Test
   public void attemptSave_doesNotSaveIfNotValidates() {
     doReturn(false).when(presenter).validateOrNotifyErrors();
 
@@ -57,7 +110,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void attemptSave_SaveIfValidates() {
-    ensureRecipeBasicContent();
+    ensureBasicValidation();
     doReturn(true).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
@@ -84,7 +137,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
   public void attemptSave_UsesDescriptionProvidedByView() {
     String expectedDescription = "Partir puerros, echar bien de pera y a comer";
     doReturn(expectedDescription).when(view).description();
-    ensureRecipeBasicContent();
+    ensureBasicValidation();
     doReturn(true).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
@@ -96,33 +149,34 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
     assertEquals(expectedDescription, captor.getValue().description());
   }
 
-  private void ensureRecipeBasicContent() {
-    doReturn("dada").when(view).title();
-  }
+  /*
+    SAVE BUTTON
+   */
 
   @Test
-  public void onHomeClicked_FinishIfNotValidates() {
-    doReturn(false).when(presenter).validateOrNotifyErrors();
-
-    presenter.onHomeClicked();
-
-    verify(view).finish();
-  }
-
-  @Test
-  public void onHomeClicked_FinishIfValidates() {
-    ensureRecipeBasicContent();
-    doReturn(true).when(presenter).validateOrNotifyErrors();
-
-    presenter.onHomeClicked();
-
-    verify(view).finish();
-  }
-
-  @Test
-  public void onHomeClicked_AttemptsSave() {
-    presenter.onBackPressed();
+  public void onSaveClicked_attemptsSave() {
+    presenter.onSaveClicked();
 
     verify(presenter).attemptSave();
+  }
+
+  @Test
+  public void onSaveClicked_doesNotFinishIfNoValidation() {
+    presenter.onSaveClicked();
+
+    verify(view, never()).finish();
+  }
+
+  @Test
+  public void onSaveClicked_finishIfValidates() {
+    ensureBasicValidation();
+
+    presenter.onSaveClicked();
+
+    verify(view).finish();
+  }
+
+  private void ensureBasicValidation() {
+    doReturn("dada").when(view).title();
   }
 }

@@ -3,6 +3,7 @@ package com.maragues.menu_planner.ui.recipe;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,20 @@ import butterknife.BindView;
  */
 
 public class EditRecipeInfoFragment extends BaseFragment implements IEditRecipe.Info {
-  @BindView(R.id.recipe_title)
+  @BindView(R.id.edit_recipe_title)
   TextInputEditText titleEditText;
 
-  @BindView(R.id.recipe_description)
+  @BindView(R.id.edit_recipe_description)
   TextInputEditText descriptionEditText;
+
+  @BindView(R.id.edit_recipe_url)
+  TextInputEditText urlEditText;
+
+  @BindView(R.id.edit_recipe_title_textInputLayout)
+  TextInputLayout titleTextInputLayout;
+
+  @BindView(R.id.edit_recipe_url_textInputLayout)
+  TextInputLayout urlTextInputLayout;
 
   static EditRecipeInfoFragment newInstance() {
     return new EditRecipeInfoFragment();
@@ -47,6 +57,11 @@ public class EditRecipeInfoFragment extends BaseFragment implements IEditRecipe.
   }
 
   @Override
+  public String url() {
+    return urlEditText.getText().toString();
+  }
+
+  @Override
   public void setTitle(String title) {
     titleEditText.setText(title);
   }
@@ -57,7 +72,17 @@ public class EditRecipeInfoFragment extends BaseFragment implements IEditRecipe.
   }
 
   @Override
+  public void setUrl(String url) {
+    urlEditText.setText(url);
+  }
+
+  @Override
   public void showTitleMissingError() {
-    titleEditText.setError(getString(R.string.recipe_missing_title));
+    titleTextInputLayout.setError(getString(R.string.recipe_missing_title));
+  }
+
+  @Override
+  public void showWrongUrlError() {
+    urlTextInputLayout.setError(getString(R.string.recipe_wrong_url));
   }
 }

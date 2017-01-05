@@ -10,11 +10,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.ui.BaseLoggedInActivity;
@@ -24,6 +22,10 @@ import java.util.List;
 public class EditRecipeActivity
         extends BaseLoggedInActivity<EditRecipePresenter, IEditRecipe.View>
         implements IEditRecipe.View {
+
+  EditRecipeInfoFragment infoFragment;
+  EditRecipeIngredientsFragment ingredientsFragment;
+  EditRecipeInstructionsFragment instructionsFragment;
 
   @NonNull
   @Override
@@ -71,35 +73,10 @@ public class EditRecipeActivity
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        getPresenter().onSaveClicked();
       }
     });
 
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == android.R.id.home) {
-      getPresenter().onHomeClicked();
-
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-  @Override
-  public void onBackPressed() {
-    getPresenter().onBackPressed();
-
-    super.onBackPressed();
   }
 
   @Override
@@ -119,6 +96,14 @@ public class EditRecipeActivity
   }
 
   @Override
+  public String url() {
+    if (infoFragment != null)
+      return infoFragment.url();
+
+    return null;
+  }
+
+  @Override
   public void setTitle(String title) {
     if (infoFragment != null)
       infoFragment.setTitle(title);
@@ -131,67 +116,50 @@ public class EditRecipeActivity
   }
 
   @Override
+  public void setUrl(String url) {
+    if (infoFragment != null)
+      infoFragment.setUrl(url);
+  }
+
+  @Override
   public void showTitleMissingError() {
     if (infoFragment != null)
       infoFragment.showTitleMissingError();
   }
 
   @Override
+  public void showWrongUrlError() {
+    if (infoFragment != null)
+      infoFragment.showWrongUrlError();
+  }
+
+  @Override
   public List<String> ingredients() {
+    if (ingredientsFragment != null)
+      return ingredientsFragment.ingredients();
+
     return null;
   }
 
   @Override
   public void setIngredients(List<String> ingredients) {
-
+    if (ingredientsFragment != null)
+      ingredientsFragment.setIngredients(ingredients);
   }
 
   @Override
   public List<String> steps() {
+    if (instructionsFragment != null)
+      return instructionsFragment.steps();
+
     return null;
   }
 
   @Override
   public void setSteps(List<String> steps) {
-
+    if (instructionsFragment != null)
+      instructionsFragment.setSteps(steps);
   }
-
-  /**
-   * A placeholder fragment containing a simple view.
-   */
-  public static class PlaceholderFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
-    public PlaceholderFragment() {
-    }
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-      PlaceholderFragment fragment = new PlaceholderFragment();
-      Bundle args = new Bundle();
-      args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-      fragment.setArguments(args);
-      return fragment;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-      View rootView = inflater.inflate(R.layout.fragment_edit_recipe_tabbed, container, false);
-      TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-      textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-      return rootView;
-    }
-  }
-
-  EditRecipeInfoFragment infoFragment;
 
   /**
    * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -212,11 +180,12 @@ public class EditRecipeActivity
         case INFO_POSITION:
           return EditRecipeInfoFragment.newInstance();
         case INGREDIENTS_POSITION:
+          return EditRecipeIngredientsFragment.newInstance();
         case INSTRUCTIONS_POSITION:
+          return EditRecipeInstructionsFragment.newInstance();
       }
-      // getItem is called to instantiate the fragment for the given page.
-      // Return a PlaceholderFragment (defined as a static inner class below).
-      return PlaceholderFragment.newInstance(position + 1);
+
+      return null;
     }
 
     @Override
@@ -226,8 +195,12 @@ public class EditRecipeActivity
       switch (position) {
         case INFO_POSITION:
           infoFragment = (EditRecipeInfoFragment) createdFragment;
+          break;
         case INGREDIENTS_POSITION:
+          ingredientsFragment = (EditRecipeIngredientsFragment) createdFragment;
+          break;
         case INSTRUCTIONS_POSITION:
+          instructionsFragment = (EditRecipeInstructionsFragment) createdFragment;
       }
 
       return createdFragment;

@@ -1,5 +1,7 @@
 package com.maragues.menu_planner.ui.recipe;
 
+import android.util.Patterns;
+
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
@@ -9,22 +11,21 @@ import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
  */
 class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipe.View> {
 
-  void onHomeClicked() {
-    attemptSave();
-
-    getView().finish();
-  }
-
-  void attemptSave() {
+  boolean attemptSave() {
     if (getView() != null && validateOrNotifyErrors()) {
       Recipe recipe = Recipe.builder()
               .setName(getView().title())
               .setDescription(getView().description())
+              .setUrl(getView().url())
               .setUid(App.appComponent.userProvider().getUid())
               .build();
 
       App.appComponent.recipeProvider().create(recipe);
+
+      return true;
     }
+
+    return false;
   }
 
   boolean validateOrNotifyErrors() {
@@ -36,13 +37,28 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipe.View> {
         validates = false;
       }
 
+      if (!App.appComponent.textUtils().isEmpty(getView().url())) {
+        boolean validUrl = isValidUrl();
+
+        if (!validUrl)
+          getView().showWrongUrlError();
+
+        validates &= validUrl;
+      }
+
       return validates;
     }
 
     return true;
   }
 
-  void onBackPressed() {
-    attemptSave();
+  boolean isValidUrl() {
+    return Patterns.WEB_URL.matcher(getView().url()).matches();
+  }
+
+  public void onSaveClicked() {
+    if (attemptSave()) {
+      getView().finish();
+    }
   }
 }

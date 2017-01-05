@@ -18,11 +18,17 @@ public interface IEditRecipe {
 
     String description();
 
+    String url();
+
     void setTitle(String title);
 
     void setDescription(String description);
 
+    void setUrl(String url);
+
     void showTitleMissingError();
+
+    void showWrongUrlError();
   }
 
   interface Ingredients {
