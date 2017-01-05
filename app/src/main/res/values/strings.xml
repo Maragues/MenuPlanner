@@ -6,6 +6,9 @@
     <string name="tasks">Tasks</string>
     <string name="title_activity_login">Sign in</string>
 
+    <!-- GENERAL -->
+    <string name="action_save">Save</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -21,4 +24,12 @@
     <string name="recipe_description_label">Description</string>
     <string name="recipe_title_label">Title</string>
     <string name="recipe_title_example">Pasta carbonara</string>
+    <string name="title_activity_edit_recipe_tabbed">EditRecipeTabbedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- CREATE RECIPE -->
+    <string name="recipe_info">Info</string>
+    <string name="recipe_ingredients">Ingredients</string>
+    <string name="recipe_instructions">Instructions</string>
+    <string name="recipe_missing_title">Enter the recipe title</string>
 </resources>

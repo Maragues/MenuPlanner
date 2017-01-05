@@ -7,7 +7,7 @@ import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
 /**
  * Created by miguelaragues on 3/1/17.
  */
-class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipeView> {
+class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipe.View> {
 
   void onHomeClicked() {
     attemptSave();
@@ -16,10 +16,10 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipeView> {
   }
 
   void attemptSave() {
-    if (getView() != null && validates()) {
+    if (getView() != null && validateOrNotifyErrors()) {
       Recipe recipe = Recipe.builder()
-              .setName(getView().getRecipeTitle())
-              .setDescription(getView().getRecipeDescription())
+              .setName(getView().title())
+              .setDescription(getView().description())
               .setUid(App.appComponent.userProvider().getUid())
               .build();
 
@@ -27,9 +27,19 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipeView> {
     }
   }
 
-  boolean validates() {
-    return getView() != null
-            && !App.appComponent.textUtils().isEmpty(getView().getRecipeTitle());
+  boolean validateOrNotifyErrors() {
+    if (getView() != null) {
+      boolean validates = true;
+      if (App.appComponent.textUtils().isEmpty(getView().title())) {
+        getView().showTitleMissingError();
+
+        validates = false;
+      }
+
+      return validates;
+    }
+
+    return true;
   }
 
   void onBackPressed() {

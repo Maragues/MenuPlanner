@@ -20,10 +20,10 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by miguelaragues on 3/1/17.
  */
-public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, EditRecipePresenter> {
+public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View, EditRecipePresenter> {
 
   public EditRecipePresenterTest() {
-    super(IEditRecipeView.class);
+    super(IEditRecipe.View.class);
   }
 
   @NonNull
@@ -34,21 +34,21 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
 
   @Test
   public void validation_emptyTitleFails() {
-    doReturn("").when(view).getRecipeTitle();
+    doReturn("").when(view).title();
 
-    assertFalse(presenter.validates());
+    assertFalse(presenter.validateOrNotifyErrors());
   }
 
   @Test
   public void validation_titleWithContentPasses() {
-    doReturn("my title").when(view).getRecipeTitle();
+    doReturn("my title").when(view).title();
 
-    assertTrue(presenter.validates());
+    assertTrue(presenter.validateOrNotifyErrors());
   }
 
   @Test
   public void attemptSave_doesNotSaveIfNotValidates() {
-    doReturn(false).when(presenter).validates();
+    doReturn(false).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
 
@@ -58,7 +58,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
   @Test
   public void attemptSave_SaveIfValidates() {
     ensureRecipeBasicContent();
-    doReturn(true).when(presenter).validates();
+    doReturn(true).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
 
@@ -68,8 +68,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
   @Test
   public void attemptSave_UsesNameProvidedByView() {
     String expectedName = "crema de puerros";
-    doReturn(expectedName).when(view).getRecipeTitle();
-    doReturn(true).when(presenter).validates();
+    doReturn(expectedName).when(view).title();
+    doReturn(true).when(presenter).validateOrNotifyErrors();
 
     ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
 
@@ -83,9 +83,9 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
   @Test
   public void attemptSave_UsesDescriptionProvidedByView() {
     String expectedDescription = "Partir puerros, echar bien de pera y a comer";
-    doReturn(expectedDescription).when(view).getRecipeDescription();
+    doReturn(expectedDescription).when(view).description();
     ensureRecipeBasicContent();
-    doReturn(true).when(presenter).validates();
+    doReturn(true).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
 
@@ -97,12 +97,12 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
   }
 
   private void ensureRecipeBasicContent() {
-    doReturn("dada").when(view).getRecipeTitle();
+    doReturn("dada").when(view).title();
   }
 
   @Test
   public void onHomeClicked_FinishIfNotValidates() {
-    doReturn(false).when(presenter).validates();
+    doReturn(false).when(presenter).validateOrNotifyErrors();
 
     presenter.onHomeClicked();
 
@@ -112,7 +112,7 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipeView, 
   @Test
   public void onHomeClicked_FinishIfValidates() {
     ensureRecipeBasicContent();
-    doReturn(true).when(presenter).validates();
+    doReturn(true).when(presenter).validateOrNotifyErrors();
 
     presenter.onHomeClicked();
 
