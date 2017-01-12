@@ -113,6 +113,8 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
               @Override
               protected void populateViewHolder(RecipeListAdapter.ViewHolder viewHolder, Recipe recipe, int position) {
                 viewHolder.setRecipe(recipe);
+
+                viewHolder.itemView.setOnClickListener(v -> onRecipeClicked(recipe));
               }
 
               @Override
@@ -125,6 +127,10 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
       getView().setAdapter(adapter);
     else
       sendToView(view -> view.setAdapter(adapter));
+  }
+
+  private void onRecipeClicked(@NonNull Recipe recipe) {
+    getView().startRecipeViewer(recipe);
   }
 
 }

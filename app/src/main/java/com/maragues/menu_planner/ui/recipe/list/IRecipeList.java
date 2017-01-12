@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.ui.recipe.list;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import com.maragues.menu_planner.model.Recipe;
@@ -21,4 +22,6 @@ public interface IRecipeList extends IBaseLoggedInView{
   void setRecipes(List<Recipe> recipes);
 
   void setAdapter(RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter);
+
+  void startRecipeViewer(@NonNull Recipe recipe);
 }

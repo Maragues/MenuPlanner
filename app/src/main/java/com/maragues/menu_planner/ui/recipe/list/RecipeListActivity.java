@@ -10,6 +10,7 @@ import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
+import com.maragues.menu_planner.ui.recipe.viewer.RecipeViewerActivity;
 
 import java.util.List;
 
@@ -54,6 +55,11 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
   @Override
   public void startAddRecipeActivity() {
     startActivity(EditRecipeActivity.createAddIntent(this));
+  }
+
+  @Override
+  public void startRecipeViewer(@NonNull Recipe recipe) {
+    startActivity(RecipeViewerActivity.createIntent(this, recipe));
   }
 
   @Override
