@@ -1,4 +1,4 @@
-package com.maragues.menu_planner.ui.recipe;
+package com.maragues.menu_planner.ui.recipe.editor;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,13 +15,13 @@ import java.util.List;
  * Created by miguelaragues on 5/1/17.
  */
 
-public class EditRecipeIngredientsFragment extends BaseFragment implements IEditRecipe.Ingredients {
+public class EditRecipeInstructionsFragment extends BaseFragment implements IEditRecipe.Instructions {
 
-  public static EditRecipeIngredientsFragment newInstance() {
-    return new EditRecipeIngredientsFragment();
+  public static EditRecipeInstructionsFragment newInstance() {
+    return new EditRecipeInstructionsFragment();
   }
 
-  public EditRecipeIngredientsFragment() {
+  public EditRecipeInstructionsFragment() {
 
   }
 
@@ -32,12 +32,12 @@ public class EditRecipeIngredientsFragment extends BaseFragment implements IEdit
   }
 
   @Override
-  public List<String> ingredients() {
+  public List<String> steps() {
     return null;
   }
 
   @Override
-  public void setIngredients(List<String> ingredients) {
+  public void setSteps(List<String> steps) {
 
   }
 }

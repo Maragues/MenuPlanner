@@ -1,16 +1,16 @@
-package com.maragues.menu_planner.ui.recipe;
+package com.maragues.menu_planner.ui.recipe.editor;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +18,8 @@ import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.ui.BaseLoggedInActivity;
 
 import java.util.List;
+
+import butterknife.OnClick;
 
 public class EditRecipeActivity
         extends BaseLoggedInActivity<EditRecipePresenter, IEditRecipe.View>
@@ -68,15 +70,11 @@ public class EditRecipeActivity
 
     TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
     tabLayout.setupWithViewPager(viewPager);
+  }
 
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        getPresenter().onSaveClicked();
-      }
-    });
-
+  @OnClick(R.id.edit_recipe_save)
+  void onAddRecipeClicked() {
+    getPresenter().onSaveClicked();
   }
 
   @Override
@@ -159,6 +157,10 @@ public class EditRecipeActivity
   public void setSteps(List<String> steps) {
     if (instructionsFragment != null)
       instructionsFragment.setSteps(steps);
+  }
+
+  public static Intent createAddIntent(@NonNull Context context) {
+    return new Intent(context, EditRecipeActivity.class);
   }
 
   /**

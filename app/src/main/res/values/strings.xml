@@ -34,4 +34,5 @@
     <string name="recipe_instructions">Instructions</string>
     <string name="recipe_missing_title">Enter the recipe title</string>
     <string name="recipe_wrong_url">Is a valid url?</string>
+    <string name="title_activity_recipe_list2">RecipeListActivity</string>
 </resources>

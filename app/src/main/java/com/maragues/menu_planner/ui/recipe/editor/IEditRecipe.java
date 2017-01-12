@@ -1,4 +1,4 @@
-package com.maragues.menu_planner.ui.recipe;
+package com.maragues.menu_planner.ui.recipe.editor;
 
 import com.maragues.menu_planner.ui.IBaseLoggedInView;
 

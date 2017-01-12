@@ -24,8 +24,13 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".ui.recipe.EditRecipeActivity"
+            android:name=".ui.recipe.editor.EditRecipeActivity"
             android:label="@string/title_activity_edit_recipe_tabbed"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".ui.recipe.list.RecipeListActivity"
+            android:label="@string/title_activity_recipe_list2"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

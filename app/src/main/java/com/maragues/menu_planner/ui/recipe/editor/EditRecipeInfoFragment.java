@@ -1,4 +1,4 @@
-package com.maragues.menu_planner.ui.recipe;
+package com.maragues.menu_planner.ui.recipe.editor;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
