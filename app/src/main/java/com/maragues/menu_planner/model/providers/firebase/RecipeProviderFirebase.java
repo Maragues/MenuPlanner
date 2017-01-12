@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import durdinapps.rxfirebase2.DataSnapshotMapper;
+import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import io.reactivex.Observable;
 
 /**
@@ -18,6 +20,15 @@ import io.reactivex.Observable;
 public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> implements IRecipeProvider {
   @Override
   public Observable<List<Recipe>> list() {
+    try {
+      return RxFirebaseDatabase.observeSingleValueEvent(
+              getReference().child(RECIPES_KEY),
+              DataSnapshotMapper.listOf(Recipe.class)
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     return null;
   }
 
