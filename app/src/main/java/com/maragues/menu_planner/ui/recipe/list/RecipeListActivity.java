@@ -7,12 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.disposables.CompositeDisposable;
 
 public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter, IRecipeList>
         implements IRecipeList {
@@ -20,8 +22,7 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
   @BindView(R.id.recipe_list_recyclerview)
   RecyclerView recyclerView;
 
-  /** Hold active loading observable subscriptions, so that they can be unsubscribed from when the activity is destroyed */
-  private CompositeDisposable disposables;
+  RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter;
 
   @NonNull
   @Override
@@ -53,5 +54,34 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
   @Override
   public void startAddRecipeActivity() {
     startActivity(EditRecipeActivity.createAddIntent(this));
+  }
+
+  @Override
+  public void setRecipes(List<Recipe> recipes) {
+    if (adapter == null) {
+      adapter = new RecipeListAdapter(recipes);
+      recyclerView.setAdapter(adapter);
+    } else {
+      //TODO diffutil?
+    }
+  }
+
+  @Override
+  public void setAdapter(RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter) {
+    recyclerView.setAdapter(adapter);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    getPresenter().onViewDisplayed();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    getPresenter().onViewHidden();
   }
 }

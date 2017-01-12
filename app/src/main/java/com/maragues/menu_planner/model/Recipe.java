@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.auto.value.AutoValue;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public abstract class Recipe implements ISynchronizable {
   @Nullable //so that we can create before having a key. The server won't accept empty id
   public abstract String id();
 
+  @Nullable //so that we can represent user-recipes
   public abstract String uid();
 
   public abstract String name();
@@ -98,5 +100,9 @@ public abstract class Recipe implements ISynchronizable {
 
   public boolean validates() {
     return !TextUtils.isEmpty(name());
+  }
+
+  public static Recipe create(DataSnapshot dataSnapshot) {
+    return dataSnapshot.getValue(AutoValue_Recipe.FirebaseValue.class).toAutoValue();
   }
 }

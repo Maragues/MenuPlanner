@@ -1,7 +1,14 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.model.providers.IRecipeProvider;
 
@@ -10,15 +17,50 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+
+import static android.content.ContentValues.TAG;
+
 
 /**
  * Created by miguelaragues on 28/12/16.
  */
 
 public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> implements IRecipeProvider {
+  static class OnSubscribeFirebase implements ObservableOnSubscribe<List<Recipe>> {
+
+    @Override
+    public void subscribe(ObservableEmitter<List<Recipe>> e) throws Exception {
+      FirebaseDatabase.getInstance().getReference()
+              .child(USER_RECIPES_KEY)
+              .child(App.appComponent.userProvider().getUid())
+              .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                  Log.d(TAG, "On data change");
+                  e.onNext(dataSnapshot.getValue(new GenericTypeIndicator<List<Recipe>>() {
+                  }));
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                  Log.d(TAG, "onCancelled");
+                  if (databaseError.getCode() == DatabaseError.PERMISSION_DENIED)
+                    Log.d(TAG, "PERMISSION_DENIED");
+                  else
+                    e.onError(databaseError.toException());
+
+                  FirebaseDatabase.getInstance().getReference().child(RECIPES_KEY).removeEventListener(this);
+                }
+              });
+    }
+  }
+
   @Override
   public Observable<List<Recipe>> list() {
-    return null;
+    return Observable.create(new OnSubscribeFirebase());
+//    return null;
   }
 
   @Override
@@ -30,7 +72,7 @@ public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> impleme
 
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + RECIPES_KEY + "/" + key, recipe.toMap());
-//    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.uid() + "/" + key, recipe.toSummaryMap());
+    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.uid() + "/" + key, recipe.toSummaryMap());
 
     getReference().updateChildren(childUpdates);
 
@@ -58,5 +100,5 @@ public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> impleme
   }
 
   static final String RECIPES_KEY = "recipes";
-  static final String USER_RECIPES_KEY = "recipes_user";
+  public static final String USER_RECIPES_KEY = "recipes_user";
 }
