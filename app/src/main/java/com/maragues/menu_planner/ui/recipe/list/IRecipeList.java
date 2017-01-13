@@ -9,8 +9,6 @@ import com.maragues.menu_planner.ui.IBaseLoggedInView;
 import net.grandcentrix.thirtyinch.callonmainthread.CallOnMainThread;
 import net.grandcentrix.thirtyinch.distinctuntilchanged.DistinctUntilChanged;
 
-import java.util.List;
-
 /**
  * Created by miguelaragues on 5/1/17.
  */
@@ -19,9 +17,9 @@ public interface IRecipeList extends IBaseLoggedInView{
 
   @CallOnMainThread
   @DistinctUntilChanged
-  void setRecipes(List<Recipe> recipes);
-
-  void setAdapter(RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter);
+  void setAdapter(RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter);
 
   void startRecipeViewer(@NonNull Recipe recipe);
+
+  void showIsLoading(boolean isLoading);
 }

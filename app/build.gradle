@@ -66,7 +66,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion
     compile 'com.android.support:design:' + rootProject.ext.supportLibVersion
 
-    compile 'com.firebaseui:firebase-ui-database:1.0.1'
+    compile 'com.firebaseui:firebase-ui-database:1.1.0'
     compile 'com.google.firebase:firebase-database:' + rootProject.ext.playServicesVersion
     compile 'com.google.firebase:firebase-auth:' + rootProject.ext.playServicesVersion
     compile 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion

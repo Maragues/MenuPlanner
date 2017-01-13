@@ -1,9 +1,14 @@
 package com.maragues.menu_planner.ui.recipe.list;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
@@ -11,9 +16,8 @@ import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.model.providers.firebase.RecipeProviderFirebase;
 import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -25,7 +29,6 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
   private static final String TAG = RecipeListPresenter.class.getSimpleName();
 
   private BehaviorSubject<Boolean> isLoadingSubject = BehaviorSubject.createDefault(false);
-  private BehaviorSubject<List<Recipe>> recipeSubject = BehaviorSubject.createDefault(new ArrayList<>());
 
   CompositeDisposable disposables = new CompositeDisposable();
 
@@ -44,11 +47,7 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
 
   void onViewDisplayed() {
     //only add if no previous Disposables
-    if (visibilityDisposables.isDisposed()) {
-      visibilityDisposables.add(recipeSubject
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(this::setRecipes));
-
+    if (visibilityDisposables.size() == 0) {
       visibilityDisposables.add(isLoadingSubject
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(this::onLoadingStateChanged)
@@ -67,15 +66,11 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
     disposables.clear();
   }
 
-  private void onLoadingStateChanged(boolean isLoading) {
-
-  }
-
-  private void setRecipes(final List<Recipe> recipes) {
+  void onLoadingStateChanged(boolean isLoading) {
     if (getView() != null)
-      getView().setRecipes(recipes);
+      getView().showIsLoading(isLoading);
     else
-      sendToView(recipeView -> recipeView.setRecipes(recipes));
+      sendToView(view -> view.showIsLoading(isLoading));
   }
 
   void loadRecipes() {
@@ -101,36 +96,84 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
                     .subscribe()
     );*/
 
-    FirebaseRecyclerAdapter<Recipe, RecipeListAdapter.ViewHolder> adapter =
-            new FirebaseRecyclerAdapter<Recipe, RecipeListAdapter.ViewHolder>(
-                    Recipe.class,
-                    R.layout.item_recipe_list,
-                    RecipeListAdapter.ViewHolder.class,
-                    FirebaseDatabase.getInstance().getReference()
-                            .child(RecipeProviderFirebase.USER_RECIPES_KEY)
-                            .child(App.appComponent.userProvider().getUid())
-            ) {
-              @Override
-              protected void populateViewHolder(RecipeListAdapter.ViewHolder viewHolder, Recipe recipe, int position) {
-                viewHolder.setRecipe(recipe);
-
-                viewHolder.itemView.setOnClickListener(v -> onRecipeClicked(recipe));
-              }
-
-              @Override
-              protected Recipe parseSnapshot(DataSnapshot snapshot) {
-                return Recipe.create(snapshot);
-              }
-            };
-
     if (getView() != null)
-      getView().setAdapter(adapter);
+      getView().setAdapter(createAdapter());
     else
-      sendToView(view -> view.setAdapter(adapter));
+      sendToView(view -> view.setAdapter(createAdapter()));
+  }
+
+  RecyclerView.Adapter<ViewHolder> adapter;
+
+  /*
+  TODO it would be better if Presenter implemented an interface and only the
+  implementation used a Firebase dependency
+   */
+  @NonNull
+  RecyclerView.Adapter<ViewHolder> createAdapter() {
+    if (adapter == null) {
+      //TODO should this be static or extracted? It doesn't hold a reference to Context or View
+      adapter = new FirebaseRecyclerAdapter<Recipe, ViewHolder>(
+              Recipe.class,
+              R.layout.item_recipe_list,
+              ViewHolder.class,
+              recipesQuery()
+      ) {
+        @Override
+        protected void populateViewHolder(ViewHolder viewHolder, Recipe recipe, int position) {
+          viewHolder.setRecipe(recipe);
+
+          viewHolder.itemView.setOnClickListener(v -> onRecipeClicked(recipe));
+        }
+
+        @Override
+        protected Recipe parseSnapshot(DataSnapshot snapshot) {
+          return Recipe.create(snapshot);
+        }
+
+        @Override
+        protected void onCancelled(DatabaseError error) {
+          super.onCancelled(error);
+
+          isLoadingSubject.onNext(false);
+        }
+
+        @Override
+        protected void onDataChanged() {
+          super.onDataChanged();
+
+          isLoadingSubject.onNext(false);
+        }
+      };
+    }
+
+    return adapter;
+  }
+
+  DatabaseReference recipesQuery() {
+    return FirebaseDatabase.getInstance().getReference()
+            .child(RecipeProviderFirebase.USER_RECIPES_KEY)
+            .child(App.appComponent.userProvider().getUid());
   }
 
   private void onRecipeClicked(@NonNull Recipe recipe) {
-    getView().startRecipeViewer(recipe);
+    if (getView() != null)
+      getView().startRecipeViewer(recipe);
+  }
+
+  @SuppressWarnings("WeakerAccess")
+  static class ViewHolder extends RecyclerView.ViewHolder {
+    @BindView(R.id.item_recipe_name)
+    TextView titleTextView;
+
+    public ViewHolder(View itemView) {
+      super(itemView);
+
+      ButterKnife.bind(this, itemView);
+    }
+
+    public void setRecipe(@NonNull Recipe recipe) {
+      titleTextView.setText(recipe.name());
+    }
   }
 
 }

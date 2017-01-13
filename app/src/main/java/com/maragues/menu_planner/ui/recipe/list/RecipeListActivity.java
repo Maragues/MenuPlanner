@@ -12,8 +12,6 @@ import com.maragues.menu_planner.ui.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
 import com.maragues.menu_planner.ui.recipe.viewer.RecipeViewerActivity;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -22,8 +20,6 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
 
   @BindView(R.id.recipe_list_recyclerview)
   RecyclerView recyclerView;
-
-  RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter;
 
   @NonNull
   @Override
@@ -63,17 +59,12 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
   }
 
   @Override
-  public void setRecipes(List<Recipe> recipes) {
-    if (adapter == null) {
-      adapter = new RecipeListAdapter(recipes);
-      recyclerView.setAdapter(adapter);
-    } else {
-      //TODO diffutil?
-    }
+  public void showIsLoading(boolean isLoading) {
+
   }
 
   @Override
-  public void setAdapter(RecyclerView.Adapter<RecipeListAdapter.ViewHolder> adapter) {
+  public void setAdapter(RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter) {
     recyclerView.setAdapter(adapter);
   }
 
