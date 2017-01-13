@@ -26,10 +26,8 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.User;
-import com.maragues.menu_planner.ui.BaseActivity;
-import com.maragues.menu_planner.ui.week.WeekActivity;
-
-import net.grandcentrix.thirtyinch.TiPresenter;
+import com.maragues.menu_planner.ui.common.BaseActivity;
+import com.maragues.menu_planner.ui.home.HomeActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -39,7 +37,8 @@ import io.reactivex.disposables.Disposable;
  * Created by miguelaragues on 28/12/16.
  */
 
-public class LoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
+        implements ILogin, GoogleApiClient.OnConnectionFailedListener {
   private static final String TAG = LoginActivity.class.getSimpleName();
 
   private static final int RC_SIGN_IN = 1;
@@ -100,7 +99,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     progressBar.setVisibility(View.GONE);
 
     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.id());
-    startActivity(new Intent(LoginActivity.this, WeekActivity.class));
+    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
 
     finish();
   }
@@ -178,7 +177,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
   @NonNull
   @Override
-  public TiPresenter providePresenter() {
-    return null;
+  public LoginPresenter providePresenter() {
+    return new LoginPresenter();
   }
 }

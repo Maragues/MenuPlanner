@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
-import com.maragues.menu_planner.ui.BaseLoggedInActivity;
+import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;

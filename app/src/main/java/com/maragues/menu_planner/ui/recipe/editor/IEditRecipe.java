@@ -1,6 +1,6 @@
 package com.maragues.menu_planner.ui.recipe.editor;
 
-import com.maragues.menu_planner.ui.IBaseLoggedInView;
+import com.maragues.menu_planner.ui.common.IBaseLoggedInView;
 
 import java.util.List;
 

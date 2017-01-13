@@ -1,4 +1,4 @@
-package com.maragues.menu_planner.ui;
+package com.maragues.menu_planner.ui.common;
 
 import net.grandcentrix.thirtyinch.TiPresenter;
 

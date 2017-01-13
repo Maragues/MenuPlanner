@@ -14,7 +14,7 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.model.providers.firebase.RecipeProviderFirebase;
-import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
+import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

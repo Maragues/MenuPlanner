@@ -2,8 +2,8 @@ package com.maragues.menu_planner.ui.test;
 
 import android.support.annotation.NonNull;
 
-import com.maragues.menu_planner.ui.BasePresenter;
-import com.maragues.menu_planner.ui.IBaseview;
+import com.maragues.menu_planner.ui.common.BasePresenter;
+import com.maragues.menu_planner.ui.common.IBaseview;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;

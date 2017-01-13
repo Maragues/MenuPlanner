@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import com.maragues.menu_planner.model.Recipe;
-import com.maragues.menu_planner.ui.IBaseLoggedInView;
+import com.maragues.menu_planner.ui.common.IBaseLoggedInView;
 
 import net.grandcentrix.thirtyinch.callonmainthread.CallOnMainThread;
 import net.grandcentrix.thirtyinch.distinctuntilchanged.DistinctUntilChanged;

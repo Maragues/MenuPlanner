@@ -4,7 +4,7 @@ import android.util.Patterns;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
-import com.maragues.menu_planner.ui.BaseLoggedInPresenter;
+import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 
 /**
  * Created by miguelaragues on 3/1/17.

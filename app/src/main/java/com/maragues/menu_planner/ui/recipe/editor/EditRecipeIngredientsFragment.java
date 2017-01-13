@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.ui.BaseFragment;
+import com.maragues.menu_planner.ui.common.BaseFragment;
 
 import java.util.List;
 

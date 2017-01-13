@@ -2,24 +2,36 @@ package com.maragues.menu_planner.ui.recipe.list;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
-import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
+import com.maragues.menu_planner.ui.common.BaseTiFragment;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
 import com.maragues.menu_planner.ui.recipe.viewer.RecipeViewerActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter, IRecipeList>
+/**
+ * Created by miguelaragues on 13/1/17.
+ */
+
+public class RecipeListFragment extends BaseTiFragment<RecipeListPresenter, IRecipeList>
         implements IRecipeList {
 
   @BindView(R.id.recipe_list_recyclerview)
   RecyclerView recyclerView;
+
+  public static Fragment newInstance() {
+    return new RecipeListFragment();
+  }
 
   @NonNull
   @Override
@@ -27,19 +39,21 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
     return new RecipeListPresenter();
   }
 
+  @Nullable
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_recipe_list);
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    return inflateView(inflater, container, R.layout.fragment_recipe_list);
+  }
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupRecyclerView();
   }
 
   private void setupRecyclerView() {
-    LinearLayoutManager manager = new LinearLayoutManager(this);
+    LinearLayoutManager manager = new LinearLayoutManager(getContext());
     recyclerView.setLayoutManager(manager);
   }
 
@@ -50,12 +64,12 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
 
   @Override
   public void startAddRecipeActivity() {
-    startActivity(EditRecipeActivity.createAddIntent(this));
+    startActivity(EditRecipeActivity.createAddIntent(getContext()));
   }
 
   @Override
   public void startRecipeViewer(@NonNull Recipe recipe) {
-    startActivity(RecipeViewerActivity.createIntent(this, recipe));
+    startActivity(RecipeViewerActivity.createIntent(getContext(), recipe));
   }
 
   @Override
@@ -69,14 +83,14 @@ public class RecipeListActivity extends BaseLoggedInActivity<RecipeListPresenter
   }
 
   @Override
-  protected void onResume() {
+  public void onResume() {
     super.onResume();
 
     getPresenter().onViewDisplayed();
   }
 
   @Override
-  protected void onPause() {
+  public void onPause() {
     super.onPause();
 
     getPresenter().onViewHidden();

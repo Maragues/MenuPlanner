@@ -4,21 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.ui.BaseLoggedInActivity;
+import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class EditRecipeActivity
@@ -43,12 +42,13 @@ public class EditRecipeActivity
    * may be best to switch to a
    * {@link android.support.v4.app.FragmentStatePagerAdapter}.
    */
-  private SectionsPagerAdapter sectionsPagerAdapter;
+  private EditRecipePagerAdapter pagerAdapter;
 
   /**
    * The {@link ViewPager} that will host the section contents.
    */
-  private ViewPager viewPager;
+  @BindView(R.id.container)
+  ViewPager viewPager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +62,10 @@ public class EditRecipeActivity
 
     // Create the adapter that will return a fragment for each of the three
     // primary sections of the activity.
-    sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+    pagerAdapter = new EditRecipePagerAdapter(getSupportFragmentManager());
 
     // Set up the ViewPager with the sections adapter.
-    viewPager = (ViewPager) findViewById(R.id.container);
-    viewPager.setAdapter(sectionsPagerAdapter);
+    viewPager.setAdapter(pagerAdapter);
 
     TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
     tabLayout.setupWithViewPager(viewPager);
@@ -167,12 +166,12 @@ public class EditRecipeActivity
    * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
    * one of the sections/tabs/pages.
    */
-  class SectionsPagerAdapter extends FragmentPagerAdapter {
+  class EditRecipePagerAdapter extends FragmentPagerAdapter {
     static final int INFO_POSITION = 0;
     static final int INGREDIENTS_POSITION = 1;
     static final int INSTRUCTIONS_POSITION = 2;
 
-    SectionsPagerAdapter(FragmentManager fm) {
+    EditRecipePagerAdapter(FragmentManager fm) {
       super(fm);
     }
 
