@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.maragues.menu_planner.dagger.AppComponent;
 import com.maragues.menu_planner.dagger.AppModule;
@@ -33,11 +34,17 @@ public class App extends Application {
 
     launchInitTask();
 
+    initFirebase();
+
     initTimezones();
 
     initDagger();
 
     initThirtyInch();
+  }
+
+  private void initFirebase() {
+    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
   }
 
   private void initThirtyInch() {
