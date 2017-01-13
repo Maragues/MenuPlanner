@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.ui.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -179,5 +180,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @Override
   public LoginPresenter providePresenter() {
     return new LoginPresenter();
+  }
+
+  public static Intent createIntent(Context context) {
+    return new Intent(context, LoginActivity.class);
   }
 }

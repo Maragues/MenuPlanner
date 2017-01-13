@@ -16,6 +16,12 @@ import io.reactivex.Single;
 public class MockUserProvider implements IUserProvider {
   public static final String DEFAULT_UID = "E7uvIt9HU3dJk5ozpFfc8u2DUk72";
 
+  private String uuid = DEFAULT_UID;
+
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
+
   @Override
   public Single<User> create(@NonNull UserInfo userInfo) {
     return null;
@@ -24,6 +30,6 @@ public class MockUserProvider implements IUserProvider {
   @Nullable
   @Override
   public String getUid() {
-    return DEFAULT_UID;
+    return uuid;
   }
 }

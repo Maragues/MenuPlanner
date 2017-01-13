@@ -1,5 +1,7 @@
 package com.maragues.menu_planner.ui.home;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -39,6 +41,10 @@ public class HomeActivity extends BaseLoggedInActivity<HomePresenter, IHome>
 
   @BindView(R.id.home_viewpager)
   ViewPager viewPager;
+
+  public static Intent createIntent(Context context) {
+    return new Intent(context, HomeActivity.class);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
