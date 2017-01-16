@@ -8,11 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.MealSlot;
 import com.maragues.menu_planner.ui.common.BaseTiFragment;
 
+import java.util.List;
+
 import butterknife.BindView;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -20,10 +26,17 @@ import butterknife.BindView;
 
 public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
         implements IPlanner {
-  @BindView(R.id.menu_recyclerview)
-  RecyclerView weekRecyclerView;
+  @BindView(R.id.planner_recyclerview)
+  RecyclerView plannerRecyclerView;
 
-  public static PlannerFragment newInstance(){
+  @BindView(R.id.planner_header)
+  TextView headerTextView;
+
+  final CompositeDisposable disposables = new CompositeDisposable();
+
+  PlannerAdapter adapter;
+
+  public static PlannerFragment newInstance() {
     return new PlannerFragment();
   }
 
@@ -47,8 +60,50 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
   }
 
   private void setupPlannerView() {
-    weekRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    plannerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
 
+    disposables.add(getPresenter().isLoadingObservable().subscribe(this::isLoading));
+    disposables.add(getPresenter().mealsObservable().subscribe(this::onNewMeals));
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+
+    disposables.clear();
+  }
+
+  private void onNewMeals(List<MealSlot> meals) {
+    if (adapter == null) {
+      adapter = new PlannerAdapter(meals, listListener);
+    }
+
+    plannerRecyclerView.setAdapter(adapter);
+  }
+
+  private void isLoading(Boolean b) {
+    Toast.makeText(getActivity(), "Is loading " + b, Toast.LENGTH_SHORT).show();
+  }
+
+  private PlannerAdapter.IMealSlotListener listListener = new PlannerAdapter.IMealSlotListener() {
+    @Override
+    public void onAddToDayClicked(@NonNull MealSlot mealSlot) {
+      getPresenter().onAddtoDayClicked(mealSlot);
+    }
+
+    @Override
+    public void onAddToSlotClicked(@NonNull MealSlot mealSlot) {
+      getPresenter().onAddToSlotClicked(mealSlot);
+    }
+
+    @Override
+    public void onSlotClicked(@NonNull MealSlot mealSlot) {
+      getPresenter().onSlotClicked(mealSlot);
+    }
+  };
 }

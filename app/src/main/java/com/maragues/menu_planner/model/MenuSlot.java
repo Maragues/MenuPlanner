@@ -2,13 +2,13 @@ package com.maragues.menu_planner.model;
 
 import android.support.annotation.NonNull;
 
+import com.maragues.menu_planner.list.MenuRecyclerViewAdapter;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZonedDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.maragues.menu_planner.list.MenuRecyclerViewAdapter;
 
 /**
  * Created by maragues on 05/12/2016.

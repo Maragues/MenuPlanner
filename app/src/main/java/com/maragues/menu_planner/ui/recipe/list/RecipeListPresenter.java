@@ -161,7 +161,7 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
   }
 
   @SuppressWarnings("WeakerAccess")
-  static class ViewHolder extends RecyclerView.ViewHolder {
+  public static class ViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.item_recipe_name)
     TextView titleTextView;
 
