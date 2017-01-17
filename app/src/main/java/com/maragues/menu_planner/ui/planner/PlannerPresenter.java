@@ -1,9 +1,7 @@
 package com.maragues.menu_planner.ui.planner;
 
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
-import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
@@ -17,6 +15,7 @@ import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -24,7 +23,9 @@ import io.reactivex.subjects.BehaviorSubject;
 
 class PlannerPresenter extends BasePresenter<IPlanner> {
 
-  private BehaviorSubject<List<MealInstance>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
+  private final BehaviorSubject<List<MealInstance>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
+
+  private final PublishSubject<MealInstance> clickedMealSubject = PublishSubject.create();
 
   @NonNull
   List<MealInstance> createDefaultMeals() {
@@ -60,6 +61,8 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   }
 
   public void onAddtoDayClicked(@NonNull MealInstance mealInstance) {
-    Toast.makeText(App.appComponent.context(), "Meal clicked " + mealInstance.dateTime(), Toast.LENGTH_SHORT).show();
+    clickedMealSubject.onNext(mealInstance);
+
+    getView().askForMealInstanceLabel();
   }
 }

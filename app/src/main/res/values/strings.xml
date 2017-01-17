@@ -126,4 +126,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_suggested_meals">SuggestedMealsActivity</string>
+    <string name="title_activity_meal_editor">Meal editor</string>
 </resources>

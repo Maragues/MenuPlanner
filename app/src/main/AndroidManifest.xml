@@ -54,6 +54,9 @@
             android:label="@string/title_activity_suggested_meals"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".ui.meal.editor.MealEditorActivity"
+                  android:label="@string/title_activity_meal_editor">
+        </activity>
     </application>
 
 </manifest>

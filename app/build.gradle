@@ -76,6 +76,10 @@ dependencies {
 
     compile "com.jakewharton.threetenabp:threetenabp:1.0.4"
     provided "com.jakewharton.threetenabp:threetenabp:1.0.4"
+    //for unit test we want the real threeten version, not the one adapted to android
+    testCompile('org.threeten:threetenbp:1.3.3') {
+        exclude group: 'com.jakewharton.threetenabp'
+    }
 
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'

@@ -106,4 +106,11 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
       getPresenter().onSlotClicked(mealInstance);
     }
   };
+
+  @Override
+  public void askForMealInstanceLabel() {
+    LabelDialogFragment fragment = LabelDialogFragment.newInstance();
+
+    fragment.show(getChildFragmentManager(), LabelDialogFragment.TAG);
+  }
 }

@@ -8,7 +8,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
+import com.maragues.menu_planner.ui.meal.editor.MealEditorActivity;
+
+import java.util.List;
 
 public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsPresenter, ISuggested>
         implements ISuggested {
@@ -34,5 +38,15 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   @Override
   public SuggestedMealsPresenter providePresenter() {
     return new SuggestedMealsPresenter();
+  }
+
+  @Override
+  public void navigateToCreateMeal() {
+    startActivity(MealEditorActivity.createIntent(this));
+  }
+
+  @Override
+  public void showSuggestedMeals(List<Meal> meals) {
+
   }
 }
