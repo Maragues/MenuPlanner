@@ -130,4 +130,6 @@
 
     <!-- ADD MEAL LABEL DIALOG-->
     <string name="meal_label_dialog_title">When?</string>
+    <string name="label_dinner">Dinner</string>
+    <string name="label_lunch">Lunch</string>
 </resources>

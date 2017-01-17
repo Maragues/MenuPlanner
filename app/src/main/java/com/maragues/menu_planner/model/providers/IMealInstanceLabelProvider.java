@@ -7,6 +7,9 @@ import com.maragues.menu_planner.model.MealInstanceLabel;
  */
 
 public interface IMealInstanceLabelProvider extends IListableProvider<MealInstanceLabel> {
-  String LUNCH_ID = "Lunch";
-  String DINNER_ID = "Dinner";
+  String LUNCH_ID = "lunch";
+  String DINNER_ID = "dinner";
+
+  String ROOT = "meal_labels";
+  String TIME = "time";
 }

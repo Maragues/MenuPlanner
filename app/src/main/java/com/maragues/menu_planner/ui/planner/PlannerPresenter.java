@@ -96,4 +96,8 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
 
     App.appComponent.mealInstanceProvider().create(clickedMealInstance);
   }
+
+  public void onCreateMealCancelled() {
+    clickedMealInstance = null;
+  }
 }

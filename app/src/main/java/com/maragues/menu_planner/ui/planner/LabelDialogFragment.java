@@ -8,16 +8,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.MealInstanceLabel;
+import com.maragues.menu_planner.model.providers.IMealInstanceLabelProvider;
 import com.maragues.menu_planner.ui.common.BaseDialogFragment;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -110,18 +114,25 @@ public class LabelDialogFragment extends BaseDialogFragment {
     dismiss();
   }
 
+  @NonNull
   private Query labelQuery() {
-    return null;
+    return FirebaseDatabase.getInstance().getReference()
+            .child(IMealInstanceLabelProvider.ROOT)
+            .orderByChild(IMealInstanceLabelProvider.TIME);
   }
 
-  static class LabelViewHolder extends RecyclerView.ViewHolder {
+  public static class LabelViewHolder extends RecyclerView.ViewHolder {
+    @BindView(R.id.item_label_name)
+    TextView labelTextView;
 
     public LabelViewHolder(View itemView) {
       super(itemView);
+
+      ButterKnife.bind(this, itemView);
     }
 
     public void setLabel(MealInstanceLabel label) {
-
+      labelTextView.setText(label.getLocalizedLabelResId());
     }
   }
 }

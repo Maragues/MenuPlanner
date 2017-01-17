@@ -135,6 +135,8 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
     if (requestCode == CREATE_MEAL_REQUEST_CODE) {
       if (resultCode == Activity.RESULT_OK) {
         getPresenter().onMealCreated(MealEditorActivity.extractMealId(data));
+      } else {
+        getPresenter().onCreateMealCancelled();
       }
     }
   }
