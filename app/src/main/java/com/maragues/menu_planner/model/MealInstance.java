@@ -40,6 +40,8 @@ public abstract class MealInstance implements ISynchronizable {
 
   @AutoValue.Builder
   public abstract static class Builder {
+    public abstract MealInstance.Builder setId(String value);
+
     public abstract MealInstance.Builder setName(String value);
 
     public abstract MealInstance.Builder setMealId(String value);

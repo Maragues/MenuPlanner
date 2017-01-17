@@ -21,9 +21,6 @@ import java.util.List;
 @AutoValue
 public abstract class Meal implements ISynchronizable {
 
-  @NonNull
-  public abstract String mealId();
-
   @Nullable
   public abstract List<String> recipes();
 
@@ -33,7 +30,7 @@ public abstract class Meal implements ISynchronizable {
 
   @AutoValue.Builder
   public abstract static class Builder {
-    public abstract Meal.Builder setMealId(String value);
+    public abstract Meal.Builder setId(String value);
 
     public abstract Meal.Builder setRecipes(List<String> value);
 

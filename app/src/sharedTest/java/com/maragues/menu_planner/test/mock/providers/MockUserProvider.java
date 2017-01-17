@@ -13,7 +13,7 @@ import io.reactivex.Single;
  * Created by miguelaragues on 4/1/17.
  */
 
-public class MockUserProvider implements IUserProvider {
+public class MockUserProvider extends MockBaseProvider<User> implements IUserProvider {
   public static final String DEFAULT_UID = "E7uvIt9HU3dJk5ozpFfc8u2DUk72";
 
   private String uuid = DEFAULT_UID;
@@ -31,5 +31,10 @@ public class MockUserProvider implements IUserProvider {
   @Override
   public String getUid() {
     return uuid;
+  }
+
+  @Override
+  public void create(@NonNull User item) {
+    //TODO implement
   }
 }

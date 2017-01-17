@@ -13,7 +13,7 @@ import io.reactivex.Single;
  * Created by miguelaragues on 30/12/16.
  */
 
-public interface IUserProvider {
+public interface IUserProvider extends IProvider<User> {
 
   Single<User> create(@NonNull UserInfo userInfo);
 

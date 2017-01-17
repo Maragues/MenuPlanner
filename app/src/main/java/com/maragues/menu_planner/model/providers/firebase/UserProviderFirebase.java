@@ -86,4 +86,9 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
   }
 
   static final String USERS_KEY = "users";
+
+  @Override
+  public void create(@NonNull User item) {
+    //TODO do we need this?
+  }
 }

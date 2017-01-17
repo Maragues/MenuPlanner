@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 
@@ -27,7 +27,12 @@ import static android.content.ContentValues.TAG;
  * Created by miguelaragues on 28/12/16.
  */
 
-public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> implements IRecipeProvider {
+public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe> implements IRecipeProvider {
+
+  public RecipeProviderFirebase() {
+    super(Recipe.class);
+  }
+
   static class OnSubscribeFirebase implements ObservableOnSubscribe<List<Recipe>> {
 
     @Override
@@ -58,9 +63,10 @@ public class RecipeProviderFirebase extends BaseProviderFirebase<Recipe> impleme
   }
 
   @Override
-  public Observable<List<Recipe>> list() {
-    return Observable.create(new OnSubscribeFirebase());
-//    return null;
+  protected Query listQuery() {
+    return FirebaseDatabase.getInstance().getReference()
+            .child(USER_RECIPES_KEY)
+            .child(App.appComponent.userProvider().getUid());
   }
 
   @Override
