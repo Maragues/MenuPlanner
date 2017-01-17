@@ -1,8 +1,11 @@
 package com.maragues.menu_planner.ui.planner;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
+import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
 import org.threeten.bp.LocalDate;
@@ -15,7 +18,6 @@ import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -24,8 +26,6 @@ import io.reactivex.subjects.PublishSubject;
 class PlannerPresenter extends BasePresenter<IPlanner> {
 
   private final BehaviorSubject<List<MealInstance>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
-
-  private final PublishSubject<MealInstance> clickedMealSubject = PublishSubject.create();
 
   @NonNull
   List<MealInstance> createDefaultMeals() {
@@ -61,8 +61,39 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   }
 
   public void onAddtoDayClicked(@NonNull MealInstance mealInstance) {
-    clickedMealSubject.onNext(mealInstance);
+    clickedMealInstance = mealInstance;
 
-    getView().askForMealInstanceLabel();
+
+    askForLabel();
+  }
+
+  private void askForLabel() {
+    if (getView() != null)
+      getView().askForMealInstanceLabel();
+    else
+      sendToView(IPlanner::askForMealInstanceLabel);
+  }
+
+  MealInstance clickedMealInstance;
+
+  public void onLabelSelected(MealInstanceLabel label) {
+    clickedMealInstance = clickedMealInstance.withLabelId(label.id());
+    //the mealInstance clicked is at clickedMealSubject, and label is the label we want to assign. Does this make sense?
+    //now we should open a Meal editor and when it's completed, assign the label and the time to a MealInstance
+
+    navigateToMealEditor();
+  }
+
+  private void navigateToMealEditor() {
+    if (getView() != null)
+      getView().navigateToMealEditor(clickedMealInstance);
+    else
+      sendToView(view -> view.navigateToMealEditor(clickedMealInstance));
+  }
+
+  public void onMealCreated(@Nullable String mealId) {
+    clickedMealInstance = clickedMealInstance.withMealId(mealId);
+
+    App.appComponent.mealInstanceProvider().create(clickedMealInstance);
   }
 }

@@ -7,6 +7,7 @@ import com.google.firebase.auth.UserInfo;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 /**
@@ -34,7 +35,8 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   }
 
   @Override
-  public void create(@NonNull User item) {
+  public Flowable<User> create(@NonNull User item) {
     //TODO implement
+    return Flowable.just(item);
   }
 }

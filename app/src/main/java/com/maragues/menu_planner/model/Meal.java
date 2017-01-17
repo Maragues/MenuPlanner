@@ -1,11 +1,13 @@
 package com.maragues.menu_planner.model;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.List;
+
+import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 
 /**
  * Created by maragues on 08/12/2016.
@@ -19,6 +21,7 @@ import java.util.List;
  */
 
 @AutoValue
+@FirebaseValue
 public abstract class Meal implements ISynchronizable {
 
   @Nullable
@@ -37,4 +40,7 @@ public abstract class Meal implements ISynchronizable {
     public abstract Meal build();
   }
 
+  public static Meal create(DataSnapshot dataSnapshot) {
+    return dataSnapshot.getValue(AutoValue_Meal.FirebaseValue.class).toAutoValue();
+  }
 }

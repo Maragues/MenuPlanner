@@ -1,5 +1,7 @@
 package com.maragues.menu_planner.ui.planner;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +15,9 @@ import android.widget.Toast;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.MealInstance;
+import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.ui.common.BaseTiFragment;
+import com.maragues.menu_planner.ui.meal.editor.MealEditorActivity;
 
 import java.util.List;
 
@@ -26,6 +30,8 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
         implements IPlanner {
+  private static final int CREATE_MEAL_REQUEST_CODE = 50;
+
   @BindView(R.id.planner_recyclerview)
   RecyclerView plannerRecyclerView;
 
@@ -111,6 +117,29 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
   public void askForMealInstanceLabel() {
     LabelDialogFragment fragment = LabelDialogFragment.newInstance();
 
+    fragment.labelObservable().subscribe(this::onLabelSelected);
+
     fragment.show(getChildFragmentManager(), LabelDialogFragment.TAG);
+  }
+
+  @Override
+  public void navigateToMealEditor(@NonNull MealInstance mealInstance) {
+    startActivityForResult(
+            MealEditorActivity.createIntent(getActivity(), mealInstance), CREATE_MEAL_REQUEST_CODE);
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == CREATE_MEAL_REQUEST_CODE) {
+      if (resultCode == Activity.RESULT_OK) {
+        getPresenter().onMealCreated(MealEditorActivity.extractMealId(data));
+      }
+    }
+  }
+
+  private void onLabelSelected(MealInstanceLabel label) {
+    getPresenter().onLabelSelected(label);
   }
 }

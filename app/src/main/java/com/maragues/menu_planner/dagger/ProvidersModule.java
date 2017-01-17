@@ -1,11 +1,13 @@
 package com.maragues.menu_planner.dagger;
 
-import com.maragues.menu_planner.model.providers.IMealProvider;
+import com.maragues.menu_planner.model.providers.IMealInstanceLabelProvider;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
+import com.maragues.menu_planner.model.providers.IMealProvider;
 import com.maragues.menu_planner.model.providers.IRecipeProvider;
 import com.maragues.menu_planner.model.providers.IUserProvider;
-import com.maragues.menu_planner.model.providers.firebase.MealProviderFirebase;
+import com.maragues.menu_planner.model.providers.firebase.MealInstanceLabelProviderFirebase;
 import com.maragues.menu_planner.model.providers.firebase.MealInstanceProviderFirebase;
+import com.maragues.menu_planner.model.providers.firebase.MealProviderFirebase;
 import com.maragues.menu_planner.model.providers.firebase.RecipeProviderFirebase;
 import com.maragues.menu_planner.model.providers.firebase.UserProviderFirebase;
 
@@ -40,7 +42,13 @@ public class ProvidersModule {
 
   @Provides
   @Singleton
-  static IMealInstanceProvider providesMealSlotProvider() {
+  static IMealInstanceProvider providesMealInstanceProvider() {
     return new MealInstanceProviderFirebase();
+  }
+
+  @Provides
+  @Singleton
+  static IMealInstanceLabelProvider providesMealInstanceLabelProvider() {
+    return new MealInstanceLabelProviderFirebase();
   }
 }

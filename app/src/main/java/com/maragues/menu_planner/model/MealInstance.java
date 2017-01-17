@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
+import com.google.firebase.database.DataSnapshot;
 import com.maragues.menu_planner.model.adapters.LocalDateTimeAdapter;
 
 import org.threeten.bp.LocalDate;
@@ -26,6 +27,9 @@ public abstract class MealInstance implements ISynchronizable {
   public abstract LocalDateTime dateTime();
 
   @Nullable
+  public abstract String labelId();
+
+  @Nullable
   public abstract String name();
 
   @Nullable
@@ -41,6 +45,8 @@ public abstract class MealInstance implements ISynchronizable {
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract MealInstance.Builder setId(String value);
+
+    public abstract MealInstance.Builder setLabelId(String value);
 
     public abstract MealInstance.Builder setName(String value);
 
@@ -59,6 +65,8 @@ public abstract class MealInstance implements ISynchronizable {
 
   public abstract MealInstance withName(String name);
 
+  public abstract MealInstance withLabelId(String labelId);
+
   public abstract MealInstance withRecipes(List<String> recipes);
 
   public abstract MealInstance withMealId(String mealId);
@@ -67,5 +75,9 @@ public abstract class MealInstance implements ISynchronizable {
 
   public boolean hasRecipes() {
     return recipes() != null && !recipes().isEmpty();
+  }
+
+  public static MealInstance create(DataSnapshot dataSnapshot) {
+    return dataSnapshot.getValue(AutoValue_MealInstance.FirebaseValue.class).toAutoValue();
   }
 }

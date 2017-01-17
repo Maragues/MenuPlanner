@@ -111,7 +111,7 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
   @NonNull
   RecyclerView.Adapter<ViewHolder> createAdapter() {
     if (adapter == null) {
-      //TODO should this be static or extracted? It doesn't hold a reference to Context or View
+      //TODO should this be static or extracted? It doesn't hold a reference to Context or View. Adapter handles view, it shouldn't be here
       adapter = new FirebaseRecyclerAdapter<Recipe, ViewHolder>(
               Recipe.class,
               R.layout.item_recipe_list,

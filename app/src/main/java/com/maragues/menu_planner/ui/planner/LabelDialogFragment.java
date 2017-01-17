@@ -1,15 +1,127 @@
 package com.maragues.menu_planner.ui.planner;
 
-import android.support.v4.app.DialogFragment;
+import android.app.Dialog;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.MealInstanceLabel;
+import com.maragues.menu_planner.ui.common.BaseDialogFragment;
+
+import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * Created by miguelaragues on 17/1/17.
  */
 
-public class LabelDialogFragment extends DialogFragment {
+public class LabelDialogFragment extends BaseDialogFragment {
   static final String TAG = LabelDialogFragment.class.getSimpleName();
+
+  @BindView(R.id.meal_instance_label_list)
+  RecyclerView labelRecyclerView;
+
+  private BehaviorSubject<Boolean> isLoadingSubject = BehaviorSubject.createDefault(false);
 
   public static LabelDialogFragment newInstance() {
     return new LabelDialogFragment();
+  }
+
+  @NonNull
+  @Override
+  public Dialog onCreateDialog(Bundle savedInstanceState) {
+    View view = inflateView(LayoutInflater.from(getActivity()), null, R.layout.dialog_meal_instance_label);
+
+    final AlertDialog dialog = new AlertDialog.Builder(getActivity())
+            .setTitle(R.string.meal_label_dialog_title)
+            .setView(view)
+            .create();
+
+    setupLabelList();
+
+    return dialog;
+  }
+
+  private void setupLabelList() {
+    labelRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    labelRecyclerView.setHasFixedSize(true);
+
+    labelRecyclerView.setAdapter(createAdapter());
+  }
+
+  private RecyclerView.Adapter createAdapter() {
+    isLoadingSubject.onNext(true);
+
+    return new FirebaseRecyclerAdapter<MealInstanceLabel, LabelViewHolder>(
+            MealInstanceLabel.class,
+            R.layout.item_meal_label,
+            LabelViewHolder.class,
+            labelQuery()
+    ) {
+      @Override
+      protected void populateViewHolder(LabelViewHolder viewHolder, MealInstanceLabel label, int position) {
+        viewHolder.setLabel(label);
+
+        viewHolder.itemView.setOnClickListener(v -> onLabelClicked(label));
+      }
+
+      @Override
+      protected MealInstanceLabel parseSnapshot(DataSnapshot snapshot) {
+        return MealInstanceLabel.create(snapshot);
+      }
+
+      @Override
+      protected void onCancelled(DatabaseError error) {
+        super.onCancelled(error);
+
+        isLoadingSubject.onNext(false);
+      }
+
+      @Override
+      protected void onDataChanged() {
+        super.onDataChanged();
+
+        isLoadingSubject.onNext(false);
+      }
+    };
+  }
+
+  private BehaviorSubject<MealInstanceLabel> labelSubject = BehaviorSubject.create();
+
+  Observable<MealInstanceLabel> labelObservable() {
+    return labelSubject;
+  }
+
+  private void onLabelClicked(MealInstanceLabel label) {
+    labelSubject.onNext(label);
+
+    labelSubject.onComplete();
+
+    dismiss();
+  }
+
+  private Query labelQuery() {
+    return null;
+  }
+
+  static class LabelViewHolder extends RecyclerView.ViewHolder {
+
+    public LabelViewHolder(View itemView) {
+      super(itemView);
+    }
+
+    public void setLabel(MealInstanceLabel label) {
+
+    }
   }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -23,12 +22,8 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
         extends BaseProviderFirebase<T>
         implements IListableProvider<T> {
 
-  private final Class<T> clazz;
-
   protected BaseListableFirebaseProvider(Class<T> clazz) {
-    super();
-
-    this.clazz = clazz;
+    super(clazz);
   }
 
   @NonNull
@@ -45,9 +40,11 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
 
   @Nullable
   @Override
-  public Observable<T> get(@NonNull String id) {
-    return null;
+  public Flowable<T> get(@NonNull String id) {
+    return RxFirebaseDatabase.observeSingleValueEvent(getReference(), this::snapshotToInstance);
   }
 
   protected abstract Query listQuery();
+
+  protected abstract T snapshotToInstance(DataSnapshot dataSnapshot);
 }

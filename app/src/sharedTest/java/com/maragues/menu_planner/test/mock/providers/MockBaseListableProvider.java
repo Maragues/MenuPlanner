@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -21,21 +20,24 @@ public abstract class MockBaseListableProvider<T extends ISynchronizable> extend
 
   private List<T> items = new ArrayList<>();
 
+  @NonNull
   @Override
   public Flowable<List<T>> list() {
     return Flowable.just(items);
   }
 
   @Override
-  public void create(@NonNull T item) {
+  public Flowable<T> create(@NonNull T item) {
     items.add(item);
+
+    return Flowable.just(item);
   }
 
   @Nullable
   @Override
-  public Observable<T> get(@NonNull String id) {
+  public Flowable<T> get(@NonNull String id) {
     for (T item : items) {
-      if (item.id().equals(id)) return Observable.just(item);
+      if (item.id().equals(id)) return Flowable.just(item);
     }
 
     return null;

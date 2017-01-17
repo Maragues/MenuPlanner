@@ -13,6 +13,7 @@ import com.google.firebase.database.Transaction;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
@@ -25,6 +26,10 @@ import io.reactivex.schedulers.Schedulers;
 
 public class UserProviderFirebase extends BaseProviderFirebase<User> implements IUserProvider {
   private static final String TAG = UserProviderFirebase.class.getSimpleName();
+
+  public UserProviderFirebase() {
+    super(User.class);
+  }
 
   @Override
   public Single<User> create(@NonNull UserInfo userInfo) {
@@ -88,7 +93,8 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
   static final String USERS_KEY = "users";
 
   @Override
-  public void create(@NonNull User item) {
+  public Flowable<User> create(@NonNull User item) {
     //TODO do we need this?
+    return null;
   }
 }

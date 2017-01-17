@@ -127,4 +127,7 @@
     </string>
     <string name="title_activity_suggested_meals">SuggestedMealsActivity</string>
     <string name="title_activity_meal_editor">Meal editor</string>
+
+    <!-- ADD MEAL LABEL DIALOG-->
+    <string name="meal_label_dialog_title">When?</string>
 </resources>

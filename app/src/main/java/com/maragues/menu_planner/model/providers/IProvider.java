@@ -4,11 +4,13 @@ import android.support.annotation.NonNull;
 
 import com.maragues.menu_planner.model.ISynchronizable;
 
+import io.reactivex.Flowable;
+
 
 /**
  * Created by maragues on 03/05/16.
  */
 public interface IProvider<T extends ISynchronizable> {
 
-  void create(@NonNull T item);
+  Flowable<T> create(@NonNull T item);
 }

@@ -10,6 +10,13 @@ import com.maragues.menu_planner.model.providers.IProvider;
  */
 
 public abstract class BaseProviderFirebase<T extends ISynchronizable> implements IProvider<T> {
+
+  protected final Class<T> clazz;
+
+  protected BaseProviderFirebase(Class<T> clazz) {
+    this.clazz = clazz;
+  }
+
   protected final DatabaseReference getReference() {
     return FirebaseDatabase.getInstance().getReference();
   }
