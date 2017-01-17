@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.MealSlot;
+import com.maragues.menu_planner.model.MealInstance;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -30,10 +30,10 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
   private static final int TYPE_HEADER_LABEL = 1;
   private static final int TYPE_BODY = 2;
 
-  final List<MealSlot> meals;
+  final List<MealInstance> meals;
   private final IMealSlotListener mealSlotListener;
 
-  public PlannerAdapter(@NonNull List<MealSlot> mealList, @NonNull IMealSlotListener listener) {
+  public PlannerAdapter(@NonNull List<MealInstance> mealList, @NonNull IMealSlotListener listener) {
     if (mealList.size() < BASE_SIZE)
       throw new IllegalArgumentException("List must have at least " + BASE_SIZE + " elements");
 
@@ -46,10 +46,10 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     if (position == 0)
       return TYPE_HEADER_DAY;
 
-    MealSlot mealSlot = meals.get(position);
+    MealInstance mealInstance = meals.get(position);
 
     //no recipes, we'll just print a day
-    if (!mealSlot.hasRecipes())
+    if (!mealInstance.hasRecipes())
       return TYPE_HEADER_DAY;
 
     //there's a day on top of us and there are recipes, always print a label
@@ -61,9 +61,9 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     if (previousType == TYPE_HEADER_LABEL)
       return TYPE_BODY;
 
-    //now we need to detect if the MealSlot to be shown belongs to a new LocalDate
-    MealSlot previousMealSlot = meals.get(position - 1);
-    if (mealSlot.dateTime().toLocalDate().isAfter(previousMealSlot.dateTime().toLocalDate())) {
+    //now we need to detect if the MealInstance to be shown belongs to a new LocalDate
+    MealInstance previousMealInstance = meals.get(position - 1);
+    if (mealInstance.dateTime().toLocalDate().isAfter(previousMealInstance.dateTime().toLocalDate())) {
       //it's a different day, print a day
       return TYPE_HEADER_DAY;
     } else {
@@ -126,10 +126,10 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
 
   abstract static class PlannerViewHolder extends RecyclerView.ViewHolder {
     protected final IMealSlotListener listener;
-    private MealSlot mealSlot;
+    private MealInstance mealInstance;
 
-    protected MealSlot getMealSlot() {
-      return mealSlot;
+    protected MealInstance getMealSlot() {
+      return mealInstance;
     }
 
     public PlannerViewHolder(View itemView, @NonNull IMealSlotListener listener) {
@@ -140,8 +140,8 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
       ButterKnife.bind(this, itemView);
     }
 
-    void render(@NonNull MealSlot mealSlot) {
-      this.mealSlot = mealSlot;
+    void render(@NonNull MealInstance mealInstance) {
+      this.mealInstance = mealInstance;
     }
   }
 
@@ -156,10 +156,10 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     }
 
     @Override
-    void render(@NonNull MealSlot mealSlot) {
-      super.render(mealSlot);
+    void render(@NonNull MealInstance mealInstance) {
+      super.render(mealInstance);
 
-      dayTextView.setText(mealSlot.dateTime().format(FORMATTER));
+      dayTextView.setText(mealInstance.dateTime().format(FORMATTER));
     }
 
     @OnClick(R.id.planner_header_day_add)
@@ -177,8 +177,8 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     }
 
     @Override
-    void render(@NonNull MealSlot mealSlot) {
-      super.render(mealSlot);
+    void render(@NonNull MealInstance mealInstance) {
+      super.render(mealInstance);
     }
   }
 
@@ -191,16 +191,16 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     }
 
     @Override
-    void render(@NonNull MealSlot mealSlot) {
-      super.render(mealSlot);
+    void render(@NonNull MealInstance mealInstance) {
+      super.render(mealInstance);
     }
   }
 
   interface IMealSlotListener {
-    void onAddToDayClicked(@NonNull MealSlot mealSlot);
+    void onAddToDayClicked(@NonNull MealInstance mealInstance);
 
-    void onAddToSlotClicked(@NonNull MealSlot mealSlot);
+    void onAddToSlotClicked(@NonNull MealInstance mealInstance);
 
-    void onSlotClicked(@NonNull MealSlot mealSlot);
+    void onSlotClicked(@NonNull MealInstance mealInstance);
   }
 }

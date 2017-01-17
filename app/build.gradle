@@ -95,8 +95,9 @@ dependencies {
     annotationProcessor 'com.gabrielittner.auto.value:auto-value-with:1.0.0'
     annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
 //    compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
-    annotationProcessor 'me.mattlogan.auto.value:auto-value-firebase:1.0.1'
-    provided 'me.mattlogan.auto.value:auto-value-firebase-annotation:1.0.1'
+    annotationProcessor 'me.mattlogan.auto.value:auto-value-firebase:'+rootProject.ext.autoValueFirebase
+    provided 'me.mattlogan.auto.value:auto-value-firebase-annotation:'+rootProject.ext.autoValueFirebase
+    compile 'me.mattlogan.auto.value:auto-value-firebase-adapter:'+rootProject.ext.autoValueFirebase
     provided 'javax.annotation:jsr250-api:1.0'
 
     def thirtyinchVersion = '0.8.0-rc2'

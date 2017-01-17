@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.maragues.menu_planner.App;
-import com.maragues.menu_planner.model.MealSlot;
+import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
 import org.threeten.bp.LocalDate;
@@ -24,17 +24,17 @@ import io.reactivex.subjects.BehaviorSubject;
 
 class PlannerPresenter extends BasePresenter<IPlanner> {
 
-  private BehaviorSubject<List<MealSlot>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
+  private BehaviorSubject<List<MealInstance>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
 
   @NonNull
-  List<MealSlot> createDefaultMeals() {
-    List<MealSlot> meals = new ArrayList<>();
+  List<MealInstance> createDefaultMeals() {
+    List<MealInstance> meals = new ArrayList<>();
 
     TemporalField fieldISO = WeekFields.of(Locale.getDefault()).dayOfWeek();
 
     LocalDate firstDayOfCurrentWeek = LocalDate.now().with(fieldISO, 1);
     for (int i = 0; i < 7; i++) {
-      meals.add(MealSlot.fromLocalDate(firstDayOfCurrentWeek.plusDays(i)));
+      meals.add(MealInstance.fromLocalDate(firstDayOfCurrentWeek.plusDays(i)));
     }
 
     return meals;
@@ -42,7 +42,7 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
 
   private BehaviorSubject<Boolean> isLoadingSubject = BehaviorSubject.createDefault(false);
 
-  Observable<List<MealSlot>> mealsObservable() {
+  Observable<List<MealInstance>> mealsObservable() {
     return mealsSubject;
   }
 
@@ -51,15 +51,15 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   }
 
 
-  public void onSlotClicked(@NonNull MealSlot mealSlot) {
+  public void onSlotClicked(@NonNull MealInstance mealInstance) {
 
   }
 
-  public void onAddToSlotClicked(@NonNull MealSlot mealSlot) {
+  public void onAddToSlotClicked(@NonNull MealInstance mealInstance) {
 
   }
 
-  public void onAddtoDayClicked(@NonNull MealSlot mealSlot) {
-    Toast.makeText(App.appComponent.context(), "Meal clicked " + mealSlot.dateTime(), Toast.LENGTH_SHORT).show();
+  public void onAddtoDayClicked(@NonNull MealInstance mealInstance) {
+    Toast.makeText(App.appComponent.context(), "Meal clicked " + mealInstance.dateTime(), Toast.LENGTH_SHORT).show();
   }
 }

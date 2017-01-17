@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.MealSlot;
+import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.ui.common.BaseTiFragment;
 
 import java.util.List;
@@ -78,7 +78,7 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
     disposables.clear();
   }
 
-  private void onNewMeals(List<MealSlot> meals) {
+  private void onNewMeals(List<MealInstance> meals) {
     if (adapter == null) {
       adapter = new PlannerAdapter(meals, listListener);
     }
@@ -92,18 +92,18 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
 
   private PlannerAdapter.IMealSlotListener listListener = new PlannerAdapter.IMealSlotListener() {
     @Override
-    public void onAddToDayClicked(@NonNull MealSlot mealSlot) {
-      getPresenter().onAddtoDayClicked(mealSlot);
+    public void onAddToDayClicked(@NonNull MealInstance mealInstance) {
+      getPresenter().onAddtoDayClicked(mealInstance);
     }
 
     @Override
-    public void onAddToSlotClicked(@NonNull MealSlot mealSlot) {
-      getPresenter().onAddToSlotClicked(mealSlot);
+    public void onAddToSlotClicked(@NonNull MealInstance mealInstance) {
+      getPresenter().onAddToSlotClicked(mealInstance);
     }
 
     @Override
-    public void onSlotClicked(@NonNull MealSlot mealSlot) {
-      getPresenter().onSlotClicked(mealSlot);
+    public void onSlotClicked(@NonNull MealInstance mealInstance) {
+      getPresenter().onSlotClicked(mealInstance);
     }
   };
 }
