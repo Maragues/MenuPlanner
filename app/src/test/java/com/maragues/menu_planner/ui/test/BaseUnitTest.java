@@ -18,12 +18,16 @@ public abstract class BaseUnitTest {
   @Rule public MockitoRule rule = MockitoJUnit.rule();
 
   @Rule
-  public final RxSchedulersOverrideRule mOverrideSchedulersRule = new RxSchedulersOverrideRule();
+  public final ImmediateRxSchedulersOverrideRule mOverrideSchedulersRule = new ImmediateRxSchedulersOverrideRule();
+
+  public BaseUnitTest(){
+    createAppComponent();
+  }
 
 
   @Before
   public void setUp() {
-    createAppComponent();
+
   }
 
 

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -35,11 +36,15 @@ public abstract class MockBaseListableProvider<T extends ISynchronizable> extend
 
   @Nullable
   @Override
-  public Flowable<T> get(@NonNull String id) {
+  public Single<T> get(@NonNull String id) {
     for (T item : items) {
-      if (item.id().equals(id)) return Flowable.just(item);
+      if (item.id().equals(id)) return Single.just(item);
     }
 
     return null;
+  }
+
+  public void reset() {
+    items.clear();
   }
 }

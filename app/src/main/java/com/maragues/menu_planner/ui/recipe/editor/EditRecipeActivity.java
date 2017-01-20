@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
 import java.util.List;
@@ -23,6 +24,16 @@ import butterknife.OnClick;
 public class EditRecipeActivity
         extends BaseLoggedInActivity<EditRecipePresenter, IEditRecipe.View>
         implements IEditRecipe.View {
+
+  public static final String EXTRA_RESULT_RECIPE = "extra_result_recipe";
+
+  public static Intent createAddIntent(@NonNull Context context) {
+    return new Intent(context, EditRecipeActivity.class);
+  }
+
+  public static Recipe extractRecipe(Intent data) {
+    return data.getParcelableExtra(EXTRA_RESULT_RECIPE);
+  }
 
   EditRecipeInfoFragment infoFragment;
   EditRecipeIngredientsFragment ingredientsFragment;
@@ -158,8 +169,12 @@ public class EditRecipeActivity
       instructionsFragment.setSteps(steps);
   }
 
-  public static Intent createAddIntent(@NonNull Context context) {
-    return new Intent(context, EditRecipeActivity.class);
+  @Override
+  public void storeResult(Recipe recipe) {
+    Intent data = new Intent();
+    data.putExtra(EXTRA_RESULT_RECIPE, recipe);
+
+    setResult(RESULT_OK, data);
   }
 
   /**

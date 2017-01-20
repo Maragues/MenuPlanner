@@ -71,6 +71,8 @@ dependencies {
     compile 'com.google.firebase:firebase-database:' + rootProject.ext.playServicesVersion
     compile 'com.google.firebase:firebase-auth:' + rootProject.ext.playServicesVersion
     compile 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion
+    
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
     compile 'com.github.quivr:android-week-view:2.0.2'
 
@@ -123,8 +125,9 @@ dependencies {
 
     testCompile 'junit:junit:' + rootProject.ext.junitVersion
 
-    testCompile "org.mockito:mockito-core:2.5.3"
-    androidTestCompile "org.mockito:mockito-core:2.5.3"
+    testCompile "org.mockito:mockito-core:" + rootProject.ext.mockitoVersion
+    androidTestCompile "org.mockito:mockito-core:" + rootProject.ext.mockitoVersion
+//    testCompile "org.mockito:mockito-android:" + rootProject.ext.mockitoVersion //this doesn't work, 20/1/2017
 
     androidTestCompile 'com.android.support:support-annotations:' + rootProject.ext.supportLibVersion
     androidTestCompile 'com.android.support.test:runner:' + rootProject.ext.runnerVersion

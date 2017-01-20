@@ -1,13 +1,11 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.model.providers.IMealInstanceLabelProvider;
 
-import io.reactivex.Flowable;
+import java.util.Map;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -31,7 +29,7 @@ public class MealInstanceLabelProviderFirebase extends BaseListableFirebaseProvi
   }
 
   @Override
-  public Flowable<MealInstanceLabel> create(@NonNull MealInstanceLabel item) {
+  protected Map<String, Object> synchronizableToMap(MealInstanceLabel item) {
     return null;
   }
 }

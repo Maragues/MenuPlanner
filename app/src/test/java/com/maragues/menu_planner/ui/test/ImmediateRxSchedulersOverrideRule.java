@@ -8,7 +8,6 @@ import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.internal.schedulers.ExecutorScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.TestScheduler;
 
 
 /**
@@ -21,7 +20,7 @@ import io.reactivex.schedulers.TestScheduler;
  * See https://medium.com/@fabioCollini/testing-asynchronous-rxjava-code-using-mockito-8ad831a16877#.ahj5h7jmg
  * See https://github.com/fabioCollini/TestingRxJavaUsingMockito/blob/master/app/src/test/java/it/codingjam/testingrxjava/TestSchedulerRule.java
  */
-public class RxSchedulersOverrideRule implements TestRule {
+public class ImmediateRxSchedulersOverrideRule implements TestRule {
 
   @Override
   public Statement apply(final Statement base, Description description) {
@@ -30,11 +29,11 @@ public class RxSchedulersOverrideRule implements TestRule {
       public void evaluate() throws Throwable {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler(schedulerCallable -> immediate);
 
-        RxJavaPlugins.setInitComputationSchedulerHandler(scheduler -> testScheduler);
+        RxJavaPlugins.setInitComputationSchedulerHandler(scheduler -> immediate);
 
-        RxJavaPlugins.setInitIoSchedulerHandler(scheduler -> testScheduler);
+        RxJavaPlugins.setInitIoSchedulerHandler(scheduler -> immediate);
 
-        RxJavaPlugins.setInitNewThreadSchedulerHandler(scheduler -> testScheduler);
+        RxJavaPlugins.setInitNewThreadSchedulerHandler(scheduler -> immediate);
 
         try {
           base.evaluate();
@@ -46,7 +45,6 @@ public class RxSchedulersOverrideRule implements TestRule {
     };
   }
 
-  private final TestScheduler testScheduler = new TestScheduler();
 
   private final Scheduler immediate = new Scheduler() {
     @Override
@@ -54,8 +52,4 @@ public class RxSchedulersOverrideRule implements TestRule {
       return new ExecutorScheduler.ExecutorWorker(Runnable::run);
     }
   };
-
-  public TestScheduler getTestScheduler() {
-    return testScheduler;
-  }
 }

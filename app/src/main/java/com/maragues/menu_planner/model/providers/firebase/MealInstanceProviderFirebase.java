@@ -1,13 +1,11 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
 
-import io.reactivex.Flowable;
+import java.util.Map;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -31,7 +29,12 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
   }
 
   @Override
-  public Flowable<MealInstance> create(@NonNull MealInstance item) {
+  protected Map<String, Object> synchronizableToMap(MealInstance item) {
     return null;
+  }
+
+  @Override
+  public void create(MealInstance clickedMealInstance) {
+
   }
 }

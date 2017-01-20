@@ -132,4 +132,6 @@
     <string name="meal_label_dialog_title">When?</string>
     <string name="label_dinner">Dinner</string>
     <string name="label_lunch">Lunch</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="meal_editor_add_first_recipe">Add your first recipe</string>
 </resources>

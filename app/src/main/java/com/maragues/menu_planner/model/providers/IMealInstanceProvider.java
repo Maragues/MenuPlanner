@@ -7,4 +7,5 @@ import com.maragues.menu_planner.model.MealInstance;
  */
 
 public interface IMealInstanceProvider extends IListableProvider<MealInstance> {
+  void create(MealInstance clickedMealInstance);
 }
