@@ -13,7 +13,7 @@ public class MockMealInstanceLabelProvider extends MockBaseListableProvider<Meal
   public MockMealInstanceLabelProvider() {
     super();
 
-    create(MealInstanceLabel.builder().setId(IMealInstanceLabelProvider.LUNCH_ID).build());
-    create(MealInstanceLabel.builder().setId(IMealInstanceLabelProvider.DINNER_ID).build());
+    createInternal(MealInstanceLabel.builder().setId(IMealInstanceLabelProvider.LUNCH_ID).build());
+    createInternal(MealInstanceLabel.builder().setId(IMealInstanceLabelProvider.DINNER_ID).build());
   }
 }

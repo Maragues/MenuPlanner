@@ -27,11 +27,10 @@ public abstract class MockBaseListableProvider<T extends ISynchronizable> extend
     return Flowable.just(items);
   }
 
-  @Override
-  public Flowable<T> create(@NonNull T item) {
+  protected Single<T> createInternal(@NonNull T item) {
     items.add(item);
 
-    return Flowable.just(item);
+    return Single.just(item);
   }
 
   @Nullable

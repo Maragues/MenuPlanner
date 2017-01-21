@@ -25,7 +25,7 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 public abstract class Meal implements ISynchronizable {
 
   @Nullable
-  public abstract List<String> recipes();
+  public abstract List<RecipeMeal> recipes();
 
   public static Meal.Builder builder() {
     return new AutoValue_Meal.Builder();
@@ -35,7 +35,7 @@ public abstract class Meal implements ISynchronizable {
   public abstract static class Builder {
     public abstract Meal.Builder setId(String value);
 
-    public abstract Meal.Builder setRecipes(List<String> value);
+    public abstract Meal.Builder setRecipes(List<RecipeMeal> value);
 
     public abstract Meal build();
   }
@@ -43,4 +43,7 @@ public abstract class Meal implements ISynchronizable {
   public static Meal create(DataSnapshot dataSnapshot) {
     return dataSnapshot.getValue(AutoValue_Meal.FirebaseValue.class).toAutoValue();
   }
+
+  public abstract Meal withRecipes(List<RecipeMeal> recipes);
+
 }

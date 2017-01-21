@@ -10,4 +10,8 @@ import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
 public class MockMealInstanceProvider extends MockBaseListableProvider<MealInstance>
         implements IMealInstanceProvider {
 
+  @Override
+  public void create(MealInstance clickedMealInstance) {
+    super.createInternal(clickedMealInstance);
+  }
 }
