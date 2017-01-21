@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
@@ -23,7 +24,15 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 
 @AutoValue
 @FirebaseValue
-public abstract class Meal implements ISynchronizable {
+public abstract class Meal implements ISynchronizable<Meal> {
+  @Nullable //so that we can create before having a key. The server won't accept empty id
+  public abstract String id();
+
+  @Nullable //so that we can represent user-recipes
+  public abstract String uid();
+
+  @Nullable //so that we can represent user-recipes
+  public abstract String groupId();
 
   @NonNull
   public abstract List<RecipeMeal> recipes();
@@ -40,6 +49,10 @@ public abstract class Meal implements ISynchronizable {
   public abstract static class Builder {
     public abstract Meal.Builder setId(String value);
 
+    public abstract Meal.Builder setUid(String value);
+
+    public abstract Meal.Builder setGroupId(String value);
+
     public abstract Meal.Builder setRecipes(List<RecipeMeal> value);
 
     public abstract Meal build();
@@ -48,6 +61,10 @@ public abstract class Meal implements ISynchronizable {
   public static Meal create(DataSnapshot dataSnapshot) {
     return dataSnapshot.getValue(AutoValue_Meal.FirebaseValue.class).toAutoValue();
   }
+
+  public abstract Meal withUid(String id);
+
+  public abstract Meal withGroupId(String id);
 
   public abstract Meal withRecipes(List<RecipeMeal> recipes);
 

@@ -51,9 +51,6 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     return Recipe.create(dataSnapshot);
   }
 
-  static final String RECIPES_KEY = "recipes";
-  public static final String USER_RECIPES_KEY = "recipes_user";
-
   @Override
   public Single<Recipe> create(@NonNull final Recipe item) {
     return Single.create(new SingleOnSubscribe<Recipe>() {
@@ -77,4 +74,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
 
     return recipe.withId(key);
   }
+
+  static final String RECIPES_KEY = "recipes";
+  public static final String USER_RECIPES_KEY = "recipes_user";
 }

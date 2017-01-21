@@ -19,13 +19,12 @@ import static org.mockito.Mockito.spy;
 public abstract class BasePresenterTest<V extends IBaseview, P extends BasePresenter<V>>
         extends BaseUnitTest {
 
-  protected final P presenter;
+  protected P presenter;
 
   protected final V view;
 
   public BasePresenterTest(Class<V> viewClass) {
     view = mock(viewClass);
-    presenter = spy(createPresenter());
   }
 
   @NonNull
@@ -37,6 +36,8 @@ public abstract class BasePresenterTest<V extends IBaseview, P extends BasePrese
   }
 
   protected final void initPresenter() {
+    presenter = spy(createPresenter());
+
     presenter.create();
 
     presenter.attachView(view);

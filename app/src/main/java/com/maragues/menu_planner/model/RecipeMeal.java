@@ -14,7 +14,7 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 
 @AutoValue
 @FirebaseValue
-public abstract class RecipeMeal {
+public abstract class RecipeMeal implements ISynchronizable<RecipeMeal> {
   public abstract String recipeId();
 
   public abstract String name();

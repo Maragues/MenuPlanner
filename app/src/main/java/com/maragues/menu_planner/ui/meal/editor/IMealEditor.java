@@ -30,4 +30,7 @@ public interface IMealEditor extends IBaseLoggedInView {
   @CallOnMainThread
   @DistinctUntilChanged
   void showRecipes(List<RecipeMeal> recipes);
+
+  @CallOnMainThread
+  void finish();
 }

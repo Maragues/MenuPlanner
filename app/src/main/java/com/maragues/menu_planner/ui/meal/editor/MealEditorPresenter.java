@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Meal;
+import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 
@@ -17,6 +18,12 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   Meal meal;
+
+  MealInstance mealInstance;
+
+  MealEditorPresenter(@Nullable MealInstance mealInstance) {
+    this.mealInstance = mealInstance;
+  }
 
   @Override
   protected void onAttachView(@NonNull IMealEditor view) {
@@ -73,7 +80,33 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   }
 
   void onSaveClicked() {
+    App.appComponent.mealProvider().create(meal)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::onMealSaved)
+    ;
+  }
 
+  private void onMealSaved(Meal meal) {
+    if (mealInstance != null) {
+      App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(mealInstance -> {
+                finish();
+              })
+      ;
+    } else {
+      finish();
+    }
+  }
+
+  private void finish() {
+    if (getView() != null) {
+      getView().finish();
+    } else {
+      sendToView(IMealEditor::finish);
+    }
   }
 
   void onAddRecipeClicked() {

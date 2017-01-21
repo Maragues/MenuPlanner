@@ -12,3 +12,6 @@ build
 .externalNativeBuild
 app/google-services.json
 firebase.properties
+
+rules.json
+schema.json

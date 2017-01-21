@@ -15,9 +15,7 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 @IgnoreExtraProperties
-public abstract class User implements ISynchronizable {
-
-  public abstract String id();
+public abstract class User implements ISynchronizable<User> {
 
   public abstract String name();
 

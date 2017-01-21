@@ -18,9 +18,7 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
  */
 @AutoValue
 @FirebaseValue
-public abstract class Recipe implements ISynchronizable {
-  @Nullable //so that we can create before having a key. The server won't accept empty id
-  public abstract String id();
+public abstract class Recipe implements ISynchronizable<Recipe> {
 
   @Nullable //so that we can represent user-recipes
   public abstract String uid();
@@ -63,14 +61,12 @@ public abstract class Recipe implements ISynchronizable {
 
   public abstract Recipe withDescription(String description);
 
-  public abstract Recipe withId(String id);
-
   public abstract Recipe withIngredients(List<Ingredient> ingredients);
 
   @Exclude
   public Map<String, Object> toMap() {
     HashMap<String, Object> result = new HashMap<>();
-    result.put("uid", uid());
+    result.put(BaseFirebaseKeys.USER_ID_KEY, uid());
     result.put("name", name());
 
     if (!TextUtils.isEmpty(url()))

@@ -19,4 +19,7 @@ public interface IUserProvider extends IProvider<User> {
 
   @Nullable
   String getUid();
+
+  @Nullable
+  String getGroupId();
 }
