@@ -5,17 +5,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.MealInstance;
+import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter, IMealEditor>
@@ -26,6 +36,9 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
 
   @BindView(R.id.meal_editor_empty)
   View emptyLayout;
+
+  @BindView(R.id.meal_editor_recipe_list)
+  RecyclerView recipeRecyclerView;
 
   public static Intent createIntent(Context context) {
     return createIntent(context, null);
@@ -48,16 +61,31 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     setContentView(R.layout.activity_meal_editor);
+
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
+
+    setupRecipeList();
+  }
+
+  private final List<RecipeMeal> recipeMeals = new ArrayList<>();
+  RecipeMealAdapter recipeAdapter;
+
+  private void setupRecipeList() {
+    recipeRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+    recipeAdapter = new RecipeMealAdapter(recipeMeals);
+
+    recipeRecyclerView.setAdapter(recipeAdapter);
   }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if(requestCode == ADD_RECIPE_CODE && resultCode == RESULT_OK){
+    if (requestCode == ADD_RECIPE_CODE && resultCode == RESULT_OK) {
       getPresenter().onRecipeAdded(AddRecipeToMealActivity.extractRecipe(data));
     }
   }
@@ -113,5 +141,58 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
   @Override
   public void showEmptyLayout() {
     emptyLayout.setVisibility(View.VISIBLE);
+  }
+
+  @Override
+  public void showRecipes(@NonNull List<RecipeMeal> recipes) {
+    // TODO: 21/1/17 Use DiffUtil
+
+    recipeMeals.clear();
+
+    recipeMeals.addAll(recipes);
+
+    recipeAdapter.notifyDataSetChanged();
+  }
+
+  private static class RecipeMealAdapter extends RecyclerView.Adapter<RecipeMealViewHolder> {
+
+    private final List<RecipeMeal> recipes;
+
+    private RecipeMealAdapter(List<RecipeMeal> recipes) {
+      this.recipes = recipes;
+    }
+
+    @Override
+    public RecipeMealViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return new RecipeMealViewHolder(
+              LayoutInflater.from(parent.getContext())
+                      .inflate(R.layout.item_recipe_meal, parent, false)
+      );
+    }
+
+    @Override
+    public void onBindViewHolder(RecipeMealViewHolder holder, int position) {
+      holder.render(recipes.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+      return recipes.size();
+    }
+  }
+
+  static class RecipeMealViewHolder extends RecyclerView.ViewHolder {
+    @BindView(R.id.recipe_meal_name)
+    TextView nameTextView;
+
+    public RecipeMealViewHolder(View itemView) {
+      super(itemView);
+
+      ButterKnife.bind(this, itemView);
+    }
+
+    public void render(RecipeMeal recipeMeal) {
+      nameTextView.setText(recipeMeal.name());
+    }
   }
 }

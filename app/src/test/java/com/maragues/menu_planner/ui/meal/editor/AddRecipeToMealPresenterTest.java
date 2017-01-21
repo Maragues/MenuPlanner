@@ -40,6 +40,8 @@ public class AddRecipeToMealPresenterTest extends BasePresenterTest<IAddRecipeTo
 
   @Test
   public void emptyRecipes_opensNewRecipeScreen() {
+    initPresenter();
+
     presenter.loadRecipes();
 
     verify(view).navigateToCreateRecipe();
@@ -47,6 +49,8 @@ public class AddRecipeToMealPresenterTest extends BasePresenterTest<IAddRecipeTo
 
   @Test
   public void atLeastOneRecipe_showsRecipeList() {
+    initPresenter();
+
     recipeProvider.create(mock(Recipe.class));
 
     presenter.loadRecipes();

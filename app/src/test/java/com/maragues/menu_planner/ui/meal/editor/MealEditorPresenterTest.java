@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,7 +41,18 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   }
 
   @Test
+  public void loadMeal_emptyId(){
+    doReturn(null).when(view).getMealId();
+
+    initPresenter();
+
+    verify(presenter).onNewMeal();
+  }
+
+  @Test
   public void clickAddRecipe_navigatesToSearchRecipes() {
+    initPresenter();
+
     presenter.onAddRecipeClicked();
 
     verify(view).navigateToAddRecipe();
@@ -48,13 +60,26 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void onNewMeal_doesNotHideEmptyLayout() {
+    initPresenter();
+
     presenter.onNewMeal();
 
     verify(view, never()).hideEmptyLayout();
   }
 
   @Test
+  public void onNewMeal_createsLocalMeal() {
+    initPresenter();
+
+    presenter.onNewMeal();
+
+    assertNotNull(presenter.meal);
+  }
+
+  @Test
   public void mealLoaded__doesNotHideEmptyLayout_ifEmpty() {
+    initPresenter();
+
     Meal mockedMeal = mock(Meal.class);
     doReturn(Collections.emptyList()).when(mockedMeal).recipes();
     presenter.onMealLoaded(mockedMeal);
@@ -64,6 +89,8 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void mealLoaded__hidesEmptyLayout_ifNotEmpty() {
+    initPresenter();
+
     Meal mockedMeal = mock(Meal.class);
     List<Recipe> recipes = new ArrayList<>();
     recipes.add(mock(Recipe.class));

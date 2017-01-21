@@ -103,6 +103,7 @@ public abstract class Recipe implements ISynchronizable {
   }
 
   public static Recipe create(DataSnapshot dataSnapshot) {
-    return dataSnapshot.getValue(AutoValue_Recipe.FirebaseValue.class).toAutoValue();
+    return dataSnapshot.getValue(AutoValue_Recipe.FirebaseValue.class).toAutoValue()
+            .withId(dataSnapshot.getKey());
   }
 }

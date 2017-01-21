@@ -38,6 +38,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_emptyTitleFails() {
+    initPresenter();
+
     doReturn("").when(view).title();
 
     assertFalse(presenter.validateOrNotifyErrors());
@@ -45,6 +47,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_titleWithContentPasses() {
+    initPresenter();
+
     doReturn("my title").when(view).title();
 
     assertTrue(presenter.validateOrNotifyErrors());
@@ -52,6 +56,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_emptyTitleShowsError() {
+    initPresenter();
+
     presenter.validateOrNotifyErrors();
 
     verify(view).showTitleMissingError();
@@ -59,6 +65,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_emptyUrlValidates() {
+    initPresenter();
+
     ensureBasicValidation();
 
     assertTrue(presenter.validateOrNotifyErrors());
@@ -66,6 +74,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_wrongUrl_doesNotValidate() {
+    initPresenter();
+
     ensureBasicValidation();
 
     //the value we return doesn't make a difference, we are mocking the validation response
@@ -77,6 +87,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_wrongUrl_showsError() {
+    initPresenter();
+
     ensureBasicValidation();
 
     //the value we return doesn't make a difference, we are mocking the validation response
@@ -90,6 +102,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void validation_validUrlValidates() {
+    initPresenter();
+
     ensureBasicValidation();
 
     //the value we return doesn't make a difference, we are mocking the validation response
@@ -101,6 +115,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void attemptSave_doesNotSaveIfNotValidates() {
+    initPresenter();
+
     doReturn(false).when(presenter).validateOrNotifyErrors();
 
     presenter.attemptSave();
@@ -110,6 +126,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void attemptSave_SaveIfValidates() {
+    initPresenter();
+
     ensureBasicValidation();
     doReturn(true).when(presenter).validateOrNotifyErrors();
 

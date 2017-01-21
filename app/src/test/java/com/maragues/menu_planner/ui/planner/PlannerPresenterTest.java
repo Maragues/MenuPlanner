@@ -32,6 +32,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void mealInstanceObservable_default_7() {
+    initPresenter();
+
     List<MealInstance> instances = getMealInstancesThroughObservable();
 
     assertEquals(7, instances.size());
@@ -39,6 +41,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void defaultMealInstances_france_MondayFirstDay() {
+    initPresenter();
+
     Locale.setDefault(Locale.FRANCE);
 
     List<MealInstance> instances = presenter.createDefaultMeals();
@@ -48,6 +52,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void defaultMealInstances_france_SevenDaysOfWeek() {
+    initPresenter();
+
     Locale.setDefault(Locale.FRANCE);
 
     List<MealInstance> instances = presenter.createDefaultMeals();
@@ -60,6 +66,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void defaultMealInstances_SundayFirstDayInUS() {
+    initPresenter();
+
     Locale.setDefault(Locale.US);
 
     List<MealInstance> instances = presenter.createDefaultMeals();
@@ -69,6 +77,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void defaultMealInstances_US_SevenDaysOfWeek() {
+    initPresenter();
+
     Locale.setDefault(Locale.US);
 
     List<MealInstance> instances = presenter.createDefaultMeals();
@@ -83,6 +93,8 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void clickOnDay_asksForLabel() {
+    initPresenter();
+
     presenter.onAddtoDayClicked(mock(MealInstance.class));
 
     verify(view).askForMealInstanceLabel();

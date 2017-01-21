@@ -32,6 +32,8 @@ public class LaunchPresenterTest extends BasePresenterTest<ILaunch, LaunchPresen
 
   @Test
   public void noUser_navigatesToLogin() {
+    initPresenter();
+
     ((MockUserProvider) App.appComponent.userProvider()).setUuid(null);
 
     presenter.decideNextScreen(view);
@@ -42,6 +44,8 @@ public class LaunchPresenterTest extends BasePresenterTest<ILaunch, LaunchPresen
 
   @Test
   public void noUser_navigatesToHome() {
+    initPresenter();
+
     presenter.decideNextScreen(view);
 
     verify(view, never()).navigateToLogin();

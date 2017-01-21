@@ -1,10 +1,11 @@
 package com.maragues.menu_planner.model;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
@@ -24,11 +25,15 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @FirebaseValue
 public abstract class Meal implements ISynchronizable {
 
-  @Nullable
+  @NonNull
   public abstract List<RecipeMeal> recipes();
 
   public static Meal.Builder builder() {
     return new AutoValue_Meal.Builder();
+  }
+
+  public static Meal emptyMeal() {
+    return builder().setRecipes(new ArrayList<>()).build();
   }
 
   @AutoValue.Builder
@@ -46,4 +51,11 @@ public abstract class Meal implements ISynchronizable {
 
   public abstract Meal withRecipes(List<RecipeMeal> recipes);
 
+  public Meal withNewRecipe(@NonNull Recipe recipe) {
+    List<RecipeMeal> recipes = recipes();
+
+    recipes.add(RecipeMeal.fromRecipe(recipe));
+
+    return withRecipes(recipes);
+  }
 }

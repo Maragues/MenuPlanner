@@ -40,16 +40,22 @@ public class RecipeListPresenterTest extends BasePresenterTest<IRecipeList, Reci
 
   @Test
   public void onAttached_loadsRecipes() {
+    initPresenter();
+
     verify(view).setAdapter(any(RecyclerView.Adapter.class));
   }
 
   @Test
   public void onAttached_doesNotFlagIsLoading() {
+    initPresenter();
+
     verify(presenter, never()).onLoadingStateChanged(eq(true));
   }
 
   @Test
   public void onViewDisplayed_flagsIsLoadingWhenLoading() {
+    initPresenter();
+
     presenter.onViewDisplayed();
 
     verify(view).showIsLoading(eq(true));
@@ -57,6 +63,8 @@ public class RecipeListPresenterTest extends BasePresenterTest<IRecipeList, Reci
 
   @Test
   public void onDataLoaded_invisible_loadingStateNotInvoked() {
+    initPresenter();
+
     invokeOnDataLoaded();
 
     verify(view, never()).showIsLoading(eq(false));
@@ -64,6 +72,8 @@ public class RecipeListPresenterTest extends BasePresenterTest<IRecipeList, Reci
 
   @Test
   public void onDataLoaded_visible_loadingStateInvoked() {
+    initPresenter();
+
     presenter.onViewDisplayed();
 
     invokeOnDataLoaded();

@@ -2,7 +2,6 @@ package com.maragues.menu_planner.ui.meal.editor;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Meal;
@@ -23,7 +22,10 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   protected void onAttachView(@NonNull IMealEditor view) {
     super.onAttachView(view);
 
-    loadMeal(getView().getMealId());
+    if (meal == null)
+      loadMeal(getView().getMealId());
+    else
+      renderMeal();
   }
 
   private void loadMeal(@Nullable String mealId) {
@@ -33,7 +35,7 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
       App.appComponent.mealProvider().get(mealId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .doOnSuccess(m -> onMealLoaded(m))
+              .doOnSuccess(this::onMealLoaded)
               .doOnError(this::onErrorLoadingMeal);
     }
   }
@@ -45,12 +47,29 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   void onMealLoaded(Meal meal) {
     this.meal = meal;
 
-    if (!meal.recipes().isEmpty())
-      getView().hideEmptyLayout();
+    renderMeal();
+  }
+
+  private void renderMeal() {
+    if (meal.recipes().isEmpty()) {
+      showEmptyLayout();
+    } else {
+      hideEmptyLayout();
+
+      showRecipes();
+    }
+  }
+
+  private void showRecipes() {
+    if (getView() != null) {
+      getView().showRecipes(meal.recipes());
+    } else {
+      sendToView(v -> v.showRecipes(meal.recipes()));
+    }
   }
 
   void onNewMeal() {
-
+    meal = Meal.emptyMeal();
   }
 
   void onSaveClicked() {
@@ -62,6 +81,24 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   }
 
   public void onRecipeAdded(Recipe recipe) {
-    Toast.makeText(App.appComponent.context(), "Recipe added " + recipe.name(), Toast.LENGTH_SHORT).show();
+    meal = meal.withNewRecipe(recipe);
+
+    renderMeal();
+  }
+
+  private void hideEmptyLayout() {
+    if (getView() != null) {
+      getView().hideEmptyLayout();
+    } else {
+      sendToView(IMealEditor::hideEmptyLayout);
+    }
+  }
+
+  private void showEmptyLayout() {
+    if (getView() != null) {
+      getView().showEmptyLayout();
+    } else {
+      sendToView(IMealEditor::showEmptyLayout);
+    }
   }
 }

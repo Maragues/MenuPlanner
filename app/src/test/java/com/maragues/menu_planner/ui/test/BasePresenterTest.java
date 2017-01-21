@@ -34,7 +34,9 @@ public abstract class BasePresenterTest<V extends IBaseview, P extends BasePrese
   @Before
   public void setUp() {
     super.setUp();
+  }
 
+  protected final void initPresenter() {
     presenter.create();
 
     presenter.attachView(view);
