@@ -10,7 +10,7 @@ import me.mattlogan.auto.value.firebase.adapter.TypeAdapter;
  */
 
 public class LocalTimeAdapter implements TypeAdapter<LocalTime, String> {
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
   @Override
   public LocalTime fromFirebaseValue(String value) {

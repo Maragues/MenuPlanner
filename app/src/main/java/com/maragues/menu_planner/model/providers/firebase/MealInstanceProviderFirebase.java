@@ -1,15 +1,10 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
-import android.support.annotation.NonNull;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
-import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
-
-import org.threeten.bp.ZoneOffset;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,16 +36,17 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
   }
 
   @Override
-  protected Map<String, Object> synchronizableToMap(MealInstance item) {
-    if (App.appComponent.textUtils().isEmpty(item.id()))
+  protected Map<String, Object> synchronizableToMap(MealInstance mealInstance) {
+    if (App.appComponent.textUtils().isEmpty(mealInstance.id()))
       throw new IllegalArgumentException("MealInstance must have key");
 
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + MEAL_INSTANCES_KEY
                     + "/" + App.appComponent.userProvider().getGroupId()
-                    + "/" + item.weekNumber()
-                    + "/" + item.dateTime().getDayOfWeek(),
-            toMap(item)
+                    + "/" + mealInstance.weekNumber()
+                    + "/" + mealInstance.dateTime().getDayOfWeek().getValue()
+                    + "/" + mealInstance.formattedTime(),
+            mealInstance.toFirebaseValue()
     );
 
     return childUpdates;
@@ -86,7 +82,7 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
                     "Jarretes": true,
                 }
    */
-  private MealInstance assignKey(MealInstance mealInstance) {
+  MealInstance assignKey(MealInstance mealInstance) {
     String key = getReference()
             .child(MEAL_INSTANCES_KEY)
             .child(App.appComponent.userProvider().getGroupId())
@@ -95,42 +91,6 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
             .push().getKey();
 
     return mealInstance.withId(key);
-  }
-
-  /*
-    $mealInstanceId: {
-                    "label": "Lunch",
-                    "mealId": #mealId,
-                    "recipes": {
-                      "$recipeId": {
-                        "recipeId": "myRecipeId",
-                        "name": "myName"
-                      }
-                    }
-                }
-   */
-  public Map<String, Object> toMap(@NonNull MealInstance mealInstance) {
-    HashMap<String, Object> result = new HashMap<>();
-    result.put(TIME, mealInstance.dateTime().toInstant(ZoneOffset.UTC).toEpochMilli());
-    result.put(LABEL, mealInstance.labelId());
-
-    Map<String, Object> recipes = new HashMap<>();
-
-    for (int i = 0; i < mealInstance.recipes().size(); i++) {
-      RecipeMeal recipeMeal = mealInstance.recipes().get(i);
-
-      Map<String, Object> recipeMealMap = new HashMap<>();
-      recipeMealMap.put(RECIPE_ID, recipeMeal.recipeId());
-      recipeMealMap.put(RECIPE_NAME, recipeMeal.name());
-
-      recipes.put(recipeMeal.recipeId(), recipeMealMap);
-    }
-
-    if (!recipes.isEmpty()) {
-      result.put(RECIPES, recipes);
-    }
-
-    return result;
   }
 
   static final String MEAL_INSTANCES_KEY = "meal_instances";

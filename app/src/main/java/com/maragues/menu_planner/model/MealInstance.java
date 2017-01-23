@@ -7,6 +7,7 @@ import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.adapters.LocalDateTimeAdapter;
+import com.maragues.menu_planner.model.adapters.LocalTimeAdapter;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -44,6 +45,10 @@ public abstract class MealInstance implements ISynchronizable<MealInstance> {
 
   public static MealInstance.Builder builder() {
     return new AutoValue_MealInstance.Builder();
+  }
+
+  public String formattedTime() {
+    return new LocalTimeAdapter().toFirebaseValue(dateTime().toLocalTime());
   }
 
   @AutoValue.Builder
@@ -97,6 +102,10 @@ public abstract class MealInstance implements ISynchronizable<MealInstance> {
 
   public static MealInstance create(DataSnapshot dataSnapshot) {
     return dataSnapshot.getValue(AutoValue_MealInstance.FirebaseValue.class).toAutoValue();
+  }
+
+  public Object toFirebaseValue() {
+    return new AutoValue_MealInstance.FirebaseValue(this);
   }
 
   public int weekNumber() {
