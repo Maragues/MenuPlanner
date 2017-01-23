@@ -32,4 +32,10 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   public String getUid() {
     return uuid;
   }
+
+  @Nullable
+  @Override
+  public String getGroupId() {
+    return null;
+  }
 }

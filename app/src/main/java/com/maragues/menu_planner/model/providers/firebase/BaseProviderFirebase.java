@@ -1,5 +1,7 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.maragues.menu_planner.model.ISynchronizable;
@@ -10,6 +12,7 @@ import com.maragues.menu_planner.model.providers.IProvider;
  */
 
 public abstract class BaseProviderFirebase<T extends ISynchronizable> implements IProvider<T> {
+  static final String ID_KEY = "id";
 
   protected final Class<T> clazz;
 
@@ -17,7 +20,8 @@ public abstract class BaseProviderFirebase<T extends ISynchronizable> implements
     this.clazz = clazz;
   }
 
-  protected final DatabaseReference getReference() {
+  @VisibleForTesting
+  public DatabaseReference getReference() {
     return FirebaseDatabase.getInstance().getReference();
   }
 }

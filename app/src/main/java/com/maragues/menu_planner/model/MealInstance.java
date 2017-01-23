@@ -12,6 +12,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.temporal.WeekFields;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -67,7 +68,10 @@ public abstract class MealInstance implements ISynchronizable<MealInstance> {
   }
 
   public static MealInstance fromLocalDateTime(@NonNull LocalDateTime dateTime) {
-    return builder().setDateTime(dateTime).build();
+    return builder()
+            .setDateTime(dateTime)
+            .setRecipes(new ArrayList<>())
+            .build();
   }
 
   public abstract MealInstance withName(String name);

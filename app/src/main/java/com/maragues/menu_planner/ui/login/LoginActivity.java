@@ -32,7 +32,9 @@ import com.maragues.menu_planner.ui.home.HomeActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by miguelaragues on 28/12/16.
@@ -73,10 +75,12 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
     mAuth = FirebaseAuth.getInstance();
 
     mAuthListener = firebaseAuth -> {
-      FirebaseUser user = firebaseAuth.getCurrentUser();
-      if (user != null) {
+      FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+      if (firebaseUser != null) {
         disposable = App.appComponent.userProvider()
-                .create(user)
+                .create(firebaseUser)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(this::onUserSignedIn)
                 .doOnError(Throwable::printStackTrace)
                 .subscribe();

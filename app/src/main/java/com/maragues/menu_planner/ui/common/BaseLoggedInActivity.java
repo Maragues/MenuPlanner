@@ -1,7 +1,6 @@
 package com.maragues.menu_planner.ui.common;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -27,19 +26,16 @@ public abstract class BaseLoggedInActivity<P extends TiPresenter<V>, V extends T
     super.onCreate(savedInstanceState);
     firebaseAuth = FirebaseAuth.getInstance();
 
-    authListener = new FirebaseAuth.AuthStateListener() {
-      @Override
-      public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-          // User is signed in
-          Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-        } else {
-          // User is signed out
-          Log.d(TAG, "onAuthStateChanged:signed_out");
-        }
-        // ...
+    authListener = firebaseAuth1 -> {
+      FirebaseUser user = firebaseAuth1.getCurrentUser();
+      if (user != null) {
+        // User is signed in
+        Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+      } else {
+        // User is signed out
+        Log.d(TAG, "onAuthStateChanged:signed_out");
       }
+      // ...
     };
   }
 

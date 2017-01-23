@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.firebase.auth.UserInfo;
@@ -16,17 +17,27 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @FirebaseValue
 @IgnoreExtraProperties
 public abstract class User implements ISynchronizable<User> {
-
+  @Nullable
   public abstract String name();
 
+  @Nullable
   public abstract String email();
 
+  @Nullable
   public abstract String photoUrl();
 
+  @Nullable
   public abstract String providerId();
+
+  @Nullable
+  public abstract String groupId();
 
   static User.Builder builder() {
     return new AutoValue_User.Builder();
+  }
+
+  public static User empty() {
+    return builder().build();
   }
 
   @AutoValue.Builder
@@ -40,6 +51,8 @@ public abstract class User implements ISynchronizable<User> {
     abstract User.Builder setPhotoUrl(String value);
 
     abstract User.Builder setProviderId(String value);
+
+    abstract User.Builder setGroupId(String value);
 
     abstract User build();
   }
@@ -65,4 +78,6 @@ public abstract class User implements ISynchronizable<User> {
 
     return builder.build();
   }
+
+  public abstract User withGroupId(String groupId);
 }

@@ -32,7 +32,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
   public abstract String description();
 
   @Nullable
-  public abstract List<Ingredient> ingredients();
+  public abstract List<String> ingredients();
 
   public static Builder builder() {
     return new AutoValue_Recipe.Builder();
@@ -50,7 +50,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
 
     public abstract Builder setDescription(String value);
 
-    public abstract Builder setIngredients(List<Ingredient> ingredients);
+    public abstract Builder setIngredients(List<String> ingredients);
 
     public abstract Recipe build();
   }
@@ -61,7 +61,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
 
   public abstract Recipe withDescription(String description);
 
-  public abstract Recipe withIngredients(List<Ingredient> ingredients);
+  public abstract Recipe withIngredients(List<String> ingredients);
 
   @Exclude
   public Map<String, Object> toMap() {

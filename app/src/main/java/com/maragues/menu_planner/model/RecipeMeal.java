@@ -26,6 +26,8 @@ public abstract class RecipeMeal implements ISynchronizable<RecipeMeal> {
 
   @AutoValue.Builder
   public abstract static class Builder {
+    public abstract RecipeMeal.Builder setId(String value);
+
     public abstract RecipeMeal.Builder setRecipeId(String value);
 
     public abstract RecipeMeal.Builder setName(String value);

@@ -1,10 +1,12 @@
 package com.maragues.menu_planner.test.dagger;
 
+import com.maragues.menu_planner.model.providers.IGroupProvider;
 import com.maragues.menu_planner.model.providers.IMealInstanceLabelProvider;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
 import com.maragues.menu_planner.model.providers.IMealProvider;
 import com.maragues.menu_planner.model.providers.IRecipeProvider;
 import com.maragues.menu_planner.model.providers.IUserProvider;
+import com.maragues.menu_planner.test.mock.providers.MockGroupProvider;
 import com.maragues.menu_planner.test.mock.providers.MockMealInstanceLabelProvider;
 import com.maragues.menu_planner.test.mock.providers.MockMealInstanceProvider;
 import com.maragues.menu_planner.test.mock.providers.MockMealProvider;
@@ -34,6 +36,12 @@ public class TestProvidersModule {
   @Singleton
   static IUserProvider providesUserProvider() {
     return spy(new MockUserProvider());
+  }
+
+  @Provides
+  @Singleton
+  static IGroupProvider providesGroupProvider() {
+    return spy(new MockGroupProvider());
   }
 
   @Provides
