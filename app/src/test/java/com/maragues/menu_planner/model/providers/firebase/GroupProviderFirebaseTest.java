@@ -1,12 +1,9 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
-import com.google.firebase.database.DatabaseReference;
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.Map;
 
@@ -15,12 +12,8 @@ import io.reactivex.observers.TestObserver;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by miguelaragues on 23/1/17.
@@ -124,17 +117,4 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
     assertEquals(Group.ADMIN_ROLE, map.get(userId));
   }
 */
-
-  private void mockSingleResponse() {
-    doAnswer(new Answer<Void>() {
-      @Override
-      public Void answer(InvocationOnMock invocation) throws Throwable {
-        DatabaseReference.CompletionListener listener = (DatabaseReference.CompletionListener) invocation.getArguments()[1];
-
-        listener.onComplete(null, mock(DatabaseReference.class));
-
-        return null;
-      }
-    }).when(databaseReference).updateChildren(anyMap(), any(DatabaseReference.CompletionListener.class));
-  }
 }

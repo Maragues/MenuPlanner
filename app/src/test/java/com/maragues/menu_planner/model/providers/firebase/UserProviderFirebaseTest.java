@@ -9,7 +9,7 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.BaseFirebaseKeys;
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
-import com.maragues.menu_planner.test.mock.providers.MockUserProvider;
+import com.maragues.menu_planner.test.factories.UserFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
   public void setup() {
     super.setUp();
 
-    doReturn(MockUserProvider.DEFAULT_UID).when(userInfo).getUid();
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
   }
 
   @Override
@@ -66,7 +66,7 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
     provider.create(userInfo).subscribe(observer);
 
     verify(databaseReference).child(UserProviderFirebase.USERS_KEY);
-    verify(databaseReference).child(MockUserProvider.DEFAULT_UID);
+    verify(databaseReference).child(UserFactory.DEFAULT_UID);
   }
 
   @Test

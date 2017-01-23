@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.model;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -7,9 +8,7 @@ import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Exclude;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 
@@ -22,6 +21,9 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
 
   @Nullable //so that we can represent user-recipes
   public abstract String uid();
+
+  @Nullable
+  public abstract String groupId();
 
   public abstract String name();
 
@@ -38,6 +40,10 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
     return new AutoValue_Recipe.Builder();
   }
 
+  public static Recipe empty(@NonNull String name) {
+    return builder().setName(name).build();
+  }
+
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract Builder setName(String value);
@@ -45,6 +51,8 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
     public abstract Builder setId(String value);
 
     public abstract Builder setUid(String value);
+
+    public abstract Builder setGroupId(String value);
 
     public abstract Builder setUrl(String value);
 
@@ -55,6 +63,10 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
     public abstract Recipe build();
   }
 
+  public abstract Recipe withGroupId(String groupId);
+
+  public abstract Recipe withUid(String id);
+
   public abstract Recipe withName(String name);
 
   public abstract Recipe withUrl(String url);
@@ -64,32 +76,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
   public abstract Recipe withIngredients(List<String> ingredients);
 
   @Exclude
-  public Map<String, Object> toMap() {
-    HashMap<String, Object> result = new HashMap<>();
-    result.put(BaseFirebaseKeys.USER_ID_KEY, uid());
-    result.put("name", name());
-
-    if (!TextUtils.isEmpty(url()))
-      result.put("url", url());
-
-    if (!TextUtils.isEmpty(description()))
-      result.put("description", description());
-
-    return result;
-  }
-
-  @Exclude
-  public Map<String, Object> toSummaryMap() {
-    HashMap<String, Object> result = new HashMap<>();
-    result.put("name", name());
-
-    if (!TextUtils.isEmpty(description()))
-      result.put("shortDescription", shortDescription());
-
-    return result;
-  }
-
-  private String shortDescription() {
+  public String shortDescription() {
     //TODO return short description
     return description();
   }
@@ -99,7 +86,12 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
   }
 
   public static Recipe create(DataSnapshot dataSnapshot) {
-    return dataSnapshot.getValue(AutoValue_Recipe.FirebaseValue.class).toAutoValue()
+    return dataSnapshot.getValue(AutoValue_Recipe.FirebaseValue.class)
+            .toAutoValue()
             .withId(dataSnapshot.getKey());
+  }
+
+  public Object toFirebaseValue() {
+    return new AutoValue_Recipe.FirebaseValue(this);
   }
 }

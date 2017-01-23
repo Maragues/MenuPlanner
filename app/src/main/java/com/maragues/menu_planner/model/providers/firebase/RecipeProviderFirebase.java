@@ -39,9 +39,12 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     if(App.appComponent.textUtils().isEmpty(recipe.id()))
       throw new IllegalArgumentException("Recipe must have key");
 
+    if(App.appComponent.textUtils().isEmpty(recipe.groupId()))
+      throw new IllegalArgumentException("Recipe must have groupId");
+
     Map<String, Object> childUpdates = new HashMap<>();
-    childUpdates.put("/" + RECIPES_KEY + "/" + recipe.id(), recipe.toMap());
-    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.uid() + "/" + recipe.id(), recipe.toSummaryMap());
+    childUpdates.put("/" + RECIPES_KEY + "/" + recipe.id(), recipe.toFirebaseValue());
+    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.groupId() + "/" + recipe.id(), toSummaryMap(recipe));
 
     return childUpdates;
   }
@@ -69,12 +72,24 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     });
   }
 
-  private Recipe assignKey(Recipe recipe) {
+  Recipe assignKey(Recipe recipe) {
     String key = getReference().child(RECIPES_KEY).push().getKey();
 
     return recipe.withId(key);
   }
 
+   Map<String, Object> toSummaryMap(Recipe recipe) {
+    HashMap<String, Object> result = new HashMap<>();
+    result.put(NAME_KEY, recipe.name());
+
+    if (!App.appComponent.textUtils().isEmpty(recipe.description()))
+      result.put(SHORT_DESCRIPTION_KEY, recipe.shortDescription());
+
+    return result;
+  }
+
   static final String RECIPES_KEY = "recipes";
   public static final String USER_RECIPES_KEY = "recipes_user";
+  public static final String NAME_KEY = "name";
+  public static final String SHORT_DESCRIPTION_KEY = "shortDescription";
 }

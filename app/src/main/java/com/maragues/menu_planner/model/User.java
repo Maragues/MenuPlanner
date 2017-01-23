@@ -42,17 +42,17 @@ public abstract class User implements ISynchronizable<User> {
 
   @AutoValue.Builder
   abstract static class Builder {
-    abstract User.Builder setName(String value);
+    abstract Builder setName(String value);
 
-    abstract User.Builder setemail(String value);
+    abstract Builder setemail(String value);
 
-    abstract User.Builder setId(String value);
+    abstract Builder setId(String value);
 
-    abstract User.Builder setPhotoUrl(String value);
+    abstract Builder setPhotoUrl(String value);
 
-    abstract User.Builder setProviderId(String value);
+    abstract Builder setProviderId(String value);
 
-    abstract User.Builder setGroupId(String value);
+    abstract Builder setGroupId(String value);
 
     abstract User build();
   }

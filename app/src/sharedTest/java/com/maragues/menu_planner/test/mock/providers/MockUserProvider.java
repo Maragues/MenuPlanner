@@ -9,12 +9,13 @@ import com.maragues.menu_planner.model.providers.IUserProvider;
 
 import io.reactivex.Single;
 
+import static com.maragues.menu_planner.test.factories.UserFactory.DEFAULT_UID;
+
 /**
  * Created by miguelaragues on 4/1/17.
  */
 
 public class MockUserProvider extends MockBaseProvider<User> implements IUserProvider {
-  public static final String DEFAULT_UID = "E7uvIt9HU3dJk5ozpFfc8u2DUk72";
 
   private String uuid = DEFAULT_UID;
 

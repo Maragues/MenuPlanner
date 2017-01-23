@@ -31,7 +31,7 @@ public abstract class Meal implements ISynchronizable<Meal> {
   @Nullable //so that we can represent user-recipes
   public abstract String uid();
 
-  @Nullable //so that we can represent user-recipes
+  @Nullable
   public abstract String groupId();
 
   @NonNull

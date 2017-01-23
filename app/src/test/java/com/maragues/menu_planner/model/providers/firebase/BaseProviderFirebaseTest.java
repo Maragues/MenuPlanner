@@ -5,9 +5,15 @@ import com.maragues.menu_planner.ui.test.BaseUnitTest;
 
 import org.junit.Before;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
@@ -30,6 +36,19 @@ public abstract class BaseProviderFirebaseTest<T extends BaseProviderFirebase> e
     doReturn(databaseReference).when(databaseReference).child(anyString());
 
     doReturn(databaseReference).when(provider).getReference();
+  }
+
+  protected void mockSingleResponse() {
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DatabaseReference.CompletionListener listener = (DatabaseReference.CompletionListener) invocation.getArguments()[1];
+
+        listener.onComplete(null, mock(DatabaseReference.class));
+
+        return null;
+      }
+    }).when(databaseReference).updateChildren(anyMap(), any(DatabaseReference.CompletionListener.class));
   }
 
   protected abstract T createProvider();
