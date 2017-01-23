@@ -34,7 +34,7 @@ public class LaunchPresenterTest extends BasePresenterTest<ILaunch, LaunchPresen
   public void noUser_navigatesToLogin() {
     initPresenter();
 
-    ((MockUserProvider) App.appComponent.userProvider()).setUuid(null);
+    ((MockUserProvider) App.appComponent.userProvider()).setUid(null);
 
     presenter.decideNextScreen(view);
 

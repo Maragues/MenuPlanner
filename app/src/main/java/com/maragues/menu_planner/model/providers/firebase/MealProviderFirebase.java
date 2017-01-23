@@ -5,9 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.App;
-import com.maragues.menu_planner.model.BaseFirebaseKeys;
 import com.maragues.menu_planner.model.Meal;
-import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.model.providers.IMealProvider;
 
 import java.util.HashMap;
@@ -38,15 +36,15 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
   }
 
   @Override
-  protected Map<String, Object> synchronizableToMap(Meal item) {
-    if (App.appComponent.textUtils().isEmpty(item.id()))
+  protected Map<String, Object> synchronizableToMap(Meal meal) {
+    if (App.appComponent.textUtils().isEmpty(meal.id()))
       throw new IllegalArgumentException("Meal must have key");
 
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + MEALS_KEY
                     + "/" + App.appComponent.userProvider().getGroupId()
-                    + "/" + item.id(),
-            toMap(item)
+                    + "/" + meal.id(),
+            meal.toFirebaseValue()
     );
 
     return childUpdates;
@@ -70,7 +68,7 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     });
   }
 
-  private Meal assignKey(Meal meal) {
+  Meal assignKey(Meal meal) {
     String key = getReference().child(MEALS_KEY)
             .child(App.appComponent.userProvider().getGroupId())
             .push().getKey();
@@ -89,21 +87,17 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
           }
         }
       }
-   */
+
   public Map<String, Object> toMap(@NonNull Meal mealInstance) {
     HashMap<String, Object> result = new HashMap<>();
-    result.put(BaseFirebaseKeys.USER_ID_KEY, mealInstance.groupId());
+    result.put(BaseFirebaseKeys.USER_ID_KEY, mealInstance.uid());
 
     Map<String, Object> recipes = new HashMap<>();
 
     for (int i = 0; i < mealInstance.recipes().size(); i++) {
       RecipeMeal recipeMeal = mealInstance.recipes().get(i);
 
-      Map<String, Object> recipeMealMap = new HashMap<>();
-      recipeMealMap.put(RECIPE_ID, recipeMeal.recipeId());
-      recipeMealMap.put(RECIPE_NAME, recipeMeal.name());
-
-      recipes.put(recipeMeal.recipeId(), recipeMealMap);
+      recipes.put(recipeMeal.recipeId(), recipeMeal.toFirebaseValue());
     }
 
     if (!recipes.isEmpty()) {
@@ -112,9 +106,8 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
 
     return result;
   }
+*/
 
   static final String MEALS_KEY = "meals_group";
   private static final String RECIPES = "recipes";
-  private static final String RECIPE_ID = "recipeId";
-  private static final String RECIPE_NAME = "name";
 }

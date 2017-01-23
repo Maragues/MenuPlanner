@@ -20,10 +20,7 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 public abstract class Recipe implements ISynchronizable<Recipe> {
 
   @Nullable //so that we can represent user-recipes
-  public abstract String uid();
-
-  @Nullable
-  public abstract String groupId();
+  public abstract String userId();
 
   public abstract String name();
 
@@ -50,9 +47,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
 
     public abstract Builder setId(String value);
 
-    public abstract Builder setUid(String value);
-
-    public abstract Builder setGroupId(String value);
+    public abstract Builder setUserId(String value);
 
     public abstract Builder setUrl(String value);
 
@@ -63,9 +58,7 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
     public abstract Recipe build();
   }
 
-  public abstract Recipe withGroupId(String groupId);
-
-  public abstract Recipe withUid(String id);
+  public abstract Recipe withUserId(String userId);
 
   public abstract Recipe withName(String name);
 

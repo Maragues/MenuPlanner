@@ -36,15 +36,15 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
 
   @Override
   protected Map<String, Object> synchronizableToMap(@NonNull Recipe recipe) {
-    if(App.appComponent.textUtils().isEmpty(recipe.id()))
+    if (App.appComponent.textUtils().isEmpty(recipe.id()))
       throw new IllegalArgumentException("Recipe must have key");
-
-    if(App.appComponent.textUtils().isEmpty(recipe.groupId()))
-      throw new IllegalArgumentException("Recipe must have groupId");
 
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + RECIPES_KEY + "/" + recipe.id(), recipe.toFirebaseValue());
-    childUpdates.put("/" + USER_RECIPES_KEY + "/" + recipe.groupId() + "/" + recipe.id(), toSummaryMap(recipe));
+    childUpdates.put("/" + USER_RECIPES_KEY
+                    + "/" + App.appComponent.userProvider().getGroupId()
+                    + "/" + recipe.id(),
+            toSummaryMap(recipe));
 
     return childUpdates;
   }
@@ -78,7 +78,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     return recipe.withId(key);
   }
 
-   Map<String, Object> toSummaryMap(Recipe recipe) {
+  Map<String, Object> toSummaryMap(Recipe recipe) {
     HashMap<String, Object> result = new HashMap<>();
     result.put(NAME_KEY, recipe.name());
 

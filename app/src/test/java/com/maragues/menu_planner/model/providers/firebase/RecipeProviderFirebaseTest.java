@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import com.maragues.menu_planner.model.Recipe;
+import com.maragues.menu_planner.test.factories.GroupFactory;
 import com.maragues.menu_planner.test.factories.RecipeFactory;
 
 import org.junit.Test;
@@ -48,11 +49,6 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
     provider.synchronizableToMap(Recipe.empty(""));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void synchronizableToMap_noGroupId(){
-    provider.synchronizableToMap(Recipe.empty("").withId("dldl"));
-  }
-
   @Test
   public void synchronizableToMap_updatesTwoPaths() {
     Map<String, Object> map = provider.synchronizableToMap(RecipeFactory.base());
@@ -73,14 +69,12 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
   @Test
   public void synchronizableToMap_createsUserRecipe() {
     String recipeKey = "my key";
-    String groupId = "group idd";
     Map<String, Object> map = provider.synchronizableToMap(
             RecipeFactory.base()
                     .withId(recipeKey)
-                    .withGroupId(groupId)
     );
 
-    String recipesPath = "/" + RecipeProviderFirebase.USER_RECIPES_KEY + "/" + groupId + "/" + recipeKey;
+    String recipesPath = "/" + RecipeProviderFirebase.USER_RECIPES_KEY + "/" + GroupFactory.DEFAULT_GROUP_ID + "/" + recipeKey;
 
     assertTrue(map.keySet().contains(recipesPath));
   }

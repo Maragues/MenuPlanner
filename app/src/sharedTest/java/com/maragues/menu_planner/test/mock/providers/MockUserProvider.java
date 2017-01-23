@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.firebase.auth.UserInfo;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
+import com.maragues.menu_planner.test.factories.GroupFactory;
 
 import io.reactivex.Single;
 
@@ -18,9 +19,14 @@ import static com.maragues.menu_planner.test.factories.UserFactory.DEFAULT_UID;
 public class MockUserProvider extends MockBaseProvider<User> implements IUserProvider {
 
   private String uuid = DEFAULT_UID;
+  private String groupId = GroupFactory.DEFAULT_GROUP_ID;
 
-  public void setUuid(String uuid) {
+  public void setUid(String uuid) {
     this.uuid = uuid;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
   }
 
   @Override
@@ -37,6 +43,6 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   @Nullable
   @Override
   public String getGroupId() {
-    return null;
+    return groupId;
   }
 }

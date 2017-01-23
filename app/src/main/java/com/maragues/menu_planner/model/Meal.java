@@ -31,9 +31,6 @@ public abstract class Meal implements ISynchronizable<Meal> {
   @Nullable //so that we can represent user-recipes
   public abstract String uid();
 
-  @Nullable
-  public abstract String groupId();
-
   @NonNull
   public abstract List<RecipeMeal> recipes();
 
@@ -41,7 +38,7 @@ public abstract class Meal implements ISynchronizable<Meal> {
     return new AutoValue_Meal.Builder();
   }
 
-  public static Meal emptyMeal() {
+  public static Meal empty() {
     return builder().setRecipes(new ArrayList<>()).build();
   }
 
@@ -50,8 +47,6 @@ public abstract class Meal implements ISynchronizable<Meal> {
     public abstract Meal.Builder setId(String value);
 
     public abstract Meal.Builder setUid(String value);
-
-    public abstract Meal.Builder setGroupId(String value);
 
     public abstract Meal.Builder setRecipes(List<RecipeMeal> value);
 
@@ -62,9 +57,11 @@ public abstract class Meal implements ISynchronizable<Meal> {
     return dataSnapshot.getValue(AutoValue_Meal.FirebaseValue.class).toAutoValue();
   }
 
-  public abstract Meal withUid(String id);
+  public Object toFirebaseValue() {
+    return new AutoValue_Meal.FirebaseValue(this);
+  }
 
-  public abstract Meal withGroupId(String id);
+  public abstract Meal withUid(String id);
 
   public abstract Meal withRecipes(List<RecipeMeal> recipes);
 

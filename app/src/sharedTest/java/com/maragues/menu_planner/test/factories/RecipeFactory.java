@@ -15,7 +15,6 @@ public abstract class RecipeFactory {
   public static Recipe base(){
     return Recipe.empty(RECIPE_NAME)
             .withId(RECIPE_ID)
-            .withGroupId(GroupFactory.DEFAULT_GROUP_ID)
-            .withUid(UserFactory.DEFAULT_UID);
+            .withUserId(UserFactory.DEFAULT_UID);
   }
 }

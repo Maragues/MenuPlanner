@@ -19,9 +19,12 @@ public abstract class RecipeMeal implements ISynchronizable<RecipeMeal> {
 
   public abstract String name();
 
-
   public static RecipeMeal.Builder builder() {
     return new AutoValue_RecipeMeal.Builder();
+  }
+
+  public static RecipeMeal empty(@NonNull String recipeId, @NonNull String name) {
+    return builder().setName(name).setRecipeId(recipeId).build();
   }
 
   @AutoValue.Builder
@@ -37,6 +40,10 @@ public abstract class RecipeMeal implements ISynchronizable<RecipeMeal> {
 
   public static RecipeMeal create(DataSnapshot dataSnapshot) {
     return dataSnapshot.getValue(AutoValue_RecipeMeal.FirebaseValue.class).toAutoValue();
+  }
+
+  public Object toFirebaseValue() {
+    return new AutoValue_RecipeMeal.FirebaseValue(this);
   }
 
   public abstract RecipeMeal withName(String name);

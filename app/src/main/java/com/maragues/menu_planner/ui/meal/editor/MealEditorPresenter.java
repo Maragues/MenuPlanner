@@ -76,7 +76,7 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   }
 
   void onNewMeal() {
-    meal = Meal.emptyMeal();
+    meal = Meal.empty();
   }
 
   void onSaveClicked() {

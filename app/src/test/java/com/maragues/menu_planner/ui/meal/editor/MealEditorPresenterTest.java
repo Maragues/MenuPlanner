@@ -82,7 +82,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   public void save_withMealInstance_usesMealInstanceProvider() {
     mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.MAX);
 
-    doReturn(Single.just(Meal.emptyMeal().withId("mealId")))
+    doReturn(Single.just(Meal.empty().withId("mealId")))
             .when(mockMealProvider)
             .create(any(Meal.class));
 
@@ -99,7 +99,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
     mealInstance = MealInstance.fromLocalDateTime(expectedTime);
 
-    doReturn(Single.just(Meal.emptyMeal().withId("mealId")))
+    doReturn(Single.just(Meal.empty().withId("mealId")))
             .when(mockMealProvider)
             .create(any(Meal.class));
 
@@ -120,7 +120,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
     String expectedMealId = "myMealId";
 
-    doReturn(Single.just(Meal.emptyMeal().withId(expectedMealId)))
+    doReturn(Single.just(Meal.empty().withId(expectedMealId)))
             .when(mockMealProvider)
             .create(any(Meal.class));
 

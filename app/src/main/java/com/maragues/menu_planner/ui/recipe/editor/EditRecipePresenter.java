@@ -26,7 +26,7 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipe.View> {
               .setName(getView().title())
               .setDescription(getView().description())
               .setUrl(getView().url())
-              .setUid(App.appComponent.userProvider().getUid())
+              .setUserId(App.appComponent.userProvider().getUid())
               .build();
 
       return App.appComponent.recipeProvider().create(recipe);
