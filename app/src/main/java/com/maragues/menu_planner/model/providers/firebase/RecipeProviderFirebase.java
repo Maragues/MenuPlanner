@@ -31,7 +31,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
   protected Query listQuery() {
     return FirebaseDatabase.getInstance().getReference()
             .child(USER_RECIPES_KEY)
-            .child(App.appComponent.userProvider().getUid());
+            .child(App.appComponent.userProvider().getGroupId());
   }
 
   @Override
@@ -39,10 +39,15 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     if (App.appComponent.textUtils().isEmpty(recipe.id()))
       throw new IllegalArgumentException("Recipe must have key");
 
+    String groupId = App.appComponent.userProvider().getGroupId();
+    recipe = recipe.withGroupId(groupId);
+
     Map<String, Object> childUpdates = new HashMap<>();
+
     childUpdates.put("/" + RECIPES_KEY + "/" + recipe.id(), recipe.toFirebaseValue());
+
     childUpdates.put("/" + USER_RECIPES_KEY
-                    + "/" + App.appComponent.userProvider().getGroupId()
+                    + "/" + groupId
                     + "/" + recipe.id(),
             toSummaryMap(recipe));
 

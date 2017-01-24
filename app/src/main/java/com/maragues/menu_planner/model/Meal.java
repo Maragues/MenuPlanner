@@ -29,7 +29,10 @@ public abstract class Meal implements ISynchronizable<Meal> {
   public abstract String id();
 
   @Nullable //so that we can represent user-recipes
-  public abstract String uid();
+  public abstract String userId();
+
+  @Nullable //so that we can represent user-recipes
+  public abstract String groupId();
 
   @NonNull
   public abstract List<RecipeMeal> recipes();
@@ -44,11 +47,13 @@ public abstract class Meal implements ISynchronizable<Meal> {
 
   @AutoValue.Builder
   public abstract static class Builder {
-    public abstract Meal.Builder setId(String value);
+    public abstract Builder setId(String value);
 
-    public abstract Meal.Builder setUid(String value);
+    public abstract Builder setUserId(String value);
 
-    public abstract Meal.Builder setRecipes(List<RecipeMeal> value);
+    public abstract Builder setGroupId(String value);
+
+    public abstract Builder setRecipes(List<RecipeMeal> value);
 
     public abstract Meal build();
   }
@@ -61,7 +66,9 @@ public abstract class Meal implements ISynchronizable<Meal> {
     return new AutoValue_Meal.FirebaseValue(this);
   }
 
-  public abstract Meal withUid(String id);
+  public abstract Meal withUserId(String userId);
+
+  public abstract Meal withGroupId(String groupId);
 
   public abstract Meal withRecipes(List<RecipeMeal> recipes);
 

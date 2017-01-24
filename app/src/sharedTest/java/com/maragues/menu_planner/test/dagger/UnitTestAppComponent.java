@@ -14,6 +14,7 @@ import dagger.Component;
 @Component(
         modules = {
                 UnitTestAppModule.class,
+                TestPreferencesModule.class,
                 TestProvidersModule.class
         }
 )

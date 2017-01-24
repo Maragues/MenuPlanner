@@ -2,6 +2,7 @@ package com.maragues.menu_planner.dagger;
 
 import android.content.Context;
 
+import com.maragues.menu_planner.model.preferences.ISignInPreferences;
 import com.maragues.menu_planner.model.providers.IGroupProvider;
 import com.maragues.menu_planner.model.providers.IMealProvider;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
@@ -20,6 +21,7 @@ import dagger.Component;
 @Component(
         modules = {
                 AppModule.class,
+                PreferencesModule.class,
                 ProvidersModule.class
         })
 public interface AppComponent {
@@ -30,6 +32,8 @@ public interface AppComponent {
   IGroupProvider groupProvider();
   IMealProvider mealProvider();
   IMealInstanceProvider mealInstanceProvider();
+
+  ISignInPreferences signInPreferences();
 
   LocalTextUtils textUtils();
 }

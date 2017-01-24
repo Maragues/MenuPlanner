@@ -14,6 +14,6 @@ public abstract class MealFactory {
   public static Meal base(){
     return Meal.empty()
             .withId(MEAL_ID)
-            .withUid(UserFactory.DEFAULT_UID);
+            .withUserId(UserFactory.DEFAULT_UID);
   }
 }

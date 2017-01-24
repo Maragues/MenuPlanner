@@ -6,6 +6,8 @@ import com.maragues.menu_planner.test.factories.RecipeFactory;
 
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import io.reactivex.observers.TestObserver;
@@ -45,7 +47,7 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
   SYNCHRONIZABLE TO MAP
    */
   @Test(expected = IllegalArgumentException.class)
-  public void synchronizableToMap_noId(){
+  public void synchronizableToMap_noId() {
     provider.synchronizableToMap(Recipe.empty(""));
   }
 
@@ -64,6 +66,18 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
     String recipesPath = "/" + RecipeProviderFirebase.RECIPES_KEY + "/" + key;
 
     assertTrue(map.keySet().contains(recipesPath));
+  }
+
+  @Test
+  public void synchronizableToMap_addsGroupIdToRecipe() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    String key = "my key";
+    Map<String, Object> map = provider.synchronizableToMap(RecipeFactory.base().withId(key));
+
+    String recipesPath = "/" + RecipeProviderFirebase.RECIPES_KEY + "/" + key;
+
+    assertTrue(map.keySet().contains(recipesPath));
+    assertEquals(GroupFactory.DEFAULT_GROUP_ID,
+            invokeGetGroupId(map.get(recipesPath)));
   }
 
   @Test
@@ -93,5 +107,15 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
 
     assertEquals(expectedName, summaryMap.get(RecipeProviderFirebase.NAME_KEY));
     assertEquals(expectedDescription, summaryMap.get(RecipeProviderFirebase.SHORT_DESCRIPTION_KEY));
+  }
+
+  private String invokeGetGroupId(Object object) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    Class<?> clazz = Class.forName("com.maragues.menu_planner.model.$$AutoValue_Recipe$FirebaseValue");
+
+    Method method = clazz.getDeclaredMethod("getGroupId");
+
+    method.setAccessible(true);
+
+    return String.valueOf(method.invoke(object));
   }
 }

@@ -31,7 +31,7 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
   @Test
   public void create_assingsKey() {
     String expectedKey = "my key";
-    MealInstance mealInstance = MealInstanceFactory.base(LocalDateTime.MAX);
+    MealInstance mealInstance = MealInstanceFactory.base(LocalDateTime.now());
     doReturn(mealInstance.withId(expectedKey)).when(provider).assignKey(eq(mealInstance));
 
     mockSingleResponse();
@@ -55,7 +55,7 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
   @Test
   public void synchronizableToMap_updatesOnePath() {
     Map<String, Object> map = provider.synchronizableToMap(
-            MealInstanceFactory.base(LocalDateTime.MAX).withId("bla")
+            MealInstanceFactory.base(LocalDateTime.now()).withId("bla")
     );
 
     assertEquals(1, map.size());

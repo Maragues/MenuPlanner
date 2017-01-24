@@ -22,6 +22,9 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
   @Nullable //so that we can represent user-recipes
   public abstract String userId();
 
+  @Nullable //so that we can represent user-recipes
+  public abstract String groupId();
+
   public abstract String name();
 
   @Nullable
@@ -49,6 +52,8 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
 
     public abstract Builder setUserId(String value);
 
+    public abstract Builder setGroupId(String value);
+
     public abstract Builder setUrl(String value);
 
     public abstract Builder setDescription(String value);
@@ -67,6 +72,8 @@ public abstract class Recipe implements ISynchronizable<Recipe> {
   public abstract Recipe withDescription(String description);
 
   public abstract Recipe withIngredients(List<String> ingredients);
+
+  public abstract Recipe withGroupId(String groupId);
 
   @Exclude
   public String shortDescription() {

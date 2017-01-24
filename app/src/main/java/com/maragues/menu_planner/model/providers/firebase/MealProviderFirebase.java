@@ -40,11 +40,13 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     if (App.appComponent.textUtils().isEmpty(meal.id()))
       throw new IllegalArgumentException("Meal must have key");
 
+    String groupId = App.appComponent.userProvider().getGroupId();
+
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + MEALS_KEY
-                    + "/" + App.appComponent.userProvider().getGroupId()
+                    + "/" + groupId
                     + "/" + meal.id(),
-            meal.toFirebaseValue()
+            meal.withGroupId(groupId).toFirebaseValue()
     );
 
     return childUpdates;

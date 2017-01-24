@@ -138,6 +138,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void attemptSave_UsesNameProvidedByView() {
+    initPresenter();
+
     String expectedName = "crema de puerros";
     doReturn(expectedName).when(view).title();
     doReturn(true).when(presenter).validateOrNotifyErrors();
@@ -153,6 +155,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void attemptSave_UsesDescriptionProvidedByView() {
+    initPresenter();
+
     String expectedDescription = "Partir puerros, echar bien de pera y a comer";
     doReturn(expectedDescription).when(view).description();
     ensureBasicValidation();
@@ -173,6 +177,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void onSaveClicked_attemptsSave() {
+    initPresenter();
+
     presenter.onSaveClicked();
 
     verify(presenter).attemptSave();
@@ -180,6 +186,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void onSaveClicked_doesNotFinishIfNoValidation() {
+    initPresenter();
+
     presenter.onSaveClicked();
 
     verify(view, never()).finish();
@@ -187,6 +195,8 @@ public class EditRecipePresenterTest extends BasePresenterTest<IEditRecipe.View,
 
   @Test
   public void onSaveClicked_finishIfValidates() {
+    initPresenter();
+
     ensureBasicValidation();
 
     presenter.onSaveClicked();

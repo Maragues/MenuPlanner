@@ -20,6 +20,11 @@ public class LaunchPresenterTest extends BasePresenterTest<ILaunch, LaunchPresen
 
   public LaunchPresenterTest() {
     super(ILaunch.class);
+  }
+
+  @Override
+  protected void onPresenterCreated() {
+    super.onPresenterCreated();
 
     doNothing().when(presenter).attachView(any(ILaunch.class));
   }

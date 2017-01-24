@@ -51,6 +51,24 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
   }
 
   @Test
+  public void firebaseUserArrives_exists_storesGroupId() {
+    initPresenter();
+
+    UserInfo userInfo = mock(FirebaseUser.class);
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    String expectedGroupId = "my best group";
+    doReturn(Single.just(true)).when(App.appComponent.userProvider()).exists(eq(userInfo));
+    doReturn(Maybe.just(UserFactory.base().withGroupId(expectedGroupId).withEmail("pepe")))
+            .when(App.appComponent.userProvider())
+            .get(eq(UserFactory.DEFAULT_UID));
+
+    presenter.onFirebaseUserArrived(userInfo);
+
+    verify(App.appComponent.signInPreferences()).saveGroupId(eq(expectedGroupId));
+  }
+
+  @Test
   public void firebaseUserArrives_notExists_createsNewUser() {
     initPresenter();
 

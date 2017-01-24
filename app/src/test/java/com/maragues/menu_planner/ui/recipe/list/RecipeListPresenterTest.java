@@ -28,6 +28,11 @@ public class RecipeListPresenterTest extends BasePresenterTest<IRecipeList, Reci
 
   public RecipeListPresenterTest() {
     super(IRecipeList.class);
+  }
+
+  @Override
+  protected void onPresenterCreated() {
+    super.onPresenterCreated();
 
     doReturn(ref).when(presenter).recipesQuery();
   }

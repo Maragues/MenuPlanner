@@ -6,6 +6,8 @@ import com.maragues.menu_planner.test.factories.MealFactory;
 
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import io.reactivex.observers.TestObserver;
@@ -64,5 +66,27 @@ public class MealProviderFirebaseTest extends BaseProviderFirebaseTest<MealProvi
     String expectedPath = "/" + MealProviderFirebase.MEALS_KEY + "/" + GroupFactory.DEFAULT_GROUP_ID + "/" + key;
 
     assertTrue(map.keySet().contains(expectedPath));
+  }
+
+  @Test
+  public void synchronizableToMap_addsGroupId() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    String key = "my key";
+    Map<String, Object> map = provider.synchronizableToMap(MealFactory.base().withId(key));
+
+    String expectedPath = "/" + MealProviderFirebase.MEALS_KEY + "/" + GroupFactory.DEFAULT_GROUP_ID + "/" + key;
+
+    assertTrue(map.keySet().contains(expectedPath));
+    assertEquals(GroupFactory.DEFAULT_GROUP_ID,
+            invokeGetGroupId(map.get(expectedPath)));
+  }
+
+  private String invokeGetGroupId(Object object) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    Class<?> clazz = Class.forName("com.maragues.menu_planner.model.$$AutoValue_Meal$FirebaseValue");
+
+    Method method = clazz.getDeclaredMethod("getGroupId");
+
+    method.setAccessible(true);
+
+    return String.valueOf(method.invoke(object));
   }
 }

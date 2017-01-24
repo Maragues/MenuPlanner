@@ -38,6 +38,11 @@ public class LoginPresenter extends BasePresenter<ILogin> {
                   return App.appComponent.userProvider().create(firebaseUser);
                 }
               })
+              .map(user -> {
+                App.appComponent.signInPreferences().saveGroupId(user.groupId());
+
+                return user;
+              })
               .doOnSuccess(this::onUserSignedIn)
               .subscribe();
     } else {

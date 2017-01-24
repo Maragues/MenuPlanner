@@ -44,7 +44,7 @@ public abstract class User implements ISynchronizable<User> {
   abstract static class Builder {
     abstract Builder setName(String value);
 
-    abstract Builder setemail(String value);
+    abstract Builder setEmail(String value);
 
     abstract Builder setId(String value);
 
@@ -69,7 +69,7 @@ public abstract class User implements ISynchronizable<User> {
   public static User fromUserInfo(@NonNull UserInfo userInfo) {
     Builder builder = builder()
             .setName(userInfo.getDisplayName())
-            .setemail(userInfo.getEmail())
+            .setEmail(userInfo.getEmail())
             .setId(userInfo.getUid())
             .setProviderId(userInfo.getProviderId());
 
@@ -80,4 +80,6 @@ public abstract class User implements ISynchronizable<User> {
   }
 
   public abstract User withGroupId(String groupId);
+
+  public abstract User withEmail(String email);
 }
