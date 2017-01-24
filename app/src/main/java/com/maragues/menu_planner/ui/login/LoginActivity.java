@@ -23,18 +23,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.common.BaseActivity;
 import com.maragues.menu_planner.ui.home.HomeActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by miguelaragues on 28/12/16.
@@ -53,8 +48,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
 
   @BindView(R.id.login_progress)
   ProgressBar progressBar;
-
-  Disposable disposable;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,37 +69,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
 
     mAuthListener = firebaseAuth -> {
       FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-      if (firebaseUser != null) {
-        disposable = App.appComponent.userProvider()
-                .create(firebaseUser)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(this::onUserSignedIn)
-                .doOnError(Throwable::printStackTrace)
-                .subscribe();
-      } else {
-        // User is signed out
-        Log.d(TAG, "onAuthStateChanged:signed_out");
-      }
-      // ...
+
+      getPresenter().onFirebaseUserArrived(firebaseUser);
     };
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-
-    if (disposable != null && !disposable.isDisposed())
-      disposable.dispose();
-  }
-
-  private void onUserSignedIn(User user) {
-    progressBar.setVisibility(View.GONE);
-
-    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.id());
-    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-
-    finish();
   }
 
   @OnClick(R.id.sign_in_button)
@@ -188,5 +153,15 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
 
   public static Intent createIntent(Context context) {
     return new Intent(context, LoginActivity.class);
+  }
+
+  @Override
+  public void hideProgressBar() {
+    progressBar.setVisibility(View.GONE);
+  }
+
+  @Override
+  public void navigateToHome() {
+    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
   }
 }

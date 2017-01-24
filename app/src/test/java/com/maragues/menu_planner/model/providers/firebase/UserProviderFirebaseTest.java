@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.BaseFirebaseKeys;
 import com.maragues.menu_planner.model.Group;
@@ -28,9 +29,11 @@ import io.reactivex.observers.TestObserver;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -73,12 +76,10 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
   public void create_createsGroup() {
     TestObserver<User> observer = new TestObserver<>();
 
-    DataSnapshot snapshot = mockUserDataSnapshot();
-
     doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        ((Transaction.Handler) invocation.getArgument(0)).onComplete(null, true, snapshot);
+        ((Transaction.Handler) invocation.getArgument(0)).onComplete(null, true, mockUserDataSnapshot());
 
         return null;
       }
@@ -137,6 +138,153 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
     assertTrue(captor.getValue().keySet().contains(BaseFirebaseKeys.GROUP_ID_KEY));
     assertEquals(expectedGroupId, captor.getValue().get(BaseFirebaseKeys.GROUP_ID_KEY));
   }
+
+  /*
+  GET
+   */
+  @Test
+  public void get_checksCorrectPath(){
+    provider.get(UserFactory.DEFAULT_UID).subscribe();
+
+    verify(databaseReference).child(eq(UserProviderFirebase.USERS_KEY));
+
+    verify(databaseReference).child(eq(UserFactory.DEFAULT_UID));
+  }
+
+  @Test
+  public void get_success_returningUser(){
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DataSnapshot snapshot = mockUserDataSnapshot();
+
+        doReturn(true).when(snapshot).exists();
+
+        ((ValueEventListener) invocation.getArgument(0)).onDataChange(snapshot);
+
+        return null;
+      }
+    }).when(databaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+    TestObserver<User> observer = new TestObserver<>();
+
+    provider.get(UserFactory.DEFAULT_UID).subscribe(observer);
+
+    observer.assertComplete();
+    observer.assertValueCount(1);
+  }
+
+  @Test
+  public void get_success_userDoesNotExist_invokesOnComplete(){
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DataSnapshot snapshot = mockUserDataSnapshot();
+
+        doReturn(false).when(snapshot).exists();
+
+        ((ValueEventListener) invocation.getArgument(0)).onDataChange(snapshot);
+
+        return null;
+      }
+    }).when(databaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+    TestObserver<User> observer = new TestObserver<>();
+
+    provider.get(UserFactory.DEFAULT_UID).subscribe(observer);
+
+    observer.assertComplete();
+  }
+
+  /*
+  EXISTS
+   */
+  @Test
+  public void exists_checksCorrectPath(){
+    UserInfo userInfo = mock(UserInfo.class);
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    provider.exists(userInfo).subscribe();
+
+    verify(databaseReference).child(eq(UserProviderFirebase.USERS_KEY));
+
+    verify(databaseReference).child(eq(UserFactory.DEFAULT_UID));
+  }
+
+  @Test
+  public void exists_success_returnsTrue(){
+    UserInfo userInfo = mock(UserInfo.class);
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    boolean expectedResult = true;
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DataSnapshot snapshot = mock(DataSnapshot.class);
+        doReturn(expectedResult).when(snapshot).exists();
+
+        ((ValueEventListener)invocation.getArgument(0)).onDataChange(snapshot);
+        return null;
+      }
+    }).when(databaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+    TestObserver<Boolean> observer = new TestObserver<>();
+
+    provider.exists(userInfo).subscribe(observer);
+
+    observer.assertComplete();
+    observer.assertValue(expectedResult);
+  }
+
+  @Test
+  public void exists_success_returnsFalse(){
+    UserInfo userInfo = mock(UserInfo.class);
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    boolean expectedResult = false;
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DataSnapshot snapshot = mock(DataSnapshot.class);
+        doReturn(expectedResult).when(snapshot).exists();
+
+        ((ValueEventListener)invocation.getArgument(0)).onDataChange(snapshot);
+        return null;
+      }
+    }).when(databaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+    TestObserver<Boolean> observer = new TestObserver<>();
+
+    provider.exists(userInfo).subscribe(observer);
+
+    observer.assertComplete();
+    observer.assertValue(expectedResult);
+  }
+
+  /*@Test
+  public void exists_error_returnsFalse(){
+    UserInfo userInfo = mock(UserInfo.class);
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        DatabaseError error = mock(DatabaseError.class);
+
+        ((ValueEventListener)invocation.getArgument(0)).onCancelled(error);
+        return null;
+      }
+    }).when(databaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+
+    TestObserver<Boolean> observer = new TestObserver<>();
+
+    provider.exists(userInfo).subscribe(observer);
+
+    observer.assertComplete();
+    observer.assertValue(false);
+  }*/
 
   private void mockFullTransaction(final DataSnapshot snapshot, String expectedGroupId) {
     doAnswer(new Answer<Void>() {

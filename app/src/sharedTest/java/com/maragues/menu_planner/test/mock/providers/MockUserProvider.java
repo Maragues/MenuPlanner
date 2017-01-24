@@ -8,6 +8,7 @@ import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
 import com.maragues.menu_planner.test.factories.GroupFactory;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static com.maragues.menu_planner.test.factories.UserFactory.DEFAULT_UID;
@@ -44,5 +45,15 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   @Override
   public String getGroupId() {
     return groupId;
+  }
+
+  @Override
+  public Single<Boolean> exists(UserInfo firebaseUser) {
+    return null;
+  }
+
+  @Override
+  public Maybe<User> get(String uid) {
+    return null;
   }
 }

@@ -7,4 +7,9 @@ import com.maragues.menu_planner.ui.common.IBaseview;
  */
 
 public interface ILogin extends IBaseview {
+  void hideProgressBar();
+
+  void navigateToHome();
+
+  void finish();
 }
