@@ -28,6 +28,7 @@ public abstract class BaseLoggedInActivity<P extends TiPresenter<V>, V extends T
 
     authListener = firebaseAuth1 -> {
       FirebaseUser user = firebaseAuth1.getCurrentUser();
+
       if (user != null) {
         // User is signed in
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());

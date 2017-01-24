@@ -102,7 +102,7 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
   @Nullable
   @Override
   public String getGroupId() {
-    return null;
+    return App.appComponent.signInPreferences().getGroupId();
   }
 
   @Override

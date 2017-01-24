@@ -30,7 +30,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
   @Override
   protected Query listQuery() {
     return FirebaseDatabase.getInstance().getReference()
-            .child(USER_RECIPES_KEY)
+            .child(GROUP_RECIPES_KEY)
             .child(App.appComponent.userProvider().getGroupId());
   }
 
@@ -46,7 +46,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
 
     childUpdates.put("/" + RECIPES_KEY + "/" + recipe.id(), recipe.toFirebaseValue());
 
-    childUpdates.put("/" + USER_RECIPES_KEY
+    childUpdates.put("/" + GROUP_RECIPES_KEY
                     + "/" + groupId
                     + "/" + recipe.id(),
             toSummaryMap(recipe));
@@ -94,7 +94,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
   }
 
   static final String RECIPES_KEY = "recipes";
-  public static final String USER_RECIPES_KEY = "recipes_user";
+  public static final String GROUP_RECIPES_KEY = "recipes_group";
   public static final String NAME_KEY = "name";
   public static final String SHORT_DESCRIPTION_KEY = "shortDescription";
 }

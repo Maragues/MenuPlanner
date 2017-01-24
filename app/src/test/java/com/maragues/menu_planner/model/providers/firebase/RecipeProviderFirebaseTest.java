@@ -88,7 +88,7 @@ public class RecipeProviderFirebaseTest extends BaseProviderFirebaseTest<RecipeP
                     .withId(recipeKey)
     );
 
-    String recipesPath = "/" + RecipeProviderFirebase.USER_RECIPES_KEY + "/" + GroupFactory.DEFAULT_GROUP_ID + "/" + recipeKey;
+    String recipesPath = "/" + RecipeProviderFirebase.GROUP_RECIPES_KEY + "/" + GroupFactory.DEFAULT_GROUP_ID + "/" + recipeKey;
 
     assertTrue(map.keySet().contains(recipesPath));
   }

@@ -151,8 +151,8 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
 
   DatabaseReference recipesQuery() {
     return FirebaseDatabase.getInstance().getReference()
-            .child(RecipeProviderFirebase.USER_RECIPES_KEY)
-            .child(App.appComponent.userProvider().getUid());
+            .child(RecipeProviderFirebase.GROUP_RECIPES_KEY)
+            .child(App.appComponent.userProvider().getGroupId());
   }
 
   private void onRecipeClicked(@NonNull Recipe recipe) {
