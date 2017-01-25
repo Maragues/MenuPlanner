@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:minHeight="48dp"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_vertical"
+              android:minHeight="48dp">
 
     <TextView
         android:id="@+id/planner_header_day_name"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.5"/>
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        tools:text="monday"/>
 
     <TextView
         android:id="@+id/planner_header_day_add"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:drawableLeft="@android:drawable/ic_input_add"
-        android:drawableTint="@android:color/white"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
         android:gravity="right"
-        android:text="Add meal"/>
+        android:singleLine="true"
+        android:text="+ Add meal"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
 </LinearLayout>

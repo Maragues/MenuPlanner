@@ -42,34 +42,10 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
 
   @Override
   public int getItemViewType(int position) {
-    if (position == 0)
-      return TYPE_HEADER_DAY;
-
-    MealInstance mealInstance = meals.get(position);
-
-    //no recipes, we'll just print a day
-    if (!mealInstance.hasRecipes())
+    if (position == 0 || !meals.get(position).hasRecipes())
       return TYPE_HEADER_DAY;
 
     return TYPE_BODY;
-
-    /*//there's a day on top of us and there are recipes, always print a label
-    int previousType = getItemViewType(position - 1);
-    if (previousType == TYPE_HEADER_DAY)
-      return TYPE_HEADER_LABEL;
-
-    //there's a label on top of us, always print the body
-    if (previousType == TYPE_HEADER_LABEL)
-
-    //now we need to detect if the MealInstance to be shown belongs to a new LocalDate
-    MealInstance previousMealInstance = meals.get(position - 1);
-    if (mealInstance.dateTime().toLocalDate().isAfter(previousMealInstance.dateTime().toLocalDate())) {
-      //it's a different day, print a day
-      return TYPE_HEADER_DAY;
-    } else {
-      //it's another meal inside the same day, print a label
-      return TYPE_HEADER_LABEL;
-    }*/
   }
 
   @Override
@@ -96,26 +72,9 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     holder.render(meals.get(position));
   }
 
-
   @Override
   public int getItemCount() {
-    return BASE_SIZE + mealsWithAtLeastOneRecipe();
-  }
-
-  private int recipesInSlots = -1;
-
-  private int mealsWithAtLeastOneRecipe() {
-    if (recipesInSlots < 0) {
-      int recipes = 0;
-
-      for (int i = 0; i < meals.size(); i++) {
-        recipes += meals.get(i).hasRecipes() ? 1 : 0;
-      }
-
-      recipesInSlots = recipes;
-    }
-
-    return recipesInSlots;
+    return meals.size();
   }
 
   abstract static class PlannerViewHolder extends RecyclerView.ViewHolder {
