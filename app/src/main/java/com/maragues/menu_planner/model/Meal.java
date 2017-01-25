@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 
@@ -35,14 +36,14 @@ public abstract class Meal implements ISynchronizable<Meal> {
   public abstract String groupId();
 
   @NonNull
-  public abstract List<RecipeMeal> recipes();
+  public abstract Map<String, RecipeMeal> recipes();
 
   public static Meal.Builder builder() {
     return new AutoValue_Meal.Builder();
   }
 
   public static Meal empty() {
-    return builder().setRecipes(new ArrayList<>()).build();
+    return builder().setRecipes(new HashMap<>()).build();
   }
 
   @AutoValue.Builder
@@ -53,7 +54,7 @@ public abstract class Meal implements ISynchronizable<Meal> {
 
     public abstract Builder setGroupId(String value);
 
-    public abstract Builder setRecipes(List<RecipeMeal> value);
+    public abstract Builder setRecipes(Map<String, RecipeMeal> value);
 
     public abstract Meal build();
   }
@@ -70,13 +71,17 @@ public abstract class Meal implements ISynchronizable<Meal> {
 
   public abstract Meal withGroupId(String groupId);
 
-  public abstract Meal withRecipes(List<RecipeMeal> recipes);
+  public abstract Meal withRecipes(Map<String, RecipeMeal> recipes);
 
   public Meal withNewRecipe(@NonNull Recipe recipe) {
-    List<RecipeMeal> recipes = recipes();
+    Map<String, RecipeMeal> recipes = recipes();
 
-    recipes.add(RecipeMeal.fromRecipe(recipe));
+    recipes.put(recipe.id(), RecipeMeal.fromRecipe(recipe));
 
     return withRecipes(recipes);
+  }
+
+  public Collection<RecipeMeal> recipeCollection(){
+    return recipes().values();
   }
 }

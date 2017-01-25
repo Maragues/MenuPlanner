@@ -69,9 +69,9 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
 
   private void showRecipes() {
     if (getView() != null) {
-      getView().showRecipes(meal.recipes());
+      getView().showRecipes(meal.recipeCollection());
     } else {
-      sendToView(v -> v.showRecipes(meal.recipes()));
+      sendToView(v -> v.showRecipes(meal.recipeCollection()));
     }
   }
 

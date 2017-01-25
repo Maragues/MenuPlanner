@@ -40,7 +40,7 @@ public class MealTest extends BaseUnitTest {
     meal = meal.withNewRecipe(recipe);
 
     assertEquals(1, meal.recipes().size());
-    RecipeMeal recipeMeal = meal.recipes().get(0);
+    RecipeMeal recipeMeal = meal.recipes().get(recipe.id());
 
     assertEquals(recipe.name(), recipeMeal.name());
     assertEquals(recipe.id(), recipeMeal.recipeId());

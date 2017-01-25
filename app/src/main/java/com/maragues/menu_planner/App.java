@@ -44,7 +44,7 @@ public class App extends Application {
   }
 
   private void initFirebase() {
-    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+    FirebaseDatabase.getInstance().setPersistenceEnabled(false);
   }
 
   private void initThirtyInch() {

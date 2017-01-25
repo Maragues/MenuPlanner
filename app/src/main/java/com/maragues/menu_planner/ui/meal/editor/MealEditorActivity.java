@@ -22,6 +22,7 @@ import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -148,7 +149,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
   }
 
   @Override
-  public void showRecipes(@NonNull List<RecipeMeal> recipes) {
+  public void showRecipes(@NonNull Collection<RecipeMeal> recipes) {
     // TODO: 21/1/17 Use DiffUtil
 
     recipeMeals.clear();

@@ -12,6 +12,7 @@ import com.maragues.menu_planner.model.MealInstance;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,11 +25,9 @@ import butterknife.OnClick;
 
 public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerViewHolder> {
   private static final int BASE_SIZE = 7;
-  private static final int RECIPES_IN_SLOT_SIZE_MULTIPLIER = 2;
 
   private static final int TYPE_HEADER_DAY = 0;
-  private static final int TYPE_HEADER_LABEL = 1;
-  private static final int TYPE_BODY = 2;
+  private static final int TYPE_BODY = 1;
 
   final List<MealInstance> meals;
   private final IMealSlotListener mealSlotListener;
@@ -52,14 +51,15 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     if (!mealInstance.hasRecipes())
       return TYPE_HEADER_DAY;
 
-    //there's a day on top of us and there are recipes, always print a label
+    return TYPE_BODY;
+
+    /*//there's a day on top of us and there are recipes, always print a label
     int previousType = getItemViewType(position - 1);
     if (previousType == TYPE_HEADER_DAY)
       return TYPE_HEADER_LABEL;
 
     //there's a label on top of us, always print the body
     if (previousType == TYPE_HEADER_LABEL)
-      return TYPE_BODY;
 
     //now we need to detect if the MealInstance to be shown belongs to a new LocalDate
     MealInstance previousMealInstance = meals.get(position - 1);
@@ -69,7 +69,7 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     } else {
       //it's another meal inside the same day, print a label
       return TYPE_HEADER_LABEL;
-    }
+    }*/
   }
 
   @Override
@@ -79,12 +79,6 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
         return new DayViewHolder(
                 LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.item_planner_day, parent, false),
-                mealSlotListener
-        );
-      case TYPE_HEADER_LABEL:
-        return new DayViewHolder(
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_planner_label, parent, false),
                 mealSlotListener
         );
       case TYPE_BODY:
@@ -105,12 +99,12 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
 
   @Override
   public int getItemCount() {
-    return BASE_SIZE + slotsWithAtLeastOneRecipe() * RECIPES_IN_SLOT_SIZE_MULTIPLIER;
+    return BASE_SIZE + mealsWithAtLeastOneRecipe();
   }
 
   private int recipesInSlots = -1;
 
-  private int slotsWithAtLeastOneRecipe() {
+  private int mealsWithAtLeastOneRecipe() {
     if (recipesInSlots < 0) {
       int recipes = 0;
 
@@ -168,23 +162,12 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     }
   }
 
-  static class LabelViewHolder extends PlannerViewHolder {
-    @BindView(R.id.planner_header_label)
-    TextView labelTextView;
-
-    public LabelViewHolder(View itemView, @NonNull IMealSlotListener listener) {
-      super(itemView, listener);
-    }
-
-    @Override
-    void render(@NonNull MealInstance mealInstance) {
-      super.render(mealInstance);
-    }
-  }
-
   static class BodyViewHolder extends PlannerViewHolder {
     @BindView(R.id.planner_body_textview)
     TextView bodyTextView;
+
+    @BindView(R.id.planner_header_label)
+    TextView labelTextView;
 
     public BodyViewHolder(View itemView, @NonNull IMealSlotListener listener) {
       super(itemView, listener);
@@ -193,6 +176,14 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
     @Override
     void render(@NonNull MealInstance mealInstance) {
       super.render(mealInstance);
+
+      Iterator<String> it = mealInstance.recipes().keySet().iterator();
+      bodyTextView.setText("");
+      while (it.hasNext()) {
+        bodyTextView.append(mealInstance.recipes().get(it.next()).name());
+      }
+
+      labelTextView.setText(mealInstance.labelId());
     }
   }
 

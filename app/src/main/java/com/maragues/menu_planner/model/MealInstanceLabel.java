@@ -1,6 +1,5 @@
 package com.maragues.menu_planner.model;
 
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.google.auto.value.AutoValue;
@@ -28,8 +27,17 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 public abstract class MealInstanceLabel implements ISynchronizable {
+  public static final MealInstanceLabel DINNER = builder()
+          .setId(IMealInstanceLabelProvider.DINNER_ID)
+          .setTime(LocalTime.of(20, 0))
+          .build();
 
-  @Nullable
+  public static final MealInstanceLabel LUNCH = builder()
+          .setId(IMealInstanceLabelProvider.LUNCH_ID)
+          .setTime(LocalTime.of(12, 0))
+          .build();
+
+
   @FirebaseAdapter(LocalTimeAdapter.class)
   public abstract LocalTime time();
 

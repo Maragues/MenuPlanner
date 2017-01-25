@@ -1,10 +1,13 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
+
+import org.threeten.bp.ZoneOffset;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +30,10 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
 
   @Override
   protected Query listQuery() {
-    return null;
+    return getReference()
+            .child(MEAL_INSTANCES_KEY)
+            .child(App.appComponent.userProvider().getGroupId())
+            .orderByKey();
   }
 
   @Override
@@ -43,9 +49,7 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
     Map<String, Object> childUpdates = new HashMap<>();
     childUpdates.put("/" + MEAL_INSTANCES_KEY
                     + "/" + App.appComponent.userProvider().getGroupId()
-                    + "/" + mealInstance.weekNumber()
-                    + "/" + mealInstance.dateTime().getDayOfWeek().getValue()
-                    + "/" + mealInstance.formattedTime(),
+                    + "/" + String.valueOf(mealInstance.dateTime().toInstant(ZoneOffset.UTC).toEpochMilli()),
             mealInstance.toFirebaseValue()
     );
 
@@ -57,40 +61,22 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
     return Single.create(new SingleOnSubscribe<MealInstance>() {
       @Override
       public void subscribe(SingleEmitter<MealInstance> e) throws Exception {
-        MealInstance meal = assignKey(newMealInstance);
-
-        getReference().updateChildren(synchronizableToMap(meal), (databaseError, databaseReference) -> {
+        getReference().updateChildren(synchronizableToMap(newMealInstance), (databaseError, databaseReference) -> {
           if (databaseError != null)
             e.onError(databaseError.toException());
           else {
-            e.onSuccess(meal);
+            e.onSuccess(newMealInstance);
           }
         });
       }
     });
   }
 
-  /*
-  meal_instances {
-    $groupId {
-        23 (week number) {
-            1 (week day) {
-                $mealInstanceId: {
-                    "label": "Lunch",
-                    "mealId": #mealId,
-                    "Puerros": true,
-                    "Jarretes": true,
-                }
-   */
-  MealInstance assignKey(MealInstance mealInstance) {
-    String key = getReference()
+  DatabaseReference getMealInstanceReference(MealInstance mealInstance) {
+    return getReference()
             .child(MEAL_INSTANCES_KEY)
             .child(App.appComponent.userProvider().getGroupId())
-            .child(String.valueOf(mealInstance.weekNumber()))
-            .child(String.valueOf(mealInstance.dateTime().getDayOfWeek()))
-            .push().getKey();
-
-    return mealInstance.withId(key);
+            .child(String.valueOf(mealInstance.dateTime().toInstant(ZoneOffset.UTC).toEpochMilli()));
   }
 
   static final String MEAL_INSTANCES_KEY = "meal_instances";

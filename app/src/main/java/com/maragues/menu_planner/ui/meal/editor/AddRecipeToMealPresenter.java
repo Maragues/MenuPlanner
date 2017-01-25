@@ -7,6 +7,7 @@ import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -36,6 +37,7 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
     firstLoad = true;
 
     App.appComponent.recipeProvider().list()
+            .debounce(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doAfterNext(recipes -> firstLoad = false)

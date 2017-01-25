@@ -5,7 +5,8 @@ import android.support.annotation.NonNull;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.model.MealInstance;
-import com.maragues.menu_planner.model.Recipe;
+import com.maragues.menu_planner.model.RecipeMeal;
+import com.maragues.menu_planner.test.factories.RecipeFactory;
 import com.maragues.menu_planner.test.mock.providers.MockMealProvider;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
@@ -13,9 +14,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.threeten.bp.LocalDateTime;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Single;
 
@@ -69,7 +69,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void save_withMealInstance_usesMealProvider() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.MAX);
+    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
 
     initPresenter();
 
@@ -80,7 +80,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void save_withMealInstance_usesMealInstanceProvider() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.MAX);
+    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
 
     doReturn(Single.just(Meal.empty().withId("mealId")))
             .when(mockMealProvider)
@@ -95,7 +95,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void save_withMealInstance_savesMealInstanceWithCorrectDate() {
-    final LocalDateTime expectedTime = LocalDateTime.MAX;
+    final LocalDateTime expectedTime = LocalDateTime.now();
 
     mealInstance = MealInstance.fromLocalDateTime(expectedTime);
 
@@ -116,7 +116,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
   @Test
   public void save_withMealInstance_savesMealInstanceWithCorrectMealId() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.MAX);
+    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
 
     String expectedMealId = "myMealId";
 
@@ -180,7 +180,9 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
     initPresenter();
 
     Meal mockedMeal = mock(Meal.class);
-    doReturn(Collections.emptyList()).when(mockedMeal).recipes();
+    Map<String, RecipeMeal> recipes = new HashMap<>();
+    doReturn(recipes).when(mockedMeal).recipes();
+
     presenter.onMealLoaded(mockedMeal);
 
     verify(view, never()).hideEmptyLayout();
@@ -191,8 +193,8 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
     initPresenter();
 
     Meal mockedMeal = mock(Meal.class);
-    List<Recipe> recipes = new ArrayList<>();
-    recipes.add(mock(Recipe.class));
+    Map<String, RecipeMeal> recipes = new HashMap<>();
+    recipes.put(RecipeFactory.RECIPE_ID, mock(RecipeMeal.class));
     doReturn(recipes).when(mockedMeal).recipes();
     presenter.onMealLoaded(mockedMeal);
 

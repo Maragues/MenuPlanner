@@ -13,11 +13,11 @@ import me.mattlogan.auto.value.firebase.adapter.TypeAdapter;
 public class LocalDateTimeAdapter implements TypeAdapter<LocalDateTime, Long> {
   @Override
   public LocalDateTime fromFirebaseValue(Long value) {
-    return LocalDateTime.from(Instant.ofEpochMilli(value));
+    return LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC);
   }
 
   @Override
   public Long toFirebaseValue(LocalDateTime value) {
-    return value.toEpochSecond(ZoneOffset.UTC) * 1000;
+    return value.toInstant(ZoneOffset.UTC).toEpochMilli();
   }
 }

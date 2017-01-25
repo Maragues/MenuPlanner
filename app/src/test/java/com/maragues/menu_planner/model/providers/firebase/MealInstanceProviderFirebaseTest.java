@@ -1,22 +1,20 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import com.maragues.menu_planner.model.MealInstance;
+import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.test.factories.GroupFactory;
 import com.maragues.menu_planner.test.factories.MealInstanceFactory;
 
 import org.junit.Test;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.temporal.WeekFields;
+import org.threeten.bp.ZoneOffset;
 
-import java.util.Locale;
 import java.util.Map;
-
-import io.reactivex.observers.TestObserver;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by miguelaragues on 23/1/17.
@@ -29,19 +27,24 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
   }
 
   @Test
-  public void create_assingsKey() {
-    String expectedKey = "my key";
-    MealInstance mealInstance = MealInstanceFactory.base(LocalDateTime.now());
-    doReturn(mealInstance.withId(expectedKey)).when(provider).assignKey(eq(mealInstance));
+  public void getMealInstanceReference_usesCorrectPath() {
+    LocalDateTime dateTime = LocalDateTime.now().with(MealInstanceLabel.DINNER.time());
+    provider.getMealInstanceReference(MealInstanceFactory.base(dateTime));
 
-    mockSingleResponse();
+    verify(databaseReference).child(eq(MealInstanceProviderFirebase.MEAL_INSTANCES_KEY));
+    verify(databaseReference).child(eq(GroupFactory.DEFAULT_GROUP_ID));
+    verify(databaseReference).child(eq(String.valueOf(dateTime.toInstant(ZoneOffset.UTC).toEpochMilli())));
+  }
 
-    TestObserver<MealInstance> observer = new TestObserver<>();
+  /*
+  LIST QUERY
+   */
+  @Test
+  public void query_usesCorrectPath() {
+    provider.listQuery();
 
-    provider.create(mealInstance).subscribe(observer);
-
-    observer.assertComplete();
-    assertEquals(expectedKey, observer.values().get(0).id());
+    verify(databaseReference).child(eq(MealInstanceProviderFirebase.MEAL_INSTANCES_KEY));
+    verify(databaseReference).child(eq(GroupFactory.DEFAULT_GROUP_ID));
   }
 
   /*
@@ -49,7 +52,7 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
    */
   @Test(expected = IllegalArgumentException.class)
   public void synchronizableToMap_noId() {
-    provider.synchronizableToMap(MealInstanceFactory.base(LocalDateTime.MAX));
+    provider.synchronizableToMap(MealInstanceFactory.base(LocalDateTime.now()).withId(null));
   }
 
   @Test
@@ -65,8 +68,6 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
   public void synchronizableToMap_createsMealInstance() {
     String key = "my key";
     LocalDateTime dateTime = LocalDateTime.now();
-    int weekOfYear = dateTime.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-    int dayOfWeek = dateTime.getDayOfWeek().getValue();
     int hour = 12;
     int minutes = 33;
     MealInstance mealInstance = MealInstanceFactory
@@ -76,9 +77,7 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
 
     String expectedPath = "/" + MealInstanceProviderFirebase.MEAL_INSTANCES_KEY
             + "/" + GroupFactory.DEFAULT_GROUP_ID
-            + "/" + weekOfYear
-            + "/" + dayOfWeek
-            + "/" + hour + ":" + minutes;
+            + "/" + mealInstance.dateTime().toInstant(ZoneOffset.UTC).toEpochMilli();
 
     assertTrue(
             "Expected " + expectedPath + ", got " + map.keySet().iterator().next(),

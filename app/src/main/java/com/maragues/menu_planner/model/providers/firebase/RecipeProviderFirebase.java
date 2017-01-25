@@ -3,7 +3,6 @@ package com.maragues.menu_planner.model.providers.firebase;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
@@ -29,7 +28,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
 
   @Override
   protected Query listQuery() {
-    return FirebaseDatabase.getInstance().getReference()
+    return getReference()
             .child(GROUP_RECIPES_KEY)
             .child(App.appComponent.userProvider().getGroupId());
   }

@@ -19,6 +19,7 @@ import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.ui.common.BaseTiFragment;
 import com.maragues.menu_planner.ui.meal.editor.MealEditorActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -84,9 +85,16 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
     disposables.clear();
   }
 
-  private void onNewMeals(List<MealInstance> meals) {
+  final List<MealInstance> meals = new ArrayList<>();
+
+  private void onNewMeals(List<MealInstance> newMeals) {
+    meals.clear();
+    meals.addAll(newMeals);
+
     if (adapter == null) {
       adapter = new PlannerAdapter(meals, listListener);
+    } else {
+      adapter.notifyDataSetChanged();
     }
 
     plannerRecyclerView.setAdapter(adapter);

@@ -2,17 +2,26 @@ package com.maragues.menu_planner.ui.planner;
 
 import android.support.annotation.NonNull;
 
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
+import com.maragues.menu_planner.test.factories.MealInstanceFactory;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
 import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.Flowable;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
+
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -29,6 +38,60 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
   protected PlannerPresenter createPresenter() {
     return new PlannerPresenter();
   }
+
+  /*
+  NEW MEAL INSTANCES
+   */
+
+  @Test
+  public void create_loadsMeals() {
+    presenter = spy(createPresenter());
+
+    onPresenterCreated();
+
+    presenter.create();
+
+    verify(presenter).loadMeals();
+  }
+
+  /*
+  LOAD MEALS
+   */
+  @Test
+  public void loadMeals_invokesProviderList() {
+    initPresenter();
+
+    verify(App.appComponent.mealInstanceProvider()).list();
+  }
+
+  /*
+  MEALS SUBJECT
+   */
+
+  @Test
+  public void mealsSubject_updatedOnNext() {
+    Flowable<List<MealInstance>> observable = App.appComponent.mealInstanceProvider().list();
+    TestSubscriber<List<MealInstance>> testObservable = observable.test();
+
+//    doReturn(observable).when(App.appComponent.mealInstanceProvider()).list();
+
+    initPresenter();
+
+    TestObserver<List<MealInstance>> observer = presenter.mealsObservable().test();
+
+    assertEquals(7, observer.values().get(0).size());
+
+    List<MealInstance> mealInstances = new ArrayList<>(observer.values().get(0));
+    mealInstances.add(MealInstanceFactory.base(LocalDateTime.now()));
+
+    testObservable.onNext(mealInstances);
+
+    assertEquals(8, observer.values().get(0).size());
+  }
+
+  /*
+  DEFAULT MEAL_INSTANCES
+   */
 
   @Test
   public void mealInstanceObservable_default_7() {
