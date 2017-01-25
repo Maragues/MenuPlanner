@@ -65,7 +65,9 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
 
 
   public void onSlotClicked(@NonNull MealInstance mealInstance) {
+    clickedMealInstance = mealInstance;
 
+    navigateToMealInstanceViewer();
   }
 
   public void onAddToSlotClicked(@NonNull MealInstance mealInstance) {
@@ -100,6 +102,13 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
       getView().navigateToSuggestedMeals(clickedMealInstance);
     else
       sendToView(view -> view.navigateToSuggestedMeals(clickedMealInstance));
+  }
+
+  private void navigateToMealInstanceViewer() {
+    if (getView() != null)
+      getView().navigateToMealInstanceViewer(clickedMealInstance);
+    else
+      sendToView(view -> view.navigateToMealInstanceViewer(clickedMealInstance));
   }
 
   public void onMealCreated(@Nullable String mealId) {

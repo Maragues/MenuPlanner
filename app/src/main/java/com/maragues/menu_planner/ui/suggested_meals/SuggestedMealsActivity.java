@@ -17,13 +17,12 @@ import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.meal.editor.MealEditorActivity;
+import com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-
-import static com.maragues.menu_planner.ui.meal.editor.MealEditorActivity.EXTRA_MEAL_INSTANCE;
 
 public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsPresenter, ISuggestedMeals>
         implements ISuggestedMeals {
@@ -39,7 +38,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
     Intent intent = new Intent(context, SuggestedMealsActivity.class);
 
     if (mealInstance != null)
-      intent.putExtra(EXTRA_MEAL_INSTANCE, mealInstance);
+      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE, mealInstance);
 
     return intent;
   }
@@ -73,7 +72,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   @NonNull
   @Override
   public SuggestedMealsPresenter providePresenter() {
-    return new SuggestedMealsPresenter(getIntent().getParcelableExtra(MealEditorActivity.EXTRA_MEAL_INSTANCE));
+    return new SuggestedMealsPresenter(getIntent().getParcelableExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE));
   }
 
   @Override

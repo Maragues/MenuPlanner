@@ -134,4 +134,5 @@
     <string name="label_lunch">Lunch</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="meal_editor_add_first_recipe">Add your first recipe</string>
+    <string name="title_activity_meal_instance_viewer">MealInstanceViewerActivity</string>
 </resources>

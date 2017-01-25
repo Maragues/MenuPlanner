@@ -16,5 +16,9 @@ interface IPlanner extends IBaseLoggedInView {
   @CallOnMainThread
   void askForMealInstanceLabel();
 
+  @CallOnMainThread
   void navigateToSuggestedMeals(@NonNull MealInstance mealInstance);
+
+  @CallOnMainThread
+  void navigateToMealInstanceViewer(@NonNull MealInstance mealInstance);
 }

@@ -12,6 +12,8 @@ import com.maragues.menu_planner.model.adapters.LocalTimeAdapter;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,5 +104,9 @@ public abstract class MealInstance implements ISynchronizable<MealInstance> {
 
   public Object toFirebaseValue() {
     return new AutoValue_MealInstance.FirebaseValue(this);
+  }
+
+  public Collection<RecipeMeal> recipeCollection(){
+    return new ArrayList<>(recipes().values());
   }
 }

@@ -18,6 +18,7 @@ import java.util.Locale;
 import io.reactivex.observers.TestObserver;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -80,6 +81,19 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
     presenter.onMealInstancesLoaded(mealInstances);
 
     assertEquals(8, presenter.mealsObservable().test().values().get(0).size());
+  }
+
+  /*
+  SLOT CLICKED
+   */
+  @Test
+  public void slotClicked_opensMealViewer(){
+    initPresenter();
+
+    MealInstance mealInstance = MealInstanceFactory.base();
+    presenter.onSlotClicked(mealInstance);
+
+    verify(view).navigateToMealInstanceViewer(eq(mealInstance));
   }
 
   /*

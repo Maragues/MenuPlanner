@@ -144,6 +144,8 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
       }
 
       labelTextView.setText(mealInstance.labelId());
+
+      itemView.setOnClickListener(ignored -> listener.onSlotClicked(mealInstance));
     }
   }
 

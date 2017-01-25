@@ -20,6 +20,7 @@ import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
+import com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,11 +30,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE;
+
 public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter, IMealEditor>
         implements IMealEditor {
 
   private static final String EXTRA_MEAL_ID = "extra_meal_id";
-  public static final String EXTRA_MEAL_INSTANCE = "extra_meal_instance";
   private static final int ADD_RECIPE_CODE = 6;
 
   @BindView(R.id.meal_editor_empty)
@@ -50,7 +52,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
     Intent intent = new Intent(context, MealEditorActivity.class);
 
     if (mealInstance != null)
-      intent.putExtra(EXTRA_MEAL_INSTANCE, mealInstance);
+      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE, mealInstance);
 
     return intent;
   }

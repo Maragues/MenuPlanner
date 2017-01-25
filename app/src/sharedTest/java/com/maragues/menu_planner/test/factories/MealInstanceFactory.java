@@ -15,4 +15,8 @@ public abstract class MealInstanceFactory {
   public static MealInstance base(LocalDateTime dateTime) {
     return MealInstance.fromLocalDateTime(dateTime);
   }
+
+  public static MealInstance base() {
+    return base(LocalDateTime.now());
+  }
 }
