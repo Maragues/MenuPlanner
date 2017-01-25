@@ -124,7 +124,6 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
               navigateToCreateRecipe(key);
             })
             .subscribe();
-
   }
 
   private void navigateToCreateRecipe(String key) {

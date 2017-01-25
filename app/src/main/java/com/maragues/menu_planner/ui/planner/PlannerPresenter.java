@@ -92,14 +92,14 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
     //the mealInstance clicked is at clickedMealSubject, and label is the label we want to assign. Does this make sense?
     //now we should open a Meal editor and when it's completed, assign the label and the time to a MealInstance
 
-    navigateToMealEditor();
+    navigateToSuggestedMeals();
   }
 
-  private void navigateToMealEditor() {
+  private void navigateToSuggestedMeals() {
     if (getView() != null)
-      getView().navigateToMealEditor(clickedMealInstance);
+      getView().navigateToSuggestedMeals(clickedMealInstance);
     else
-      sendToView(view -> view.navigateToMealEditor(clickedMealInstance));
+      sendToView(view -> view.navigateToSuggestedMeals(clickedMealInstance));
   }
 
   public void onMealCreated(@Nullable String mealId) {

@@ -27,7 +27,9 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
 
   @Override
   protected Query listQuery() {
-    return null;
+    return getReference()
+            .child(MEALS_KEY)
+            .child(App.appComponent.userProvider().getGroupId());
   }
 
   @Override
@@ -70,12 +72,19 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     });
   }
 
+  @Override
+  public Single<String> getKey() {
+    return Single.just(generateKey());
+  }
+
   Meal assignKey(Meal meal) {
-    String key = getReference().child(MEALS_KEY)
+    return meal.withId(generateKey());
+  }
+
+  private String generateKey() {
+    return getReference().child(MEALS_KEY)
             .child(App.appComponent.userProvider().getGroupId())
             .push().getKey();
-
-    return meal.withId(key);
   }
 
   /*

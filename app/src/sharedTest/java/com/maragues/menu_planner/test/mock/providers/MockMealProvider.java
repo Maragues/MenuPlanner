@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.model.providers.IMealProvider;
+import com.maragues.menu_planner.test.factories.MealFactory;
 
 import io.reactivex.Single;
 
@@ -15,5 +16,10 @@ public class MockMealProvider extends MockBaseListableProvider<Meal> implements 
   @Override
   public Single<Meal> create(@NonNull Meal item) {
     return super.createInternal(item);
+  }
+
+  @Override
+  public Single<String> getKey() {
+    return Single.just(MealFactory.MEAL_ID);
   }
 }

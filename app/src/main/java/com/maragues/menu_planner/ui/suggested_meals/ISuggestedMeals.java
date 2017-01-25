@@ -12,9 +12,9 @@ import java.util.List;
  * Created by miguelaragues on 17/1/17.
  */
 
-public interface ISuggested extends IBaseLoggedInView {
+public interface ISuggestedMeals extends IBaseLoggedInView {
   @CallOnMainThread
-  void navigateToCreateMeal();
+  void navigateToCreateMeal(String key);
 
   @CallOnMainThread
   @DistinctUntilChanged

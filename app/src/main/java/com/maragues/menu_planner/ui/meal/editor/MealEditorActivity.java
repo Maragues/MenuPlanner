@@ -33,7 +33,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
         implements IMealEditor {
 
   private static final String EXTRA_MEAL_ID = "extra_meal_id";
-  private static final String EXTRA_MEAL_INSTANCE = "extra_meal_instance";
+  public static final String EXTRA_MEAL_INSTANCE = "extra_meal_instance";
   private static final int ADD_RECIPE_CODE = 6;
 
   @BindView(R.id.meal_editor_empty)

@@ -9,7 +9,7 @@
     <item
         android:id="@+id/action_recipes"
         android:enabled="true"
-        android:title="@string/recipes"
+        android:title="@string/meals"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_tasks"

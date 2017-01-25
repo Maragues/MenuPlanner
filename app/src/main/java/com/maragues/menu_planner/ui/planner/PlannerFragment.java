@@ -18,6 +18,7 @@ import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.ui.common.BaseTiFragment;
 import com.maragues.menu_planner.ui.meal.editor.MealEditorActivity;
+import com.maragues.menu_planner.ui.suggested_meals.SuggestedMealsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,9 +132,9 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
   }
 
   @Override
-  public void navigateToMealEditor(@NonNull MealInstance mealInstance) {
+  public void navigateToSuggestedMeals(@NonNull MealInstance mealInstance) {
     startActivityForResult(
-            MealEditorActivity.createIntent(getActivity(), mealInstance), CREATE_MEAL_REQUEST_CODE);
+            SuggestedMealsActivity.createIntent(getActivity(), mealInstance), CREATE_MEAL_REQUEST_CODE);
   }
 
   @Override

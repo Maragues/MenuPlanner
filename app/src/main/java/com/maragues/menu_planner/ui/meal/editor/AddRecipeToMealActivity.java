@@ -28,7 +28,10 @@ public class AddRecipeToMealActivity
   @BindView(R.id.recipe_list_suggestions)
   RecyclerView recyclerView;
 
-  private static final String RECIPE_LIST_TAG = "recipe_list_tag";
+  private final List<Recipe> recipes = new ArrayList<>();
+
+  private final RecipeSuggesterAdapter adapter = new RecipeSuggesterAdapter(recipes);
+
   private static final int CREATE_RECIPE_CODE = 5;
 
   public static Intent createIntent(Context context) {
@@ -72,10 +75,6 @@ public class AddRecipeToMealActivity
       getPresenter().onRecipeResultArrived();
     }
   }
-
-  private final List<Recipe> recipes = new ArrayList<>();
-
-  private final RecipeSuggesterAdapter adapter = new RecipeSuggesterAdapter(recipes);
 
   @Override
   public void showRecipeList(List<Recipe> newRecipes) {
