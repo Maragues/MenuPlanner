@@ -6,6 +6,7 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.RecipeMeal;
+import com.maragues.menu_planner.test.factories.MealFactory;
 import com.maragues.menu_planner.test.factories.RecipeFactory;
 import com.maragues.menu_planner.test.mock.providers.MockMealProvider;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
@@ -22,9 +23,11 @@ import io.reactivex.Single;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -199,5 +202,18 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
     presenter.onMealLoaded(mockedMeal);
 
     verify(view).hideEmptyLayout();
+  }
+
+  @Test
+  public void mealLoaded_loadsRecipes(){
+    initPresenter();
+
+    Map<String, RecipeMeal> recipes = new HashMap<>();
+    recipes.put(RecipeFactory.RECIPE_ID, mock(RecipeMeal.class));
+    Meal meal = MealFactory.base().withRecipes(recipes);
+
+    presenter.onMealLoaded(meal);
+
+    verify(view).showRecipes(eq(meal.recipeCollection()));
   }
 }

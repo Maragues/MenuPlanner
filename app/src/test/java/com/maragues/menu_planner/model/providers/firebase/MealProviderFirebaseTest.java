@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import com.maragues.menu_planner.model.Meal;
+import com.maragues.menu_planner.test.TestUtils;
 import com.maragues.menu_planner.test.factories.GroupFactory;
 import com.maragues.menu_planner.test.factories.MealFactory;
 
@@ -81,7 +82,7 @@ public class MealProviderFirebaseTest extends BaseProviderFirebaseTest<MealProvi
   }
 
   private String invokeGetGroupId(Object object) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    Class<?> clazz = Class.forName("com.maragues.menu_planner.model.$$AutoValue_Meal$FirebaseValue");
+    Class<?> clazz = TestUtils.getFirebaseValueClass(Meal.class);
 
     Method method = clazz.getDeclaredMethod("getGroupId");
 

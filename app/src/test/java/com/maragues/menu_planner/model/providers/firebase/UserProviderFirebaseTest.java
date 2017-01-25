@@ -10,6 +10,7 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.BaseFirebaseKeys;
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
+import com.maragues.menu_planner.test.TestUtils;
 import com.maragues.menu_planner.test.factories.UserFactory;
 
 import org.junit.Before;
@@ -29,7 +30,6 @@ import io.reactivex.observers.TestObserver;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -317,7 +317,7 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
     DataSnapshot snapshot = mock(DataSnapshot.class);
 
     try {
-      Class<?> clazz = Class.forName("com.maragues.menu_planner.model.$$AutoValue_User$FirebaseValue");
+      Class<?> clazz = TestUtils.getFirebaseValueClass(User.class);
 
       Constructor<?> constructor = clazz.getDeclaredConstructor();
 

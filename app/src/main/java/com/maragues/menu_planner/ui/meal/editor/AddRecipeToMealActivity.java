@@ -5,18 +5,28 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
-import com.maragues.menu_planner.ui.recipe.list.RecipeListFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
 
 import static com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity.EXTRA_RESULT_RECIPE;
 
 public class AddRecipeToMealActivity
         extends BaseLoggedInActivity<AddRecipeToMealPresenter, IAddRecipeToMeal>
         implements IAddRecipeToMeal {
+
+  @BindView(R.id.recipe_list_suggestions)
+  RecyclerView recyclerView;
 
   private static final String RECIPE_LIST_TAG = "recipe_list_tag";
   private static final int CREATE_RECIPE_CODE = 5;
@@ -36,6 +46,20 @@ public class AddRecipeToMealActivity
     setContentView(R.layout.activity_add_recipe_to_meal);
 
     getPresenter().loadRecipes();
+
+    setupList();
+  }
+
+  @OnClick(R.id.add_recipe_to_meal_fab)
+  void onAddRecipeClicked() {
+    getPresenter().onCreateRecipeClicked();
+  }
+
+  private void setupList() {
+    adapter.recipeClickedObservable().subscribe(recipe -> getPresenter().onRecipeClicked(recipe));
+
+    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView.setAdapter(adapter);
   }
 
   @Override
@@ -49,15 +73,20 @@ public class AddRecipeToMealActivity
     }
   }
 
+  private final List<Recipe> recipes = new ArrayList<>();
+
+  private final RecipeSuggesterAdapter adapter = new RecipeSuggesterAdapter(recipes);
+
   @Override
-  public void showRecipeList() {
-    getSupportFragmentManager().beginTransaction()
-            .replace(R.id.activity_add_recipe_to_meal, RecipeListFragment.newInstance(), RECIPE_LIST_TAG)
-            .commit();
+  public void showRecipeList(List<Recipe> newRecipes) {
+    recipes.clear();
+    recipes.addAll(newRecipes);
+
+    adapter.notifyDataSetChanged();
   }
 
   @Override
-  public void navigateToCreateRecipe() {
+  public void navigateToCreateRecipe(String key) {
     startActivityForResult(EditRecipeActivity.createAddIntent(this), CREATE_RECIPE_CODE);
   }
 

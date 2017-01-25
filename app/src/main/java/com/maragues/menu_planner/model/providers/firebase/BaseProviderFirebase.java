@@ -1,7 +1,5 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.maragues.menu_planner.model.ISynchronizable;
@@ -20,7 +18,6 @@ public abstract class BaseProviderFirebase<T extends ISynchronizable> implements
     this.clazz = clazz;
   }
 
-  @VisibleForTesting
   public DatabaseReference getReference() {
     return FirebaseDatabase.getInstance().getReference();
   }

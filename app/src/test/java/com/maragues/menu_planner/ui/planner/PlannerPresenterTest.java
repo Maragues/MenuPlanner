@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import io.reactivex.Flowable;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.subscribers.TestSubscriber;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -70,23 +68,18 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
   @Test
   public void mealsSubject_updatedOnNext() {
-    Flowable<List<MealInstance>> observable = App.appComponent.mealInstanceProvider().list();
-    TestSubscriber<List<MealInstance>> testObservable = observable.test();
-
-//    doReturn(observable).when(App.appComponent.mealInstanceProvider()).list();
-
     initPresenter();
 
     TestObserver<List<MealInstance>> observer = presenter.mealsObservable().test();
 
     assertEquals(7, observer.values().get(0).size());
 
-    List<MealInstance> mealInstances = new ArrayList<>(observer.values().get(0));
+    List<MealInstance> mealInstances = new ArrayList<>();
     mealInstances.add(MealInstanceFactory.base(LocalDateTime.now()));
 
-    testObservable.onNext(mealInstances);
+    presenter.onMealInstancesLoaded(mealInstances);
 
-    assertEquals(8, observer.values().get(0).size());
+    assertEquals(8, presenter.mealsObservable().test().values().get(0).size());
   }
 
   /*

@@ -7,4 +7,5 @@ import net.grandcentrix.thirtyinch.TiPresenter;
  */
 
 public abstract class BasePresenter<V extends IBaseview> extends TiPresenter<V> {
+
 }

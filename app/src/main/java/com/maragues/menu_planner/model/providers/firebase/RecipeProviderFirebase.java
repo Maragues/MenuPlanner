@@ -76,10 +76,17 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     });
   }
 
-  Recipe assignKey(Recipe recipe) {
-    String key = getReference().child(RECIPES_KEY).push().getKey();
+  @Override
+  public Single<String> getKey() {
+    return Single.just(generateKey());
+  }
 
-    return recipe.withId(key);
+  Recipe assignKey(Recipe recipe) {
+    return recipe.withId(generateKey());
+  }
+
+  private String generateKey() {
+    return getReference().child(RECIPES_KEY).push().getKey();
   }
 
   Map<String, Object> toSummaryMap(Recipe recipe) {

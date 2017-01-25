@@ -13,4 +13,6 @@ import io.reactivex.Single;
 public interface IRecipeProvider extends IListableProvider<Recipe> {
 
   Single<Recipe> create(@NonNull Recipe item);
+
+  Single<String> getKey();
 }

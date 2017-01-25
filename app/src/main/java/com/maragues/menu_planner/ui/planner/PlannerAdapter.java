@@ -140,6 +140,7 @@ public class PlannerAdapter extends RecyclerView.Adapter<PlannerAdapter.PlannerV
       bodyTextView.setText("");
       while (it.hasNext()) {
         bodyTextView.append(mealInstance.recipes().get(it.next()).name());
+        if (it.hasNext()) bodyTextView.append("\n");
       }
 
       labelTextView.setText(mealInstance.labelId());

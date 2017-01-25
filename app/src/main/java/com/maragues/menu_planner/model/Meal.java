@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,6 @@ public abstract class Meal implements ISynchronizable<Meal> {
   }
 
   public Collection<RecipeMeal> recipeCollection(){
-    return recipes().values();
+    return new ArrayList<>(recipes().values());
   }
 }

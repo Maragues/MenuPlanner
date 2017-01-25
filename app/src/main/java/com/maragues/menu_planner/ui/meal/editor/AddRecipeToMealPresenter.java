@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.ui.meal.editor;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Recipe;
@@ -18,10 +19,9 @@ import io.reactivex.schedulers.Schedulers;
 public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeToMeal> {
 
   /*
-  This flag allows us to react to a recipe being created from EditRecipeActivity, otherwise
-  we'd need the fragment to invoke a listener or something like that
+  Stores the key of the recipe the user would create if he did
    */
-  private boolean firstLoad;
+  public String expectedKey;
 
   @Override
   protected void onCreate() {
@@ -34,58 +34,105 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
   }
 
   public void loadRecipes() {
-    firstLoad = true;
 
     App.appComponent.recipeProvider().list()
             .debounce(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doAfterNext(recipes -> firstLoad = false)
             .subscribe(this::onRecipesLoaded);
   }
 
-  private void onRecipesLoaded(List<Recipe> recipes) {
+  void onRecipesLoaded(List<Recipe> recipes) {
     if (recipes.isEmpty()) {
+      onCreateRecipeClicked();
+    } else {
+      if (listContainsExpectedId(recipes)) {
+        onRecipeAdded(extractExpectedRecipe(recipes));
+
+        expectedKey = null;
+      } else {
+        onRecipesFirstLoad(recipes);
+      }
+    }
+  }
+
+  @Nullable
+  private Recipe extractExpectedRecipe(List<Recipe> recipes) {
+    if (recipes != null && !recipes.isEmpty()) {
+      for (int i = 0; i < recipes.size(); i++) {
+        Recipe recipe = recipes.get(i);
+        if (recipe.id() != null && recipe.id().equals(expectedKey))
+          return recipe;
+      }
+    }
+
+    return null;
+  }
+
+  boolean listContainsExpectedId(List<Recipe> recipes) {
+    if (recipes.isEmpty() || expectedKey == null)
+      return false;
+
+    for (int i = 0; i < recipes.size(); i++) {
+      if (recipes.get(i).id() != null && recipes.get(i).id().equals(expectedKey))
+        return true;
+    }
+
+    return false;
+  }
+
+  private void onRecipesFirstLoad(List<Recipe> recipes) {
+    if (getView() != null) {
+      getView().showRecipeList(recipes);
+    } else {
+      sendToView(view -> view.showRecipeList(recipes));
+    }
+  }
+
+  public void onRecipeAdded(Recipe recipe) {
+    if (recipe != null) {
       if (getView() != null) {
-        getView().navigateToCreateRecipe();
+        getView().storeResult(recipe);
+
         getView().finish();
       } else {
-        sendToView(view -> view.navigateToCreateRecipe());
-        sendToView(view -> view.finish());
-      }
-    } else {
-      if (firstLoad) {
-        onRecipesFirstLoad();
-      } else {
-        onRecipeCreated(recipes.get(recipes.size() - 1));
+        sendToView(v -> v.storeResult(recipe));
+        sendToView(IAddRecipeToMeal::finish);
       }
     }
   }
 
-  private void onRecipesFirstLoad() {
-    if (getView() != null) {
-      getView().showRecipeList();
-    } else {
-      sendToView(view -> view.showRecipeList());
-    }
-  }
-
-  public void onRecipeCreated(Recipe recipe) {
-    if (getView() != null) {
-      getView().storeResult(recipe);
-
-      getView().finish();
-    } else {
-      sendToView(v -> v.storeResult(recipe));
-      sendToView(v -> v.finish());
-    }
-  }
-
-  public void onRecipeResultArrived() {
+  void onRecipeResultArrived() {
     if (getView() != null) {
       getView().finish();
     } else {
-      sendToView(v -> v.finish());
+      sendToView(IAddRecipeToMeal::finish);
+    }
+  }
+
+  void onRecipeClicked(@NonNull Recipe recipe) {
+    onRecipeAdded(recipe);
+  }
+
+  void onCreateRecipeClicked() {
+    App.appComponent.recipeProvider().getKey()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess(key -> {
+              expectedKey = key;
+
+              navigateToCreateRecipe(key);
+            })
+            .subscribe();
+
+  }
+
+  private void navigateToCreateRecipe(String key) {
+    if (getView() != null) {
+      getView().navigateToCreateRecipe(key);
+      ;
+    } else {
+      sendToView(v -> v.navigateToCreateRecipe(key));
     }
   }
 }

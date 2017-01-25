@@ -75,7 +75,6 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   public void onAddtoDayClicked(@NonNull MealInstance mealInstance) {
     clickedMealInstance = mealInstance;
 
-
     askForLabel();
   }
 
@@ -124,15 +123,17 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
     App.appComponent.mealInstanceProvider().list()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(mealInstances -> {
-              List<MealInstance> fullList = new ArrayList<>(mealsSubject.getValue());
-              fullList.addAll(mealInstances);
-
-              Collections.sort(fullList, COMPARATOR);
-
-              mealsSubject.onNext(fullList);
-            })
+            .doOnNext(this::onMealInstancesLoaded)
             .subscribe()
     ;
+  }
+
+  void onMealInstancesLoaded(List<MealInstance> mealInstances) {
+    List<MealInstance> fullList = new ArrayList<>(mealsSubject.getValue());
+    fullList.addAll(mealInstances);
+
+    Collections.sort(fullList, COMPARATOR);
+
+    mealsSubject.onNext(fullList);
   }
 }
