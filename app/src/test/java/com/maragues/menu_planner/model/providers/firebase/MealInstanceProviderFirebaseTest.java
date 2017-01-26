@@ -14,6 +14,7 @@ import java.util.Map;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -37,14 +38,35 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
   }
 
   /*
-  LIST QUERY
+  QUERies
    */
   @Test
-  public void query_usesCorrectPath() {
+  public void listQuery_usesCorrectPath() {
     provider.listQuery();
 
     verify(databaseReference).child(eq(MealInstanceProviderFirebase.MEAL_INSTANCES_KEY));
     verify(databaseReference).child(eq(GroupFactory.DEFAULT_GROUP_ID));
+  }
+
+  @Test
+  public void listBetween_usesCorrectPath() {
+    LocalDateTime tstart = LocalDateTime.now();
+    LocalDateTime tend = tstart.plusDays(45);
+
+    provider.listBetweenQuery(tstart, tend);
+
+    verify(databaseReference).startAt(eq(String.valueOf(tstart.toInstant(ZoneOffset.UTC).toEpochMilli())));
+    verify(databaseReference).endAt(eq(String.valueOf(tend.toInstant(ZoneOffset.UTC).toEpochMilli())));
+  }
+
+  @Test
+  public void listBetween_ordersOnlyOnce() {
+    LocalDateTime tstart = LocalDateTime.now();
+    LocalDateTime tend = tstart.plusDays(45);
+
+    provider.listBetweenQuery(tstart, tend);
+
+    verify(databaseReference, times(1)).orderByKey();
   }
 
   /*

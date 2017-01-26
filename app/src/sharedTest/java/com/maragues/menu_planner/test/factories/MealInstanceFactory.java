@@ -12,6 +12,10 @@ public abstract class MealInstanceFactory {
   private MealInstanceFactory() {
   }
 
+  public static MealInstance withRecipes(LocalDateTime dateTime) {
+    return base(dateTime).fromMeal(MealFactory.withRecipes());
+  }
+
   public static MealInstance base(LocalDateTime dateTime) {
     return MealInstance.fromLocalDateTime(dateTime);
   }

@@ -7,17 +7,16 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.MealInstanceLabel;
 import com.maragues.menu_planner.ui.common.BasePresenter;
+import com.maragues.menu_planner.utils.DateUtils;
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.temporal.TemporalField;
-import org.threeten.bp.temporal.WeekFields;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -29,34 +28,77 @@ import io.reactivex.subjects.BehaviorSubject;
  */
 
 class PlannerPresenter extends BasePresenter<IPlanner> {
+  private static final int PAST_WEEKS_NUMBER = 1;
+  private static final int FUTURE_WEEKS_NUMBER = 2;
 
-  private final BehaviorSubject<List<MealInstance>> mealsSubject = BehaviorSubject.createDefault(createDefaultMeals());
+  static final int INITIAL_MEAL_INSTANCES = 7;
+  static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'd");
+
+  private final BehaviorSubject<List<MealInstance>> currentWeekMealsSubject = BehaviorSubject
+          .createDefault(createDefaultMeals());
+
+  private final BehaviorSubject<List<MealInstance>> fullMealsSubject = BehaviorSubject
+          .createDefault(new ArrayList<>(currentWeekMealsSubject.getValue()));
+
+  private LocalDateTime currentWeek, oldestDateTime, newestDateTime;
 
   @Override
   protected void onCreate() {
     super.onCreate();
 
-    loadMeals();
+    LocalDateTime startOfWeek = DateUtils.startOfWeek();
+
+    loadMeals(startOfWeek.minusWeeks(PAST_WEEKS_NUMBER), startOfWeek.plusWeeks(FUTURE_WEEKS_NUMBER));
+
+    showWeekHeader();
   }
 
-  @NonNull
-  List<MealInstance> createDefaultMeals() {
-    List<MealInstance> meals = new ArrayList<>();
-
-    TemporalField fieldISO = WeekFields.of(Locale.getDefault()).dayOfWeek();
-
-    LocalDateTime firstDayOfCurrentWeek = LocalDate.now().atStartOfDay().with(fieldISO, 1);
-    for (int i = 0; i < 7; i++) {
-      meals.add(MealInstance.fromLocalDateTime(firstDayOfCurrentWeek.plusDays(i)));
+  void showWeekHeader() {
+    if (getView() != null) {
+      getView().setHeader(generateHeader());
+    } else {
+      sendToView(v -> v.setHeader(generateHeader()));
     }
+  }
 
-    return meals;
+  @Nullable
+  String generateHeader() {
+    if (currentWeek == null)
+      return null;
+
+    String header = HEADER_FORMATTER.format(DateUtils.startOfWeek(currentWeek.toLocalDate()));
+    header += " - ";
+    return header + HEADER_FORMATTER.format(DateUtils.endOfWeek(currentWeek.toLocalDate()));
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
   }
 
   private BehaviorSubject<Boolean> isLoadingSubject = BehaviorSubject.createDefault(false);
 
   Observable<List<MealInstance>> mealsObservable() {
-    return mealsSubject;
+    return currentWeekMealsSubject
+//            .debounce(500, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map(mealInstances -> {
+              List<MealInstance> filteredList = new ArrayList<>(mealInstances);
+              Iterator<MealInstance> it = filteredList.iterator();
+
+              final int currentWeekNumber = DateUtils.weekOfYear(currentWeek.toLocalDate());
+              while (it.hasNext()) {
+                if (DateUtils.weekOfYear(it.next().dateTime().toLocalDate()) != currentWeekNumber)
+                  it.remove();
+              }
+
+              return filteredList;
+            });
+  }
+
+  Observable<List<MealInstance>> fullMealsObservable() {
+    return fullMealsSubject;
   }
 
   Observable<Boolean> isLoadingObservable() {
@@ -128,21 +170,95 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
     }
   };
 
-  void loadMeals() {
-    App.appComponent.mealInstanceProvider().list()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(this::onMealInstancesLoaded)
-            .subscribe()
-    ;
+  void loadMeals(LocalDateTime tstartInclusive, LocalDateTime tEndExclusive) {
+    oldestDateTime = tstartInclusive;
+    newestDateTime = tEndExclusive;
+
+    isLoadingSubject.onNext(true);
+
+    disposables.add(
+            App.appComponent.mealInstanceProvider().listBetween(tstartInclusive, tEndExclusive)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(this::onMealInstancesLoaded)
+                    .doOnComplete(() -> isLoadingSubject.onNext(false))
+                    .subscribe()
+    );
   }
 
-  void onMealInstancesLoaded(List<MealInstance> mealInstances) {
-    List<MealInstance> fullList = new ArrayList<>(mealsSubject.getValue());
+  synchronized void onMealInstancesLoaded(List<MealInstance> mealInstances) {
+    List<MealInstance> fullList = new ArrayList<>(fullMealsSubject.getValue());
     fullList.addAll(mealInstances);
 
+    propagateList(fullList);
+  }
+
+  void propagateList(List<MealInstance> fullList) {
     Collections.sort(fullList, COMPARATOR);
 
-    mealsSubject.onNext(fullList);
+    fullMealsSubject.onNext(fullList);
+    currentWeekMealsSubject.onNext(fullList);
+  }
+
+  // TODO: 26/1/17 Debounce this so that quick taps don't launch multiple requests
+  void onNavigateBack() {
+    showNewWeek(currentWeek.minusWeeks(1));
+
+    loadMeals(oldestDateTime.minusWeeks(1), oldestDateTime);
+  }
+
+  void onNavigateForward() {
+    showNewWeek(currentWeek.plusWeeks(1));
+
+    loadMeals(newestDateTime, newestDateTime.plusWeeks(1));
+  }
+
+  /**
+   * This method will replace the MealInstances that represent the days of the week. It relies on
+   * these being the only MealInstances without recipes.
+   * <p>
+   * It also
+   * - updates currentWeek when invoking createDayMealsForWeek
+   * - updates header from newWeek
+   * <p>
+   * 1. Find MealInstances representing days and remove them
+   * 2. Add mealInstnaces for new week
+   * 3. Propagate new list
+   *
+   * @param newWeek The week we will generate empty MealInstances for. It will also be our new
+   *                currentWeek
+   */
+  void showNewWeek(LocalDateTime newWeek) {
+    List<MealInstance> meals = currentWeekMealsSubject.getValue();
+
+    Iterator<MealInstance> it = meals.iterator();
+
+    while (it.hasNext()) {
+      if (!it.next().hasRecipes()) it.remove();
+    }
+
+    meals.addAll(createDayMealsForWeek(newWeek));
+
+    showWeekHeader();
+
+    propagateList(meals);
+  }
+
+  @NonNull
+  List<MealInstance> createDefaultMeals() {
+    return createDayMealsForWeek(LocalDateTime.now());
+  }
+
+  List<MealInstance> createDayMealsForWeek(LocalDateTime week) {
+    currentWeek = week;
+
+    List<MealInstance> meals = new ArrayList<>();
+
+    LocalDateTime firstDayOfCurrentWeek = DateUtils.startOfWeek(week.toLocalDate());
+    for (int i = 0; i < INITIAL_MEAL_INSTANCES; i++) {
+      meals.add(MealInstance.fromLocalDateTime(firstDayOfCurrentWeek.plusDays(i)));
+    }
+
+    return meals;
   }
 }

@@ -1,5 +1,7 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -7,14 +9,15 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.providers.IMealInstanceProvider;
 
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -58,18 +61,29 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
 
   @Override
   public Single<MealInstance> create(final MealInstance newMealInstance) {
-    return Single.create(new SingleOnSubscribe<MealInstance>() {
-      @Override
-      public void subscribe(SingleEmitter<MealInstance> e) throws Exception {
-        getReference().updateChildren(synchronizableToMap(newMealInstance), (databaseError, databaseReference) -> {
-          if (databaseError != null)
-            e.onError(databaseError.toException());
-          else {
-            e.onSuccess(newMealInstance);
-          }
-        });
-      }
-    });
+    return Single.create(e ->
+            getReference().updateChildren(synchronizableToMap(newMealInstance), (databaseError, databaseReference) -> {
+              if (databaseError != null)
+                e.onError(databaseError.toException());
+              else {
+                e.onSuccess(newMealInstance);
+              }
+            }));
+  }
+
+  @NonNull
+  @Override
+  public Flowable<List<MealInstance>> listBetween(@NonNull LocalDateTime tStartInclusive,
+                                                  @NonNull LocalDateTime tEndInclusive) {
+    return list(listBetweenQuery(tStartInclusive, tEndInclusive));
+  }
+
+
+  Query listBetweenQuery(@NonNull LocalDateTime tStartInclusive,
+                                   @NonNull LocalDateTime tEndInclusive) {
+    return listQuery()
+            .startAt(String.valueOf(tStartInclusive.toInstant(ZoneOffset.UTC).toEpochMilli()))
+            .endAt(String.valueOf(tEndInclusive.toInstant(ZoneOffset.UTC).toEpochMilli()));
   }
 
   DatabaseReference getMealInstanceReference(MealInstance mealInstance) {

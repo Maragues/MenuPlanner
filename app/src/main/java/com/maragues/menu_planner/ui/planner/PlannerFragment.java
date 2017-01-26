@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -66,6 +67,35 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
     super.onViewCreated(view, savedInstanceState);
 
     setupPlannerView();
+
+    addNavigationListeners();
+  }
+
+  private View.OnTouchListener navigateTouchListener = (view, event) -> {
+    final int DRAWABLE_LEFT = 0;
+    final int DRAWABLE_RIGHT = 2;
+
+    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      if (((TextView) view).getCompoundDrawables()[DRAWABLE_RIGHT] != null
+              && event.getRawX() >= (view.getRight() - ((TextView) view).getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+        getPresenter().onNavigateForward();
+
+        return true;
+      }
+
+      if (((TextView) view).getCompoundDrawables()[DRAWABLE_LEFT] != null
+              && event.getRawX() <= (view.getRight() - ((TextView) view).getCompoundDrawables()[DRAWABLE_LEFT].getBounds().width())) {
+        getPresenter().onNavigateBack();
+
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  private void addNavigationListeners() {
+    headerTextView.setOnTouchListener(navigateTouchListener);
   }
 
   private void setupPlannerView() {
@@ -141,6 +171,21 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
   @Override
   public void navigateToMealInstanceViewer(@NonNull MealInstance mealInstance) {
     startActivity(MealInstanceViewerActivity.createIntent(getActivity(), mealInstance));
+  }
+
+  @Override
+  public void showIsLoading() {
+
+  }
+
+  @Override
+  public void hideIsLoading() {
+
+  }
+
+  @Override
+  public void setHeader(String text) {
+    headerTextView.setText(text);
   }
 
   @Override

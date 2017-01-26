@@ -37,7 +37,11 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
   @NonNull
   @Override
   public Flowable<List<T>> list() {
-    return RxFirebaseDatabase.observeValueEvent(listQuery(), listMapper);
+    return list(listQuery());
+  }
+
+  protected final Flowable<List<T>> list(@NonNull Query query) {
+    return RxFirebaseDatabase.observeValueEvent(query, listMapper);
   }
 
   @Nullable
@@ -55,7 +59,7 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
     );
   }*/
 
-  protected abstract Map<String,Object> synchronizableToMap(T item);
+  protected abstract Map<String, Object> synchronizableToMap(T item);
 
   protected abstract Query listQuery();
 

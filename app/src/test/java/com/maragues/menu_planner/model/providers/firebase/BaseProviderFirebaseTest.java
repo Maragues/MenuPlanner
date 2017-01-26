@@ -9,6 +9,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -34,6 +36,13 @@ public abstract class BaseProviderFirebaseTest<T extends BaseProviderFirebase> e
 
     //otherwise since it's immutable we can't verify
     doReturn(databaseReference).when(databaseReference).child(anyString());
+    doReturn(databaseReference).when(databaseReference).orderByKey();
+    doReturn(databaseReference).when(databaseReference).startAt(any());
+    doReturn(databaseReference).when(databaseReference).startAt(anyLong());
+    doReturn(databaseReference).when(databaseReference).startAt(anyDouble());
+    doReturn(databaseReference).when(databaseReference).endAt(any());
+    doReturn(databaseReference).when(databaseReference).endAt(anyLong());
+    doReturn(databaseReference).when(databaseReference).endAt(anyDouble());
 
     doReturn(databaseReference).when(provider).getReference();
   }

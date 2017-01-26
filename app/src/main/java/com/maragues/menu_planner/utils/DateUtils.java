@@ -4,7 +4,10 @@ import android.support.annotation.NonNull;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.temporal.ChronoUnit;
+import org.threeten.bp.temporal.TemporalField;
+import org.threeten.bp.temporal.WeekFields;
+
+import java.util.Locale;
 
 /**
  * Created by miguelaragues on 24/1/17.
@@ -14,7 +17,24 @@ public abstract class DateUtils {
   private DateUtils() {
   }
 
-  public static long weeksSinceEpoch(@NonNull LocalDateTime dateTime) {
-    return ChronoUnit.WEEKS.between(LocalDate.ofEpochDay(0), dateTime);
+  public static LocalDateTime startOfWeek(){
+    return startOfWeek(LocalDate.now());
+  }
+
+  public static LocalDateTime startOfWeek(@NonNull LocalDate week){
+    TemporalField fieldISO = WeekFields.of(Locale.getDefault()).dayOfWeek();
+
+    return week.atStartOfDay().with(fieldISO, 1);
+  }
+
+  public static LocalDateTime endOfWeek(@NonNull LocalDate week){
+    TemporalField fieldISO = WeekFields.of(Locale.getDefault()).dayOfWeek();
+
+    return week.atStartOfDay().with(fieldISO, 7);
+  }
+
+  public static int weekOfYear(LocalDate date){
+    WeekFields weekFields = WeekFields.of(Locale.getDefault());
+    return date.get(weekFields.weekOfWeekBasedYear());
   }
 }

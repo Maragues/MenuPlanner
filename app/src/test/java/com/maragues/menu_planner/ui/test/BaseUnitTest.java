@@ -9,6 +9,8 @@ import org.junit.Rule;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import java.util.Locale;
+
 /**
  * Created by miguelaragues on 3/1/17.
  */
@@ -27,7 +29,6 @@ public abstract class BaseUnitTest {
 
   @Before
   public void setUp() {
-
   }
 
 

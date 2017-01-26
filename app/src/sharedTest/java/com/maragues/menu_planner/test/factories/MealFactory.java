@@ -16,4 +16,8 @@ public abstract class MealFactory {
             .withId(MEAL_ID)
             .withUserId(UserFactory.DEFAULT_UID);
   }
+
+  public static Meal withRecipes(){
+    return base().withNewRecipe(RecipeFactory.base());
+  }
 }

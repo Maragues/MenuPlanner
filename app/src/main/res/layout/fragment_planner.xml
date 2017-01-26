@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TextView
@@ -16,8 +16,8 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@android:drawable/arrow_down_float"
         android:drawableRight="@android:drawable/arrow_up_float"
-        android:minHeight="?listPreferredItemHeightLarge"
         android:gravity="center"
+        android:minHeight="?listPreferredItemHeightLarge"
         android:text="This week, Jan. 16 - 22"/>
 
     <android.support.v7.widget.RecyclerView
