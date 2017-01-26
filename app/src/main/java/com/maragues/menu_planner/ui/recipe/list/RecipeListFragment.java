@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,7 +54,8 @@ public class RecipeListFragment extends BaseTiFragment<RecipeListPresenter, IRec
   }
 
   private void setupRecyclerView() {
-    LinearLayoutManager manager = new LinearLayoutManager(getContext());
+    LinearLayoutManager manager = new GridLayoutManager(getContext(), 2);
+    recyclerView.addItemDecoration(new RecipeGridDecoration(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin)));
     recyclerView.setLayoutManager(manager);
   }
 

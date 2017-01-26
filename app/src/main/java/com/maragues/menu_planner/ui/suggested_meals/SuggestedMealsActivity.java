@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsPresenter, ISuggestedMeals>
         implements ISuggestedMeals {
@@ -50,16 +51,12 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-      }
-    });
-
     setupList();
+  }
+
+  @OnClick(R.id.suggested_meals_fab)
+  void onCreateMealFab(){
+    getPresenter().onCreateMealClicked();
   }
 
   private void setupList() {

@@ -17,8 +17,7 @@
         android:drawableLeft="@android:drawable/arrow_down_float"
         android:drawableRight="@android:drawable/arrow_up_float"
         android:gravity="center"
-        android:minHeight="?listPreferredItemHeightLarge"
-        android:text="This week, Jan. 16 - 22"/>
+        android:minHeight="?listPreferredItemHeightLarge"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/planner_recyclerview"

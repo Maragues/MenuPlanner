@@ -68,6 +68,10 @@
             android:label="@string/title_activity_meal_instance_viewer"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:enabled="false" />
     </application>
 
 </manifest>

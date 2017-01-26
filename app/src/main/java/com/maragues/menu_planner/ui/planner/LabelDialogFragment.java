@@ -58,7 +58,7 @@ public class LabelDialogFragment extends BaseDialogFragment {
 
   private void setupLabelList() {
     labelRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    labelRecyclerView.setHasFixedSize(true);
+//    labelRecyclerView.setHasFixedSize(true);
 
     labelRecyclerView.setAdapter(createAdapter());
   }
@@ -77,6 +77,11 @@ public class LabelDialogFragment extends BaseDialogFragment {
         viewHolder.setLabel(label);
 
         viewHolder.itemView.setOnClickListener(v -> onLabelClicked(label));
+      }
+
+      @Override
+      public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
       }
 
       @Override

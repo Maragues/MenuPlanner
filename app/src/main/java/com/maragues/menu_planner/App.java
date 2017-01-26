@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.maragues.menu_planner.dagger.AppComponent;
@@ -44,6 +46,9 @@ public class App extends Application {
   }
 
   private void initFirebase() {
+    FirebaseOptions options = FirebaseOptions.fromResource(this);
+    FirebaseApp.initializeApp(this, options);
+
     FirebaseDatabase.getInstance().setPersistenceEnabled(false);
   }
 

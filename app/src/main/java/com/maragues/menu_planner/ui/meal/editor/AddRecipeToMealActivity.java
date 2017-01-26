@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity;
+import com.maragues.menu_planner.ui.recipe.list.RecipeGridDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,8 @@ public class AddRecipeToMealActivity
   private void setupList() {
     adapter.recipeClickedObservable().subscribe(recipe -> getPresenter().onRecipeClicked(recipe));
 
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+    recyclerView.addItemDecoration(new RecipeGridDecoration(getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin)));
     recyclerView.setAdapter(adapter);
   }
 

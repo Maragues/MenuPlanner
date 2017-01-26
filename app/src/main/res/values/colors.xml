@@ -4,9 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="event_color_01">#59dbe0</color>
+    <color name="grid_odd">#59dbe0</color>
+    <color name="grid_odd_pressed">#36C8CF</color>
+
+    <color name="grid_even">#87d288</color>
+    <color name="grid_even_pressed">#59B659</color>
+
     <color name="event_color_02">#f57f68</color>
-    <color name="event_color_03">#87d288</color>
     <color name="event_color_04">#f8b552</color>
     <color name="toolbar_text">#8f000000</color>
 </resources>

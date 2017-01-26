@@ -123,6 +123,12 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
           viewHolder.setRecipe(recipe);
 
           viewHolder.itemView.setOnClickListener(v -> onRecipeClicked(recipe));
+
+          if (position % 2 == 0) {
+            viewHolder.itemView.setBackgroundResource(R.drawable.sel_grid_even);
+          } else {
+            viewHolder.itemView.setBackgroundResource(R.drawable.sel_grid_odd);
+          }
         }
 
         @Override

@@ -50,6 +50,12 @@ public class RecipeSuggesterAdapter extends RecyclerView.Adapter<RecipeSuggester
     holder.render(recipe);
 
     holder.itemView.setOnClickListener(ignored -> recipeClickedSubject.onNext(recipe));
+
+    if (position % 2 == 0) {
+      holder.itemView.setBackgroundResource(R.drawable.sel_grid_even);
+    } else {
+      holder.itemView.setBackgroundResource(R.drawable.sel_grid_odd);
+    }
   }
 
   @Override

@@ -51,6 +51,11 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
     LocalDateTime startOfWeek = DateUtils.startOfWeek();
 
     loadMeals(startOfWeek.minusWeeks(PAST_WEEKS_NUMBER), startOfWeek.plusWeeks(FUTURE_WEEKS_NUMBER));
+  }
+
+  @Override
+  protected void onAttachView(@NonNull IPlanner view) {
+    super.onAttachView(view);
 
     showWeekHeader();
   }
