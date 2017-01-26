@@ -34,12 +34,11 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
   }
 
   public void loadRecipes() {
-
-    App.appComponent.recipeProvider().list()
+    disposables.add(App.appComponent.recipeProvider().list()
             .debounce(500, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onRecipesLoaded);
+            .subscribe(this::onRecipesLoaded));
   }
 
   void onRecipesLoaded(List<Recipe> recipes) {
@@ -115,7 +114,7 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
   }
 
   void onCreateRecipeClicked() {
-    App.appComponent.recipeProvider().getKey()
+    disposables.add(App.appComponent.recipeProvider().getKey()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess(key -> {
@@ -123,7 +122,7 @@ public class AddRecipeToMealPresenter extends BaseLoggedInPresenter<IAddRecipeTo
 
               navigateToCreateRecipe(key);
             })
-            .subscribe();
+            .subscribe());
   }
 
   private void navigateToCreateRecipe(String key) {

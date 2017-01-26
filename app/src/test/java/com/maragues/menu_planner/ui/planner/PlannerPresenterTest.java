@@ -20,6 +20,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import io.reactivex.Flowable;
 
@@ -424,7 +425,7 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
 
     Locale.setDefault(Locale.FRANCE);
 
-    List<MealInstance> instances = presenter.createDefaultMeals();
+    List<MealInstance> instances = new ArrayList<>(presenter.createDefaultMeals());
 
     assertEquals(DayOfWeek.MONDAY.getValue(), instances.get(0).dateTime().getDayOfWeek().getValue());
   }
@@ -523,7 +524,7 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
     return presenter.mealsObservable().test().assertValueCount(1).values().get(0);
   }
 
-  private List<MealInstance> fullMealInstancesThroughObservable() {
+  private Set<MealInstance> fullMealInstancesThroughObservable() {
     return presenter.fullMealsObservable().test().assertValueCount(1).values().get(0);
   }
 

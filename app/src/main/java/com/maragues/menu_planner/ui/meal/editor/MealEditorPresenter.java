@@ -80,21 +80,21 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
   }
 
   void onSaveClicked() {
-    App.appComponent.mealProvider().create(meal)
+    disposables.add(App.appComponent.mealProvider().create(meal)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(this::onMealSaved)
-    ;
+    );
   }
 
   private void onMealSaved(Meal meal) {
     if (mealInstance != null) {
-      App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
+      disposables.add(App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(mealInstance -> {
                 finish();
-              })
+              }))
       ;
     } else {
       finish();

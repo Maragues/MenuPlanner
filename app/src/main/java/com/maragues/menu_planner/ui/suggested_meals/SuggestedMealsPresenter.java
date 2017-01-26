@@ -38,10 +38,10 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
   }
 
   void loadSuggestedMeals() {
-    App.appComponent.mealProvider().list()
+    disposables.add(App.appComponent.mealProvider().list()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onMealsReceived);
+            .subscribe(this::onMealsReceived));
   }
 
   void onMealsReceived(List<Meal> meals) {
@@ -81,11 +81,11 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
   }
 
   public void onMealClicked(Meal meal) {
-    App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
+    disposables.add(App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess(this::onMealInstanceCreated)
-            .subscribe();
+            .subscribe());
   }
 
   void onMealInstanceCreated(MealInstance mealInstance) {
@@ -93,7 +93,7 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
   }
 
   public void onCreateMealClicked() {
-    App.appComponent.mealProvider().getKey()
+    disposables.add(App.appComponent.mealProvider().getKey()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess(key -> {
@@ -101,6 +101,6 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
 
               navigateToCreateMeal(key);
             })
-            .subscribe();
+            .subscribe());
   }
 }

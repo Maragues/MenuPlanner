@@ -24,7 +24,7 @@ public class LoginPresenter extends BasePresenter<ILogin> {
 
   public void onFirebaseUserArrived(@Nullable UserInfo firebaseUser) {
     if (firebaseUser != null) {
-      App.appComponent.userProvider().exists(firebaseUser)
+      disposables.add(App.appComponent.userProvider().exists(firebaseUser)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .flatMap(new Function<Boolean, SingleSource<User>>() {
@@ -44,7 +44,8 @@ public class LoginPresenter extends BasePresenter<ILogin> {
                 return user;
               })
               .doOnSuccess(this::onUserSignedIn)
-              .subscribe();
+              .subscribe()
+      );
     } else {
       // User is signed out
     }

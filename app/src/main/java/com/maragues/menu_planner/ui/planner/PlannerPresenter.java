@@ -15,8 +15,10 @@ import org.threeten.bp.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,11 +36,11 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   static final int INITIAL_MEAL_INSTANCES = 7;
   static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'd");
 
-  private final BehaviorSubject<List<MealInstance>> currentWeekMealsSubject = BehaviorSubject
-          .createDefault(createDefaultMeals());
+  private final BehaviorSubject<Set<MealInstance>> currentWeekMealsSubject = BehaviorSubject
+          .createDefault(new HashSet<>(createDefaultMeals()));
 
-  private final BehaviorSubject<List<MealInstance>> fullMealsSubject = BehaviorSubject
-          .createDefault(new ArrayList<>(currentWeekMealsSubject.getValue()));
+  private final BehaviorSubject<Set<MealInstance>> fullMealsSubject = BehaviorSubject
+          .createDefault(new HashSet<>(currentWeekMealsSubject.getValue()));
 
   private LocalDateTime currentWeek, oldestDateTime, newestDateTime;
 
@@ -93,11 +95,13 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
                   it.remove();
               }
 
+              Collections.sort(filteredList, COMPARATOR);
+
               return filteredList;
             });
   }
 
-  Observable<List<MealInstance>> fullMealsObservable() {
+  Observable<Set<MealInstance>> fullMealsObservable() {
     return fullMealsSubject;
   }
 
@@ -187,15 +191,13 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
   }
 
   synchronized void onMealInstancesLoaded(List<MealInstance> mealInstances) {
-    List<MealInstance> fullList = new ArrayList<>(fullMealsSubject.getValue());
+    Set<MealInstance> fullList = new HashSet<>(fullMealsSubject.getValue());
     fullList.addAll(mealInstances);
 
     propagateList(fullList);
   }
 
-  void propagateList(List<MealInstance> fullList) {
-    Collections.sort(fullList, COMPARATOR);
-
+  void propagateList(Set<MealInstance> fullList) {
     fullMealsSubject.onNext(fullList);
     currentWeekMealsSubject.onNext(fullList);
   }
@@ -229,7 +231,7 @@ class PlannerPresenter extends BasePresenter<IPlanner> {
    *                currentWeek
    */
   void showNewWeek(LocalDateTime newWeek) {
-    List<MealInstance> meals = currentWeekMealsSubject.getValue();
+    Set<MealInstance> meals = currentWeekMealsSubject.getValue();
 
     Iterator<MealInstance> it = meals.iterator();
 

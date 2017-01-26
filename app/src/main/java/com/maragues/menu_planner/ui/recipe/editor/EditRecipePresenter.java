@@ -64,10 +64,10 @@ class EditRecipePresenter extends BaseLoggedInPresenter<IEditRecipe.View> {
   }
 
   public void onSaveClicked() {
-    attemptSave()
+    disposables.add(attemptSave()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onSaveSuccess, this::onSaveFailed);
+            .subscribe(this::onSaveSuccess, this::onSaveFailed));
   }
 
   private void onSaveSuccess(Recipe recipe) {
