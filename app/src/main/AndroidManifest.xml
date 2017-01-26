@@ -71,7 +71,21 @@
 
         <provider
             android:name="com.google.firebase.provider.FirebaseInitProvider"
-            android:enabled="false" />
+            android:enabled="false"/>
+
+        <receiver android:name=".ui.widget.PlannerWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/planner_widget_info"/>
+        </receiver><!-- The service serving the RemoteViews to the collection widget -->
+
+        <service android:name=".ui.widget.MealInstancesRemoteService"
+                 android:permission="android.permission.BIND_REMOTEVIEWS"
+                 android:exported="false" />
     </application>
 
 </manifest>

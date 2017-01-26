@@ -7,12 +7,13 @@ import android.text.TextUtils;
 
 /**
  * Created by maragues
- *
+ * <p>
  * Duplicated methods to avoid android dependencies in presenters
  */
 public class LocalTextUtils {
   /**
    * Returns true if the string is null or 0-length.
+   *
    * @param str the string to be examined
    * @return true if str is null or zero length
    */
@@ -20,16 +21,16 @@ public class LocalTextUtils {
     return TextUtils.isEmpty(str);
   }
 
-  public String capitalizeFirstLetter(String word){
+  public static String capitalizeFirstLetter(String word) {
     return stripToFirstLetterCapitalized(word) + word.substring(1);
   }
 
-  public String stripToFirstLetterCapitalized(String word){
+  public static String stripToFirstLetterCapitalized(String word) {
     return String.valueOf(Character.toUpperCase(word.charAt(0)));
   }
 
   @SuppressWarnings("deprecation")
-  public CharSequence fromHtml(String text){
+  public static CharSequence fromHtml(String text) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY);
     } else {
