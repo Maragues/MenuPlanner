@@ -45,6 +45,14 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
     loadRecipes();
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    if (adapter != null && adapter instanceof FirebaseRecyclerAdapter)
+      ((FirebaseRecyclerAdapter) adapter).cleanup();
+  }
+
   void onViewDisplayed() {
     //only add if no previous Disposables
     if (visibilityDisposables.size() == 0) {

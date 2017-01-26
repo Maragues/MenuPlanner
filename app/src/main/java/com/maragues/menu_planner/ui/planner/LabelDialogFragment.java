@@ -56,14 +56,26 @@ public class LabelDialogFragment extends BaseDialogFragment {
     return dialog;
   }
 
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+
+    if (adapter != null)
+      adapter.cleanup();
+  }
+
   private void setupLabelList() {
     labelRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 //    labelRecyclerView.setHasFixedSize(true);
 
-    labelRecyclerView.setAdapter(createAdapter());
+    adapter = createAdapter();
+
+    labelRecyclerView.setAdapter(adapter);
   }
 
-  private RecyclerView.Adapter createAdapter() {
+  FirebaseRecyclerAdapter adapter;
+
+  private FirebaseRecyclerAdapter createAdapter() {
     isLoadingSubject.onNext(true);
 
     return new FirebaseRecyclerAdapter<MealInstanceLabel, LabelViewHolder>(
