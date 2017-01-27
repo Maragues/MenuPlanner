@@ -2,6 +2,8 @@ package com.maragues.menu_planner.model.providers.firebase;
 
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
+import com.maragues.menu_planner.test.factories.GroupFactory;
+import com.maragues.menu_planner.test.factories.UserFactory;
 
 import org.junit.Test;
 
@@ -30,9 +32,9 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
    */
   @Test
   public void create_assingsKey() {
-    Group group = Group.empty();
+    Group group = GroupFactory.base();
     String id = "myId";
-    User user = User.empty().withId(id);
+    User user = UserFactory.base().withId(id);
 
     String expectedKey = "my key";
     doReturn(group.withId(expectedKey)).when(provider).assignKey(eq(group));
@@ -48,10 +50,10 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
   }
 
   @Test
-  public void create_assingsRole() {
-    Group group = Group.empty();
+  public void create_assingsOwnerRole() {
+    Group group = GroupFactory.base();
     String userId = "myId";
-    User user = User.empty().withId(userId);
+    User user = UserFactory.base().withId(userId);
 
     String expectedKey = "my key";
     doReturn(group.withId(expectedKey)).when(provider).assignKey(eq(group));
@@ -64,7 +66,7 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
 
     Group createdGroup = observer.values().get(0);
     assertTrue(createdGroup.users().containsKey(userId));
-    assertEquals(Group.ADMIN_ROLE, createdGroup.users().get(userId));
+    assertEquals(Group.OWNER_ROLE, createdGroup.users().get(userId).role());
   }
 
   /*

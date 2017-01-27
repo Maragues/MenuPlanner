@@ -82,4 +82,6 @@ public abstract class User implements ISynchronizable<User> {
   public abstract User withGroupId(String groupId);
 
   public abstract User withEmail(String email);
+
+  public abstract User withName(String name);
 }

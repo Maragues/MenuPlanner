@@ -8,12 +8,11 @@ import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IGroupProvider;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 /**
  * Created by miguelaragues on 23/1/17.
@@ -26,20 +25,24 @@ public class GroupProviderFirebase extends BaseProviderFirebase<Group> implement
 
   @Override
   public Single<Group> create(@NonNull Group group, @NonNull User creator) {
-    return Single.create(new SingleOnSubscribe<Group>() {
-      @Override
-      public void subscribe(SingleEmitter<Group> e) throws Exception {
-        Group internalGroup = assignKey(group).withNewRole(creator, Group.ADMIN_ROLE);
+    return Single.create(e -> {
+      Group internalGroup = assignKey(group).withNewRole(creator, Group.OWNER_ROLE);
 
-        getReference().updateChildren(synchronizableToMap(internalGroup), (databaseError, databaseReference) -> {
-          if (databaseError != null)
-            e.onError(databaseError.toException());
-          else {
-            e.onSuccess(internalGroup);
-          }
-        });
-      }
+      getReference().updateChildren(synchronizableToMap(internalGroup), (databaseError, databaseReference) -> {
+        if (databaseError != null)
+          e.onError(databaseError.toException());
+        else {
+          e.onSuccess(internalGroup);
+        }
+      });
     });
+  }
+
+  @Override
+  public Flowable<Group> getUserGroup() {
+    return RxFirebaseDatabase
+            .observeValueEvent(getReference().child(GROUPS_KEY).child(App.appComponent.userProvider().getGroupId()),
+                    Group::create);
   }
 
   protected Map<String, Object> synchronizableToMap(@NonNull Group group) {
@@ -50,23 +53,6 @@ public class GroupProviderFirebase extends BaseProviderFirebase<Group> implement
     childUpdates.put("/" + GROUPS_KEY + "/" + group.id(), group.toFirebaseValue());
 
     return childUpdates;
-  }
-
-  Map<String, Object> toMap(Group group) {
-    HashMap<String, Object> result = new HashMap<>();
-
-    result.put(ID_KEY, group.id());
-
-    if (!group.users().isEmpty()) {
-      Iterator<String> it = group.users().keySet().iterator();
-
-      while (it.hasNext()) {
-        String userId = it.next();
-        result.put(userId, group.users().get(userId));
-      }
-    }
-
-    return result;
   }
 
   Group assignKey(Group group) {

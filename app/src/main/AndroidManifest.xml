@@ -81,11 +81,18 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/planner_widget_info"/>
-        </receiver><!-- The service serving the RemoteViews to the collection widget -->
+        </receiver> <!-- The service serving the RemoteViews to the collection widget -->
 
-        <service android:name=".ui.widget.MealInstancesRemoteService"
-                 android:permission="android.permission.BIND_REMOTEVIEWS"
-                 android:exported="false" />
+        <service
+            android:name=".ui.widget.MealInstancesRemoteService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <activity
+            android:name=".ui.team.TeamActivity"
+            android:label="@string/title_activity_team"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

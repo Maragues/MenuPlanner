@@ -19,6 +19,7 @@ import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 import com.maragues.menu_planner.ui.planner.PlannerFragment;
 import com.maragues.menu_planner.ui.recipe.list.RecipeListFragment;
 import com.maragues.menu_planner.ui.tasks.TasksFragment;
+import com.maragues.menu_planner.ui.team.TeamActivity;
 
 import org.threeten.bp.ZonedDateTime;
 
@@ -151,6 +152,8 @@ public class HomeActivity extends BaseLoggedInActivity<HomePresenter, IHome>
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
       return true;
+    } else if (id == R.id.action_team) {
+      getPresenter().onTeamClicked();
     }
 
     return super.onOptionsItemSelected(item);
@@ -160,6 +163,11 @@ public class HomeActivity extends BaseLoggedInActivity<HomePresenter, IHome>
   @Override
   public HomePresenter providePresenter() {
     return new HomePresenter();
+  }
+
+  @Override
+  public void navigateToTeamScreen() {
+    startActivity(TeamActivity.createIntent(this));
   }
 
   /**

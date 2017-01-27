@@ -32,6 +32,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "SERVER_CIENT_ID", '"' + firebaseServerId + '"'
+
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -69,6 +71,7 @@ dependencies {
 
     compile 'com.google.firebase:firebase-database:' + rootProject.ext.playServicesVersion
     compile 'com.google.firebase:firebase-auth:' + rootProject.ext.playServicesVersion
+    compile 'com.google.firebase:firebase-invites:' + rootProject.ext.playServicesVersion
     compile 'com.google.android.gms:play-services-auth:' + rootProject.ext.playServicesVersion
 
     //for unit test we want the real threeten version, not the one adapted to android
@@ -78,12 +81,11 @@ dependencies {
 
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.
-    
 
     //    compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
-    annotationProcessor 'me.mattlogan.auto.value:auto-value-firebase:'+rootProject.ext.autoValueFirebase
-    provided 'me.mattlogan.auto.value:auto-value-firebase-annotation:'+rootProject.ext.autoValueFirebase
-    compile 'me.mattlogan.auto.value:auto-value-firebase-adapter:'+ rootProject.ext.autoValueFirebase
+    annotationProcessor 'me.mattlogan.auto.value:auto-value-firebase:' + rootProject.ext.autoValueFirebase
+    provided 'me.mattlogan.auto.value:auto-value-firebase-annotation:' + rootProject.ext.autoValueFirebase
+    compile 'me.mattlogan.auto.value:auto-value-firebase-adapter:' + rootProject.ext.autoValueFirebase
 
 
     def thirtyinchVersion = '0.8.0-rc2'

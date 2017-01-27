@@ -7,4 +7,11 @@ import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
  */
 
 public class HomePresenter extends BaseLoggedInPresenter<IHome> {
+  public void onTeamClicked() {
+    if (getView() != null) {
+      getView().navigateToTeamScreen();
+    } else {
+      sendToView(IHome::navigateToTeamScreen);
+    }
+  }
 }

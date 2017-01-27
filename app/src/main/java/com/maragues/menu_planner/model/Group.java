@@ -16,23 +16,26 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 public abstract class Group implements ISynchronizable<Group> {
+  public static final String OWNER_ROLE = "owner";
   public static final String ADMIN_ROLE = "admin";
   public static final String USER_ROLE = "user";
 
   @NonNull
-  public abstract Map<String, String> users();
+  public abstract Map<String, UserGroup> users();
 
-  static Group.Builder builder() {
+  static Builder builder() {
     return new AutoValue_Group.Builder();
   }
 
   public Group withNewRole(@NonNull User admin, @NonNull String role) {
-    if(!role.equals(ADMIN_ROLE) && !role.equals(USER_ROLE))
-      throw new IllegalArgumentException("Role must be "+ADMIN_ROLE+" or "+USER_ROLE);
+    if (!role.equals(ADMIN_ROLE) && !role.equals(USER_ROLE) && !role.equals(OWNER_ROLE))
+      throw new IllegalArgumentException("Role must be " + ADMIN_ROLE
+              + " or " + USER_ROLE
+              + " or " + OWNER_ROLE);
 
-    Map<String, String> users = users();
+    Map<String, UserGroup> users = users();
 
-    users.put(admin.id(), role);
+    users.put(admin.id(), UserGroup.empty(admin.name(), role));
 
     return withUsers(users);
   }
@@ -43,9 +46,9 @@ public abstract class Group implements ISynchronizable<Group> {
 
   @AutoValue.Builder
   abstract static class Builder {
-    abstract Group.Builder setId(String value);
+    abstract Builder setId(String value);
 
-    abstract Group.Builder setUsers(Map<String, String> value);
+    abstract Builder setUsers(Map<String, UserGroup> value);
 
     abstract Group build();
   }
@@ -58,5 +61,5 @@ public abstract class Group implements ISynchronizable<Group> {
     return new AutoValue_Group.FirebaseValue(this);
   }
 
-  public abstract Group withUsers(Map<String, String> users);
+  public abstract Group withUsers(Map<String, UserGroup> users);
 }

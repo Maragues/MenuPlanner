@@ -115,8 +115,6 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
     assertNotNull(user);
 
     assertEquals(expectedGroupId, user.groupId());
-
-
   }
 
   @Captor

@@ -135,6 +135,12 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="meal_editor_add_first_recipe">Add your first recipe</string>
     <string name="title_activity_meal_instance_viewer">MealInstanceViewerActivity</string>
-    <string name="appwidget_text">EXAMPLE</string>
+
+    <!-- WIDGET -->
     <string name="add_widget">Add widget</string>
+
+    <!-- INVITES -->
+    <string name="invites_deeplink">https://djvv8.app.goo.gl/XktS</string>
+    <string name="action_team">Team</string>
+    <string name="title_activity_team">TeamActivity</string>
 </resources>
