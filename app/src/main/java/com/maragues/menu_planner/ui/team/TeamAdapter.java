@@ -14,6 +14,7 @@ import com.maragues.menu_planner.model.UserGroup;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -65,10 +66,14 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     public TeamViewHolder(View itemView) {
       super(itemView);
+
+      ButterKnife.bind(this, itemView);
     }
 
     public void render(@NonNull UserGroup userGroup) {
       nameTextView.setText(userGroup.name());
+      
+      roleTextView.setText(userGroup.role());
     }
   }
 }

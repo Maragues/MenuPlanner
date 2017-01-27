@@ -48,8 +48,8 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
   TeamAdapter adapter = new TeamAdapter(teamMembers);
 
   private void setupList() {
-    teamRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     teamRecyclerView.setAdapter(adapter);
+    teamRecyclerView.setLayoutManager(new LinearLayoutManager(this));
   }
 
   @OnClick(R.id.team_activity_fab)
