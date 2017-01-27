@@ -2,19 +2,23 @@ package com.maragues.menu_planner.ui.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * Implementation of App Widget functionality.
- *
+ * <p>
  * See https://github.com/manishcm/weatherwidget/blob/master/src/com/example/android/weatherlistwidget/WeatherWidgetProvider.java
  */
-public class PlannerWidget extends AppWidgetProvider {
+public class PlannerWidgetProvider extends AppWidgetProvider {
 
   public static final String EXTRA_MEAL_INSTANCE_ID = "extra_meal_instance_id";
 
@@ -40,14 +44,30 @@ public class PlannerWidget extends AppWidgetProvider {
     }
   }
 
+  private Disposable disposable;
+
   @Override
   public void onEnabled(Context context) {
     // Enter relevant functionality for when the first widget is created
+    disposable = MealInstancesRemoteService.MealInstancesRemoteViewsFactory.mealInstanceFlowable()
+            .doOnNext(ignored -> onDataUpdated())
+            .subscribe();
+  }
+
+  private void onDataUpdated() {
+    AppWidgetManager widgetManager = AppWidgetManager.getInstance(App.appComponent.context());
+    ComponentName cn = new ComponentName(App.appComponent.context(), PlannerWidgetProvider.class);
+    widgetManager.notifyAppWidgetViewDataChanged(
+            widgetManager.getAppWidgetIds(cn),
+            R.id.widget_listview
+    );
   }
 
   @Override
   public void onDisabled(Context context) {
-    // Enter relevant functionality for when the last widget is disabled
+    if (disposable != null && !disposable.isDisposed())
+      disposable.dispose();
   }
+
 }
 

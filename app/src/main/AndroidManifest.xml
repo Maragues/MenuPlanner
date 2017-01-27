@@ -73,7 +73,7 @@
             android:name="com.google.firebase.provider.FirebaseInitProvider"
             android:enabled="false"/>
 
-        <receiver android:name=".ui.widget.PlannerWidget">
+        <receiver android:name=".ui.widget.PlannerWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>

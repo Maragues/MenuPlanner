@@ -18,8 +18,11 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 /**
  * Created by miguelaragues on 27/1/17.
@@ -45,13 +48,16 @@ public class MealInstancesRemoteService extends RemoteViewsService {
 
     List<MealInstance> meals;
 
+    static Flowable<List<MealInstance>> mealInstanceFlowable() {
+      LocalDateTime start = LocalDate.now().atStartOfDay();
+      LocalDateTime end = DateUtils.endOfDay(start.plusDays(6));
+
+      return App.appComponent.mealInstanceProvider().listBetween(start, end);
+    }
+
     private List<MealInstance> getMealInstances() {
       if (meals == null) {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = DateUtils.endOfDay(start.plusDays(6));
-
-        meals = App.appComponent.mealInstanceProvider().listBetween(start, end)
-                .blockingFirst();
+        meals = mealInstanceFlowable().blockingFirst(new ArrayList<>());
       }
 
       return meals;
@@ -105,7 +111,7 @@ public class MealInstancesRemoteService extends RemoteViewsService {
 
       final Intent fillInIntent = new Intent();
       final Bundle extras = new Bundle();
-      extras.putString(PlannerWidget.EXTRA_MEAL_INSTANCE_ID, mealInstance.id());
+      extras.putString(PlannerWidgetProvider.EXTRA_MEAL_INSTANCE_ID, mealInstance.id());
       fillInIntent.putExtras(extras);
       remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
