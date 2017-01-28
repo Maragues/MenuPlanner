@@ -45,8 +45,4 @@ public class TeamPresenter extends BaseLoggedInPresenter<ITeam> {
       sendToView(v -> v.showUsers(users));
     }
   }
-
-  public void onAddToTeamClicked() {
-
-  }
 }

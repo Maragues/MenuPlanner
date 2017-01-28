@@ -143,4 +143,7 @@
     <string name="invites_deeplink">https://djvv8.app.goo.gl/XktS</string>
     <string name="action_team">Team</string>
     <string name="title_activity_team">TeamActivity</string>
+    <string name="invitation_title">Join my MenuPlanner team!</string>
+    <string name="invitation_message">Greatest app ever</string>
+    <string name="invitation_ca">Join</string>
 </resources>

@@ -72,7 +72,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     public void render(@NonNull UserGroup userGroup) {
       nameTextView.setText(userGroup.name());
-      
+
       roleTextView.setText(userGroup.role());
     }
   }
