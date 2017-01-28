@@ -24,6 +24,16 @@ public class SignInPreferences extends BasePreferences implements ISignInPrefere
     return !App.appComponent.textUtils().isEmpty(getGroupId());
   }
 
-  public static final String PREFS_KEY_GROUPID = "group_id";
+  @Override
+  public boolean isFirstLaunch() {
+    return getPrefs().getBoolean(PREFS_KEY_FIRST_LAUNCH, false);
+  }
 
+  @Override
+  public void touchFirstLaunch() {
+    getPrefsEditor().putBoolean(PREFS_KEY_FIRST_LAUNCH, true).apply();
+  }
+
+  public static final String PREFS_KEY_GROUPID = "group_id";
+  public static final String PREFS_KEY_FIRST_LAUNCH = "first_launch";
 }

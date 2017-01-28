@@ -12,6 +12,8 @@ import com.maragues.menu_planner.model.preferences.ISignInPreferences;
 public class MockSignInPreferences implements ISignInPreferences {
   private String groupId;
 
+  private boolean firstLaunch;
+
   @Override
   public void saveGroupId(String groupId) {
     this.groupId = groupId;
@@ -29,7 +31,18 @@ public class MockSignInPreferences implements ISignInPreferences {
   }
 
   @Override
+  public boolean isFirstLaunch() {
+    return firstLaunch;
+  }
+
+  @Override
+  public void touchFirstLaunch() {
+    firstLaunch = true;
+  }
+
+  @Override
   public void clear() {
     groupId = null;
+    firstLaunch = true;
   }
 }

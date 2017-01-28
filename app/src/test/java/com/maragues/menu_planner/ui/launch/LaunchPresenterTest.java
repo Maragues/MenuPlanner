@@ -57,4 +57,45 @@ public class LaunchPresenterTest extends BasePresenterTest<ILaunch, LaunchPresen
     verify(view).navigateToHome();
   }
 
+  /*
+  INVITES
+   */
+  @Test
+  public void firstLaunch_subscribesToInvitationObservable(){
+    App.appComponent.signInPreferences().clear();
+
+    initPresenter();
+
+    verify(view).invitationObservable();
+  }
+
+  @Test
+  public void firstLaunch_checksForInvites(){
+    App.appComponent.signInPreferences().clear();
+
+    initPresenter();
+
+    verify(view).invitationExists();
+  }
+
+  @Test
+  public void firstLaunch_invitesTrue_doesNotNavigateAnywhere(){
+  //in this case, Android takes care and launches our DeepLinkActivity
+  }
+
+  @Test
+  public void firstLaunch_invitesFalse_navigatesToLogin(){
+    //in this case, Android takes care and launches our DeepLinkActivity
+  }
+
+  @Test
+  public void secondLaunch_doesNotCheckForInvites(){
+
+  }
+
+  @Test
+  public void secondLaunch_doesNotSubscribeForInvites(){
+
+    verify(view, never()).invitationObservable();
+  }
 }

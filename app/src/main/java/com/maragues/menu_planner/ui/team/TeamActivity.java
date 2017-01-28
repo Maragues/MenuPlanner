@@ -78,7 +78,7 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
 
   @OnClick(R.id.team_activity_fab)
   void onAddToTeamClicked() {
-    // TODO: 28/1/17 Check Jointfully's Utils.shareApp 
+    // TODO: 28/1/17 Check Jointfully's Utils.shareApp
 
     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
             .setMessage(getString(R.string.invitation_message))

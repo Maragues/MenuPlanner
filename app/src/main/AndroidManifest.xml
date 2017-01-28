@@ -93,6 +93,25 @@
             android:label="@string/title_activity_team"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".ui.invitation_received.InvitationReceivedDeepLinkActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <!-- [START deep_link_filter] -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="menu_planner"
+                    android:scheme="http"/>
+                <data
+                    android:host="menu_planner"
+                    android:scheme="https"/>
+            </intent-filter>
+            <!-- [END deep_link_filter] -->
+        </activity>
     </application>
 
 </manifest>
