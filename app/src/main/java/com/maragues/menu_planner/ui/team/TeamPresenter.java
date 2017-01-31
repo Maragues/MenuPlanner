@@ -16,6 +16,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class TeamPresenter extends BaseLoggedInPresenter<ITeam> {
+
   Group group;
 
   @Override

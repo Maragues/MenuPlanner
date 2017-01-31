@@ -2,11 +2,12 @@ package com.maragues.menu_planner.ui.planner;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.MealInstanceLabel;
-import com.maragues.menu_planner.ui.common.BasePresenter;
+import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 import com.maragues.menu_planner.utils.DateUtils;
 
 import org.threeten.bp.LocalDateTime;
@@ -29,7 +30,7 @@ import io.reactivex.subjects.BehaviorSubject;
  * Created by miguelaragues on 13/1/17.
  */
 
-class PlannerPresenter extends BasePresenter<IPlanner> {
+class PlannerPresenter extends BaseLoggedInPresenter<IPlanner> {
   private static final int PAST_WEEKS_NUMBER = 1;
   private static final int FUTURE_WEEKS_NUMBER = 2;
 

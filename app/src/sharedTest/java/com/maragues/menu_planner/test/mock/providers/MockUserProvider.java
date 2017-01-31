@@ -47,13 +47,27 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
     return groupId;
   }
 
+  public boolean userExists = true;
+
   @Override
   public Single<Boolean> exists(UserInfo firebaseUser) {
-    return null;
+    return Single.just(userExists);
   }
+
+  public User userGet = null;
 
   @Override
   public Maybe<User> get(String uid) {
-    return null;
+    return Maybe.create(e -> {
+      if (userGet == null)
+        e.onComplete();
+
+      e.onSuccess(userGet);
+    });
+  }
+
+  public void clear() {
+    uuid = null;
+    groupId = null;
   }
 }

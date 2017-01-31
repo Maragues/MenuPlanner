@@ -18,46 +18,44 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-import static org.mockito.Mockito.spy;
-
 /**
  * Created by miguelaragues on 4/1/17.
  */
 @Module
-public class TestProvidersModule {
+public class EspressoTestProvidersModule {
 
   @Provides
   @Singleton
   static IRecipeProvider providesRecipeProvider() {
-    return spy(new MockRecipeProvider());
+    return (new MockRecipeProvider());
   }
 
   @Provides
   @Singleton
   static IUserProvider providesUserProvider() {
-    return spy(new MockUserProvider());
+    return (new MockUserProvider());
   }
 
   @Provides
   @Singleton
   static IGroupProvider providesGroupProvider() {
-    return spy(new MockGroupProvider());
+    return (new MockGroupProvider());
   }
 
   @Provides
   @Singleton
   static IMealProvider providesMealProvider() {
-    return spy(new MockMealProvider());
+    return (new MockMealProvider());
   }
 
   @Provides
   @Singleton
   static IMealInstanceProvider providesMealInstanceProvider() {
-    return spy(new MockMealInstanceProvider());
+    return (new MockMealInstanceProvider());
   }
   @Provides
   @Singleton
   static IMealInstanceLabelProvider providesMealInstanceLabelProvider() {
-    return spy(new MockMealInstanceLabelProvider());
+    return (new MockMealInstanceLabelProvider());
   }
 }

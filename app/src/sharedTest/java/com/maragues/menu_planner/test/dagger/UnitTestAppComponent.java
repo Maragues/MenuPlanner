@@ -15,7 +15,7 @@ import dagger.Component;
         modules = {
                 UnitTestAppModule.class,
                 TestPreferencesModule.class,
-                TestProvidersModule.class
+                UnitTestProvidersModule.class
         }
 )
 public interface UnitTestAppComponent extends AppComponent {

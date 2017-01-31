@@ -1,5 +1,8 @@
 package com.maragues.menu_planner.ui.invitation_received;
 
+import android.support.annotation.NonNull;
+
+import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
 /**
@@ -7,4 +10,20 @@ import com.maragues.menu_planner.ui.common.BasePresenter;
  */
 
 public class InvitationReceivedPresenter extends BasePresenter<IInvitationReceived> {
+  @Override
+  protected void onAttachView(@NonNull IInvitationReceived view) {
+    super.onAttachView(view);
+
+    String invitedByUserId = view.getInvitedByUserId();
+    if (invitedByUserId == null) {
+      view.navigateToLauncher();
+    } else {
+      if (App.appComponent.signInPreferences().hasGroupId())
+        view.navigateToAcceptInvitation(invitedByUserId);
+      else
+        view.navigateToLogin(invitedByUserId);
+    }
+
+    view.finish();
+  }
 }

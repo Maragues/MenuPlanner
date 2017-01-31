@@ -1,4 +1,4 @@
-package com.maragues.menu_planner.ui.test;
+package com.maragues.menu_planner.test.rules;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;

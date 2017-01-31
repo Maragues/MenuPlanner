@@ -10,12 +10,16 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.appinvite.AppInvite;
+import com.google.android.gms.appinvite.AppInviteInvitationResult;
+import com.google.android.gms.appinvite.AppInviteReferral;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -25,11 +29,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.common.BaseActivity;
 import com.maragues.menu_planner.ui.home.HomeActivity;
+import com.maragues.menu_planner.ui.team.TeamUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * Created by miguelaragues on 28/12/16.
@@ -38,6 +46,21 @@ import butterknife.OnClick;
 public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
         implements ILogin, GoogleApiClient.OnConnectionFailedListener {
   private static final String TAG = LoginActivity.class.getSimpleName();
+  private static final String EXTRA_INVITEDBY_UID = "extra_invited_by";
+
+  public static Intent createIntent(@NonNull Context context) {
+    return createIntent(context, null);
+  }
+
+  public static Intent createIntent(@NonNull Context context,
+                                    @Nullable String invitedByUID) {
+    Intent intent = new Intent(context, LoginActivity.class);
+
+    if (invitedByUID != null)
+      intent.putExtra(EXTRA_INVITEDBY_UID, invitedByUID);
+
+    return intent;
+  }
 
   private static final int RC_SIGN_IN = 1;
   private GoogleApiClient googleApiClient;
@@ -60,9 +83,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
             .requestEmail()
             .build();
 
-    googleApiClient = new GoogleApiClient.Builder(this)
+    googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
             .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            .addApi(AppInvite.API)
             .build();
 
     mAuth = FirebaseAuth.getInstance();
@@ -105,25 +129,81 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @Override
   public void onStart() {
     super.onStart();
+
+//    addAuthListener();
+  }
+
+  @Override
+  public void addAuthListener() {
     mAuth.addAuthStateListener(mAuthListener);
+  }
+
+  @Nullable
+  @Override
+  public String getInvitedByUserId() {
+    if (getIntent().getData() == null)
+      return null;
+
+    return TeamUtils.extractUserId(getIntent().getData());
+  }
+
+  @Override
+  public void showInvitationLayout(@NonNull User invitedByUser) {
+
   }
 
   @Override
   public void onStop() {
     super.onStop();
+
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
     }
   }
 
+  private BehaviorSubject<Boolean> hasInvitationSubject = BehaviorSubject.create();
+
+  @Override
+  public Observable<Boolean> invitationObservable() {
+    return hasInvitationSubject;
+  }
+
+  public void checkInvitations() {
+    // Check for App Invite invitations and launch deep-link activity if possible.
+    // Requires that an Activity is registered in AndroidManifest.xml to handle
+    // deep-link URLs.
+    boolean autoLaunchDeepLink = true;
+    AppInvite.AppInviteApi.getInvitation(googleApiClient, this, autoLaunchDeepLink)
+            .setResultCallback(
+                    new ResultCallback<AppInviteInvitationResult>() {
+                      @Override
+                      public void onResult(AppInviteInvitationResult result) {
+                        if (result.getStatus().isSuccess()) {
+                          // Extract information from the intent
+                          Intent intent = result.getInvitationIntent();
+                          String deepLink = AppInviteReferral.getDeepLink(intent);
+                          String invitationId = AppInviteReferral.getInvitationId(intent);
+
+                          Log.d(TAG, "Deep link. " + deepLink + ", InvitationId " + invitationId);
+
+                          // Because autoLaunchDeepLink = true we don't have to do anything
+                          // here, but we could set that to false and manually choose
+                          // an Activity to launch to handle the deep link here.
+                          // ...
+                        } else {
+                          hasInvitationSubject.onNext(false);
+                        }
+                      }
+                    });
+  }
+
   @Override
   public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+    // TODO: 30/1/17 Determine if it was the invitations connection check or login
+    hasInvitationSubject.onNext(false);
   }
 
   private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-    Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
     AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
     mAuth.signInWithCredential(credential)
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -149,10 +229,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @Override
   public LoginPresenter providePresenter() {
     return new LoginPresenter();
-  }
-
-  public static Intent createIntent(Context context) {
-    return new Intent(context, LoginActivity.class);
   }
 
   @Override

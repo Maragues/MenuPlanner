@@ -2,14 +2,13 @@ package com.maragues.menu_planner.ui.test;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.test.dagger.DaggerUnitTestAppComponent;
+import com.maragues.menu_planner.test.rules.ImmediateRxSchedulersOverrideRule;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-
-import java.util.Locale;
 
 /**
  * Created by miguelaragues on 3/1/17.

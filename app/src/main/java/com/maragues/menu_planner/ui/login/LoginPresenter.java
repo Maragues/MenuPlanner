@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.ui.login;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.UserInfo;
@@ -9,7 +10,6 @@ import com.maragues.menu_planner.ui.common.BasePresenter;
 
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -20,7 +20,66 @@ import io.reactivex.schedulers.Schedulers;
 public class LoginPresenter extends BasePresenter<ILogin> {
   private static final String TAG = LoginPresenter.class.getSimpleName();
 
-  private Disposable disposable;
+  @Override
+  protected void onAttachView(@NonNull ILogin view) {
+    super.onAttachView(view);
+
+    if (!isHandlingInvitesScenario())
+      getView().addAuthListener();
+
+    App.appComponent.signInPreferences().touchFirstLaunch();
+  }
+
+  boolean isHandlingInvitesScenario() {
+    if (getView().getInvitedByUserId() != null) {
+      disposables.add(App.appComponent.userProvider().get(getView().getInvitedByUserId())
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .doOnSuccess(this::onInvitedByUserLoaded)
+              .doOnComplete(this::checkInvites)
+              .subscribe());
+
+      return true;
+    } else if (App.appComponent.signInPreferences().isFirstLaunch()) {
+      checkInvites();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  void checkInvites() {
+    disposables.add(getView().invitationObservable()
+            .doOnNext(this::onInvitationChecked)
+            .subscribe());
+
+    getView().checkInvitations();
+  }
+
+  private User invitedByUser;
+
+  void onInvitedByUserLoaded(User user) {
+    invitedByUser = user;
+
+    if (getView() != null) {
+      getView().showInvitationLayout(user);
+    } else {
+      sendToView(v -> v.showInvitationLayout(user));
+    }
+  }
+
+  void onInvitationChecked(Boolean hasInvitation) {
+    if (!hasInvitation) {
+      if (getView() != null) {
+        getView().addAuthListener();
+      } else {
+        sendToView(ILogin::addAuthListener);
+      }
+    }
+
+    //else no need for, App Invites takes care of launching the activity
+  }
 
   public void onFirebaseUserArrived(@Nullable UserInfo firebaseUser) {
     if (firebaseUser != null) {
@@ -81,13 +140,5 @@ public class LoginPresenter extends BasePresenter<ILogin> {
     } else {
       sendToView(ILogin::hideProgressBar);
     }
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-
-    if (disposable != null && !disposable.isDisposed())
-      disposable.dispose();
   }
 }

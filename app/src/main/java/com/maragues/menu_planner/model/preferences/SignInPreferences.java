@@ -26,7 +26,7 @@ public class SignInPreferences extends BasePreferences implements ISignInPrefere
 
   @Override
   public boolean isFirstLaunch() {
-    return getPrefs().getBoolean(PREFS_KEY_FIRST_LAUNCH, false);
+    return getPrefs().getBoolean(PREFS_KEY_FIRST_LAUNCH, true);
   }
 
   @Override

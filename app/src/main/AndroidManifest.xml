@@ -93,9 +93,11 @@
             android:label="@string/title_activity_team"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
         <activity
             android:name=".ui.invitation_received.InvitationReceivedDeepLinkActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Deep Link Activity"
+            android:theme="@style/NoDisplay">
             <!-- [START deep_link_filter] -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -109,8 +111,24 @@
                 <data
                     android:host="menu_planner"
                     android:scheme="https"/>
+                <data
+                    android:host="djvv8.app.goo.gl"
+                    android:scheme="https"/>
             </intent-filter>
             <!-- [END deep_link_filter] -->
+        </activity>
+
+        <!-- Share App Invites dummy Activity. Used to start the App Invites dialog -->
+        <activity
+            android:name=".ui.team.DummyStartInvitesActivity"
+            android:icon="@android:drawable/ic_menu_share"
+            android:label="@string/invite_through_jointfully"
+            android:theme="@style/NoDisplay">
+            <intent-filter
+                android:priority="1">
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.google.android.gms.appinvite.ACTION_APP_INVITE"/>
+            </intent-filter>
         </activity>
     </application>
 

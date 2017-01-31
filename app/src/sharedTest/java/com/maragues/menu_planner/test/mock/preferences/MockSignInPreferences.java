@@ -12,7 +12,7 @@ import com.maragues.menu_planner.model.preferences.ISignInPreferences;
 public class MockSignInPreferences implements ISignInPreferences {
   private String groupId;
 
-  private boolean firstLaunch;
+  private boolean firstLaunch = true;
 
   @Override
   public void saveGroupId(String groupId) {
@@ -37,7 +37,7 @@ public class MockSignInPreferences implements ISignInPreferences {
 
   @Override
   public void touchFirstLaunch() {
-    firstLaunch = true;
+    firstLaunch = false;
   }
 
   @Override
