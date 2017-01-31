@@ -11,6 +11,7 @@ import com.maragues.menu_planner.test.mock.providers.MockUserProvider;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -19,6 +20,9 @@ import io.reactivex.MaybeEmitter;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static com.maragues.menu_planner.test.factories.UserFactory.mockFirebaseUser;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,69 +44,6 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
   @Override
   protected LoginPresenter createPresenter() {
     return new LoginPresenter();
-  }
-
-  @Test
-  public void firebaseUserArrives_exists_invokesOnUserSignedIn() {
-    initPresenter();
-
-    UserInfo userInfo = mock(FirebaseUser.class);
-    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
-
-    doReturn(Single.just(true)).when(App.appComponent.userProvider()).exists(eq(userInfo));
-    doReturn(Maybe.just(UserFactory.base())).when(App.appComponent.userProvider()).get(eq(UserFactory.DEFAULT_UID));
-
-    presenter.onFirebaseUserArrived(userInfo);
-
-    verify(presenter).onUserSignedIn(any(User.class));
-  }
-
-  @Test
-  public void firebaseUserArrives_exists_storesGroupId() {
-    initPresenter();
-
-    UserInfo userInfo = mock(FirebaseUser.class);
-    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
-
-    String expectedGroupId = "my best group";
-    doReturn(Single.just(true)).when(App.appComponent.userProvider()).exists(eq(userInfo));
-    doReturn(Maybe.just(UserFactory.base().withGroupId(expectedGroupId).withEmail("pepe")))
-            .when(App.appComponent.userProvider())
-            .get(eq(UserFactory.DEFAULT_UID));
-
-    presenter.onFirebaseUserArrived(userInfo);
-
-    verify(App.appComponent.signInPreferences()).saveGroupId(eq(expectedGroupId));
-  }
-
-  @Test
-  public void firebaseUserArrives_notExists_createsNewUser() {
-    initPresenter();
-
-    UserInfo userInfo = mock(FirebaseUser.class);
-    doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(eq(userInfo));
-
-    presenter.onFirebaseUserArrived(userInfo);
-
-    verify(App.appComponent.userProvider()).create(eq(userInfo));
-  }
-
-  @Test
-  public void firebaseUserArrives_null_doesNotNavigateToHome() {
-    initPresenter();
-
-    presenter.onFirebaseUserArrived(null);
-
-    verify(view, never()).navigateToHome();
-  }
-
-  @Test
-  public void firebaseUserArrives_null_doesNotFinish() {
-    initPresenter();
-
-    presenter.onFirebaseUserArrived(null);
-
-    verify(view, never()).finish();
   }
 
   /*
@@ -372,5 +313,118 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
     initPresenter();
 
     verify(view).showInvitationLayout(eq(expectedUser));
+  }
+
+  /*
+  FIREBASE USER ARRIVED, GOOGLE PROVIDES US WITH THE INFO
+   */
+
+  @Test
+  public void firebaseUserArrives_exists_invokesOnUserSignedIn() {
+    initPresenter();
+
+    UserInfo userInfo = mockFirebaseUser();
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    doReturn(Single.just(true)).when(App.appComponent.userProvider()).exists(any(User.class));
+    doReturn(Maybe.just(UserFactory.base())).when(App.appComponent.userProvider()).get(eq(UserFactory.DEFAULT_UID));
+
+    presenter.onFirebaseUserArrived(userInfo);
+
+    verify(presenter).onUserSignedIn(any(User.class));
+  }
+
+  @Test
+  public void firebaseUserArrives_exists_storesGroupId() {
+    initPresenter();
+
+    UserInfo userInfo = mockFirebaseUser();
+    doReturn(UserFactory.DEFAULT_UID).when(userInfo).getUid();
+
+    String expectedGroupId = "my best group";
+    doReturn(Single.just(true)).when(App.appComponent.userProvider()).exists(any(User.class));
+    doReturn(Maybe.just(UserFactory.base().withGroupId(expectedGroupId).withEmail("pepe")))
+            .when(App.appComponent.userProvider())
+            .get(eq(UserFactory.DEFAULT_UID));
+
+    presenter.onFirebaseUserArrived(userInfo);
+
+    verify(App.appComponent.signInPreferences()).saveGroupId(eq(expectedGroupId));
+  }
+
+  @Test
+  public void firebaseUserArrives_notExists_createsNewUser() {
+    initPresenter();
+
+    UserInfo userInfo = mockFirebaseUser();
+    doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(any(User.class));
+
+    presenter.onFirebaseUserArrived(userInfo);
+
+    verify(App.appComponent.userProvider()).create(any(User.class));
+  }
+
+  @Test
+  public void firebaseUserArrives_notExists_withInvitation_userWantsToJoin_createsNewUserWithAssignedGroupId() {
+    initPresenter();
+
+    FirebaseUser firebaseUserMock = mockFirebaseUser();
+    doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(any(User.class));
+
+    String expectedGroupId = "Rockeros ko";
+    User invitedBy = UserFactory.base().withGroupId(expectedGroupId);
+
+    presenter.onInvitedByUserLoaded(invitedBy);
+
+    presenter.userClickedOnJoinTeam();
+
+    presenter.onFirebaseUserArrived(firebaseUserMock);
+
+    ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+    verify(App.appComponent.userProvider()).create(captor.capture());
+
+    assertEquals(expectedGroupId, captor.getValue().groupId());
+  }
+
+  @Test
+  public void firebaseUserArrives_notExists_withInvitation_userDoesNotWantToJoin_createsNewUserWithNoGroupId() {
+    initPresenter();
+
+    FirebaseUser firebaseUserMock = mockFirebaseUser();
+    doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(any(User.class));
+
+    String expectedGroupId = "Rockeros ko";
+    User invitedBy = UserFactory.base().withGroupId(expectedGroupId);
+
+    presenter.onInvitedByUserLoaded(invitedBy);
+
+    presenter.userClickedOnStandardSignIn();
+
+    presenter.onFirebaseUserArrived(firebaseUserMock);
+
+    ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+    verify(App.appComponent.userProvider()).create(captor.capture());
+
+    assertNotSame(expectedGroupId, captor.getValue().groupId());
+  }
+
+  @Test
+  public void firebaseUserArrives_null_doesNotNavigateToHome() {
+    initPresenter();
+
+    presenter.onFirebaseUserArrived(null);
+
+    verify(view, never()).navigateToHome();
+  }
+
+  @Test
+  public void firebaseUserArrives_null_doesNotFinish() {
+    initPresenter();
+
+    presenter.onFirebaseUserArrived(null);
+
+    verify(view, never()).finish();
   }
 }

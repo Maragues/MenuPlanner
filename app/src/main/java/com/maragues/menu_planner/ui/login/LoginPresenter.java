@@ -19,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class LoginPresenter extends BasePresenter<ILogin> {
   private static final String TAG = LoginPresenter.class.getSimpleName();
+  private boolean userWantsToJoinTeam;
 
   @Override
   protected void onAttachView(@NonNull ILogin view) {
@@ -81,8 +82,10 @@ public class LoginPresenter extends BasePresenter<ILogin> {
     //else no need for, App Invites takes care of launching the activity
   }
 
-  public void onFirebaseUserArrived(@Nullable UserInfo firebaseUser) {
-    if (firebaseUser != null) {
+  public void onFirebaseUserArrived(@Nullable UserInfo userInfo) {
+    if (userInfo != null) {
+      final User firebaseUser = User.fromUserInfo(userInfo);
+
       disposables.add(App.appComponent.userProvider().exists(firebaseUser)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
@@ -91,10 +94,14 @@ public class LoginPresenter extends BasePresenter<ILogin> {
                 public SingleSource<User> apply(Boolean userExists) throws Exception {
                   if (userExists) {
                     //supposedly we have assured that the user exists, thus toSingle is safe
-                    return App.appComponent.userProvider().get(firebaseUser.getUid()).toSingle();
+                    return App.appComponent.userProvider().get(userInfo.getUid()).toSingle();
                   }
 
-                  return App.appComponent.userProvider().create(firebaseUser);
+                  User userToCreate = firebaseUser;
+                  if (invitedByUser != null && userWantsToJoinTeam)
+                    userToCreate = firebaseUser.withGroupId(invitedByUser.groupId());
+
+                  return App.appComponent.userProvider().create(userToCreate);
                 }
               })
               .map(user -> {
@@ -140,5 +147,13 @@ public class LoginPresenter extends BasePresenter<ILogin> {
     } else {
       sendToView(ILogin::hideProgressBar);
     }
+  }
+
+  public void userClickedOnJoinTeam() {
+    userWantsToJoinTeam = true;
+  }
+
+  public void userClickedOnStandardSignIn() {
+    userWantsToJoinTeam = false;
   }
 }

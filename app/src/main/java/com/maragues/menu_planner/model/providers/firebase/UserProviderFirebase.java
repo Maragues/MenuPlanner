@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,15 +47,18 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
   It could be done in a single step with a Map and if we managed the groups in this class,
   but I choosed to delegate Group management to its own provider.
    */
-  public Single<User> create(@NonNull UserInfo userInfo) {
+  public Single<User> create(@NonNull User user) {
+    if (App.appComponent.textUtils().isEmpty(user.id()))
+      throw new IllegalArgumentException("Id cannot be empty for user");
+
     return Single.create(new SingleOnSubscribe<User>() {
       @Override
       public void subscribe(SingleEmitter<User> e) throws Exception {
-        getUserReference(userInfo.getUid()).runTransaction(new Transaction.Handler() {
+        getUserReference(user.id()).runTransaction(new Transaction.Handler() {
           @Override
           public Transaction.Result doTransaction(MutableData mutableData) {
             if (mutableData.getValue() == null) {
-              mutableData.setValue(User.fromUserInfo(userInfo).toFirebaseValue());
+              mutableData.setValue(user.toFirebaseValue());
 
               return Transaction.success(mutableData);
             }
@@ -69,25 +71,31 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
             if (databaseError != null)
               e.onError(databaseError.toException());
             else {
-              User admin = User.create(dataSnapshot);
-
-              App.appComponent.groupProvider().create(Group.empty(), admin)
-                      .doOnSuccess(group -> {
-                                Map<String, Object> userGroupIdMap = new HashMap<>();
-                                userGroupIdMap.put(BaseFirebaseKeys.GROUP_ID_KEY, group.id());
-
-                                getUserReference(userInfo.getUid())
-                                        .updateChildren(userGroupIdMap)
-                                        .addOnCompleteListener(task1 -> e.onSuccess(admin.withGroupId(group.id())));
-                              }
-                      )
-                      .subscribe();
+              if (App.appComponent.textUtils().isEmpty(user.groupId())) {
+                createGroupForUser(user, e);
+              } else {
+                e.onSuccess(user);
+              }
             }
           }
         });
       }
     })
             .subscribeOn(Schedulers.io());
+  }
+
+  private void createGroupForUser(User createdUser, SingleEmitter<User> e) {
+    App.appComponent.groupProvider().create(Group.empty(), createdUser)
+            .doOnSuccess(group -> {
+                      Map<String, Object> userGroupIdMap = new HashMap<>();
+                      userGroupIdMap.put(BaseFirebaseKeys.GROUP_ID_KEY, group.id());
+
+                      getUserReference(createdUser.id())
+                              .updateChildren(userGroupIdMap)
+                              .addOnCompleteListener(task1 -> e.onSuccess(createdUser.withGroupId(group.id())));
+                    }
+            )
+            .subscribe();
   }
 
   @Override
@@ -106,9 +114,12 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
   }
 
   @Override
-  public Single<Boolean> exists(UserInfo firebaseUser) {
+  public Single<Boolean> exists(@NonNull User user) {
+    if (user.id() == null)
+      return Single.just(false);
+
     return Single.create(e ->
-            getUserReference(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            getUserReference(user.id()).addListenerForSingleValueEvent(new ValueEventListener() {
               @Override
               public void onDataChange(DataSnapshot dataSnapshot) {
                 e.onSuccess(dataSnapshot.exists());

@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInvite;
@@ -18,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -72,6 +75,15 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @BindView(R.id.login_progress)
   ProgressBar progressBar;
 
+  @BindView(R.id.sign_in_button)
+  SignInButton signInButton;
+
+  @BindView(R.id.login_invitedByLayout)
+  ViewGroup invitedByLayout;
+
+  @BindView(R.id.login_invitedBy_name)
+  TextView invitedByName;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -99,7 +111,20 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   }
 
   @OnClick(R.id.sign_in_button)
-  void signIn() {
+  void onStandardSignInClicked(){
+    getPresenter().userClickedOnStandardSignIn();
+
+    onSignInClicked();
+  }
+
+  @OnClick(R.id.login_invitedBy_button)
+  void onWantsToJoinTeamClicked(){
+    getPresenter().userClickedOnJoinTeam();
+
+    onSignInClicked();
+  }
+
+  private void onSignInClicked() {
     progressBar.setVisibility(View.VISIBLE);
 
     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
@@ -149,7 +174,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
 
   @Override
   public void showInvitationLayout(@NonNull User invitedByUser) {
+    invitedByLayout.setVisibility(View.VISIBLE);
 
+    invitedByName.setText(invitedByUser.name()+" wants you to join his kitchen");
   }
 
   @Override

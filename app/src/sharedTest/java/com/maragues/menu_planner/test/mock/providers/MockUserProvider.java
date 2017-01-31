@@ -3,7 +3,6 @@ package com.maragues.menu_planner.test.mock.providers;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.firebase.auth.UserInfo;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
 import com.maragues.menu_planner.test.factories.GroupFactory;
@@ -31,8 +30,8 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   }
 
   @Override
-  public Single<User> create(@NonNull UserInfo userInfo) {
-    return Single.just(User.fromUserInfo(userInfo));
+  public Single<User> create(@NonNull User user) {
+    return Single.just(user);
   }
 
   @Nullable
@@ -50,7 +49,7 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
   public boolean userExists = true;
 
   @Override
-  public Single<Boolean> exists(UserInfo firebaseUser) {
+  public Single<Boolean> exists(@NonNull User user) {
     return Single.just(userExists);
   }
 
