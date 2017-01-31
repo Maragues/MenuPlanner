@@ -10,7 +10,6 @@ import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteReferral;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.ui.common.BaseActivity;
 import com.maragues.menu_planner.ui.launch.LaunchActivity;
 import com.maragues.menu_planner.ui.login.LoginActivity;
@@ -25,7 +24,8 @@ public class InvitationReceivedDeepLinkActivity extends BaseActivity<InvitationR
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_invitation_received_deep_link);
+
+    getPresenter().decideNextScreen(this);
   }
 
   private void checkInvites() {
@@ -70,7 +70,7 @@ public class InvitationReceivedDeepLinkActivity extends BaseActivity<InvitationR
   @Nullable
   @Override
   public String getInvitedByUserId() {
-    if(getIntent().getData() == null)
+    if (getIntent().getData() == null)
       return null;
 
     return TeamUtils.extractUserId(getIntent().getData());

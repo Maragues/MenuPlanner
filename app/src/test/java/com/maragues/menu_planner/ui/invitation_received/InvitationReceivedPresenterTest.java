@@ -7,7 +7,9 @@ import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -26,6 +28,13 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
     return new InvitationReceivedPresenter();
   }
 
+  @Override
+  protected void onPresenterCreated() {
+    super.onPresenterCreated();
+
+    doNothing().when(presenter).attachView(any(IInvitationReceived.class));
+  }
+
   @Test
   public void nullUri_navigatesToLauncher(){
     App.appComponent.signInPreferences().clear();
@@ -33,6 +42,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
     doReturn(null).when(view).getInvitedByUserId();
 
     initPresenter();
+
+    presenter.decideNextScreen(view);
 
     verify(view).navigateToLauncher();
   }
@@ -44,6 +55,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
     doReturn(null).when(view).getInvitedByUserId();
 
     initPresenter();
+
+    presenter.decideNextScreen(view);
 
     verify(view).finish();
   }
@@ -59,6 +72,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
 
     initPresenter();
 
+    presenter.decideNextScreen(view);
+
     verify(view).navigateToLogin(eq(expectedUid));
   }
 
@@ -72,6 +87,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
             .getInvitedByUserId();
 
     initPresenter();
+
+    presenter.decideNextScreen(view);
 
     verify(view).finish();
   }
@@ -87,6 +104,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
 
     initPresenter();
 
+    presenter.decideNextScreen(view);
+
     verify(view).navigateToAcceptInvitation(eq(expectedUid));
   }
 
@@ -100,6 +119,8 @@ public class InvitationReceivedPresenterTest extends BasePresenterTest<IInvitati
             .getInvitedByUserId();
 
     initPresenter();
+
+    presenter.decideNextScreen(view);
 
     verify(view).finish();
   }

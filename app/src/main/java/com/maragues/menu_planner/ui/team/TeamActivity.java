@@ -13,6 +13,7 @@ import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.UserGroup;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,20 +59,16 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
   @OnClick(R.id.team_activity_fab)
   void onAddToTeamClicked() {
     // TODO: 28/1/17 Check Jointfully's Utils.shareApp
-
-    Intent sendIntent = new Intent();
-    sendIntent.setAction(Intent.ACTION_SEND);
-
-    sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invitation_title));
-    sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invitation_message,
-            TeamUtils.inviteUri()));
-
-    sendIntent.setType("text/plain");
-
-    /*
-     * For the rare case where no app responds to this intent
-     */
     try {
+      Intent sendIntent = new Intent();
+      sendIntent.setAction(Intent.ACTION_SEND);
+
+      sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invitation_title));
+      sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invitation_message,
+              TeamUtils.inviteUri()));
+
+      sendIntent.setType("text/plain");
+
       final Intent chooserIntent = Intent.createChooser(
               sendIntent,
               getString(R.string.send_to)
@@ -82,7 +79,11 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
 
       startActivity(chooserIntent);
     } catch (ActivityNotFoundException e) {
-
+    /*
+     * For the rare case where no app responds to this intent
+     */
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
     }
   }
 

@@ -12,8 +12,10 @@ import com.maragues.menu_planner.ui.common.BasePresenter;
 public class InvitationReceivedPresenter extends BasePresenter<IInvitationReceived> {
   @Override
   protected void onAttachView(@NonNull IInvitationReceived view) {
-    super.onAttachView(view);
+//    do nothing
+  }
 
+  void decideNextScreen(@NonNull IInvitationReceived view) {
     String invitedByUserId = view.getInvitedByUserId();
     if (invitedByUserId == null) {
       view.navigateToLauncher();

@@ -140,7 +140,8 @@
     <string name="add_widget">Add widget</string>
 
     <!-- INVITES -->
-    <string name="invites_deeplink">https://djvv8.app.goo.gl/XktS</string>
+    <string name="invites_deeplink">https://djvv8.app.goo.gl/?apn=com.maragues.menu_planner&amp;link=%1$s</string>
+    <string name="invites_deeplink_inner">https://menu_planner/invite?%1$s</string>
     <string name="action_team">Team</string>
     <string name="title_activity_team">TeamActivity</string>
     <string name="send_to">Invite…</string>
