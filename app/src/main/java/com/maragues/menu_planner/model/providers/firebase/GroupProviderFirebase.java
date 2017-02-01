@@ -25,8 +25,11 @@ public class GroupProviderFirebase extends BaseProviderFirebase<Group> implement
 
   @Override
   public Single<Group> create(@NonNull Group group, @NonNull User creator) {
+    if (App.appComponent.textUtils().isEmpty(creator.id()))
+      throw new IllegalArgumentException("creator must have an id assigned");
+
     return Single.create(e -> {
-      Group internalGroup = assignKey(group).withNewRole(creator, Group.OWNER_ROLE);
+      Group internalGroup = group.withId(creator.id()).withNewRole(creator, Group.OWNER_ROLE);
 
       getReference().updateChildren(synchronizableToMap(internalGroup), (databaseError, databaseReference) -> {
         if (databaseError != null)
@@ -53,12 +56,6 @@ public class GroupProviderFirebase extends BaseProviderFirebase<Group> implement
     childUpdates.put("/" + GROUPS_KEY + "/" + group.id(), group.toFirebaseValue());
 
     return childUpdates;
-  }
-
-  Group assignKey(Group group) {
-    String key = getReference().child(GROUPS_KEY).push().getKey();
-
-    return group.withId(key);
   }
 
   static final String GROUPS_KEY = "groups";

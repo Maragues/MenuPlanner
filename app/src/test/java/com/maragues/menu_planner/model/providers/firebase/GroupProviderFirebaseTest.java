@@ -14,8 +14,6 @@ import io.reactivex.observers.TestObserver;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 
 /**
  * Created by miguelaragues on 23/1/17.
@@ -31,13 +29,10 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
   CREATE SUBSCRIPTION
    */
   @Test
-  public void create_assingsKey() {
+  public void create_assingedKeyEqualsUserId() {
     Group group = GroupFactory.base();
-    String id = "myId";
-    User user = UserFactory.base().withId(id);
-
-    String expectedKey = "my key";
-    doReturn(group.withId(expectedKey)).when(provider).assignKey(eq(group));
+    String expectedId = "myId";
+    User user = UserFactory.base().withId(expectedId);
 
     mockSingleResponse();
 
@@ -46,7 +41,7 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
     provider.create(group, user).subscribe(observer);
 
     observer.assertComplete();
-    assertEquals(expectedKey, observer.values().get(0).id());
+    assertEquals(expectedId, observer.values().get(0).id());
   }
 
   @Test
@@ -54,9 +49,6 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
     Group group = GroupFactory.base();
     String userId = "myId";
     User user = UserFactory.base().withId(userId);
-
-    String expectedKey = "my key";
-    doReturn(group.withId(expectedKey)).when(provider).assignKey(eq(group));
 
     mockSingleResponse();
 
@@ -67,6 +59,18 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
     Group createdGroup = observer.values().get(0);
     assertTrue(createdGroup.users().containsKey(userId));
     assertEquals(Group.OWNER_ROLE, createdGroup.users().get(userId).role());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void create_userWithNullIdThrowsException() {
+    Group group = GroupFactory.base();
+    User userWithoutId = UserFactory.base().withId(null);
+
+    mockSingleResponse();
+
+    TestObserver<Group> observer = new TestObserver<>();
+
+    provider.create(group, userWithoutId).subscribe(observer);
   }
 
   /*
