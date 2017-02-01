@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Meal;
+import com.maragues.menu_planner.model.RecipeMeal;
 
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,7 +23,7 @@ import io.reactivex.subjects.BehaviorSubject;
  * Created by miguelaragues on 25/1/17.
  */
 
-public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdapter.MealViewHolder> {
+public class SuggestedMealsAdapter extends RecyclerView.Adapter<SuggestedMealsAdapter.MealViewHolder> {
 
   private final List<Meal> meals;
 
@@ -31,7 +33,7 @@ public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdap
     return recipeClickedSubject;
   }
 
-  MealSuggesterAdapter(List<Meal> meals) {
+  SuggestedMealsAdapter(List<Meal> meals) {
     this.meals = meals;
   }
 
@@ -39,7 +41,7 @@ public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdap
   public MealViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     return new MealViewHolder(
             LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_recipe_suggestion, parent, false)
+                    .inflate(R.layout.item_meal_suggestion, parent, false)
     );
   }
 
@@ -50,6 +52,12 @@ public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdap
     holder.render(meal);
 
     holder.itemView.setOnClickListener(ignored -> recipeClickedSubject.onNext(meal));
+
+    if (position % 2 == 0) {
+      holder.itemView.setBackgroundResource(R.drawable.sel_grid_even);
+    } else {
+      holder.itemView.setBackgroundResource(R.drawable.sel_grid_odd);
+    }
   }
 
   @Override
@@ -58,8 +66,8 @@ public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdap
   }
 
   static class MealViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R.id.recipe_suggestion_name)
-    TextView mealName;
+    @BindView(R.id.meal_suggestion_recipes)
+    TextView mealRecipes;
 
     public MealViewHolder(View itemView) {
       super(itemView);
@@ -68,7 +76,13 @@ public class MealSuggesterAdapter extends RecyclerView.Adapter<MealSuggesterAdap
     }
 
     void render(@NonNull Meal meal) {
-      mealName.setText(meal.id());
+      mealRecipes.setText(""); //clear previous content
+
+      Iterator<RecipeMeal> recipesIterator = meal.recipeCollection().iterator();
+      while (recipesIterator.hasNext()) {
+        mealRecipes.append(recipesIterator.next().name());
+        if (recipesIterator.hasNext()) mealRecipes.append("\n");
+      }
     }
   }
 }

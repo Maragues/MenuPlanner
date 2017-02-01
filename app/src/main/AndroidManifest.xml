@@ -61,7 +61,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".ui.meal.editor.AddRecipeToMealActivity"
+            android:name=".ui.meal.editor.SuggestedRecipesToMealActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity

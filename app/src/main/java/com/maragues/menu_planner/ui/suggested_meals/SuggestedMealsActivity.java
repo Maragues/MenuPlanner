@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.Meal;
@@ -33,7 +30,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
 
   private final List<Meal> meals = new ArrayList<>();
 
-  private final MealSuggesterAdapter adapter = new MealSuggesterAdapter(meals);
+  private final SuggestedMealsAdapter adapter = new SuggestedMealsAdapter(meals);
 
   public static Intent createIntent(Context context, @Nullable MealInstance mealInstance) {
     Intent intent = new Intent(context, SuggestedMealsActivity.class);
@@ -62,7 +59,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   private void setupList() {
     adapter.recipeClickedObservable().subscribe(meal -> getPresenter().onMealClicked(meal));
 
-    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     recyclerView.setAdapter(adapter);
   }
 

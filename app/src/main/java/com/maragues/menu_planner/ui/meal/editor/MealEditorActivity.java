@@ -93,7 +93,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == ADD_RECIPE_CODE && resultCode == RESULT_OK) {
-      getPresenter().onRecipeAdded(AddRecipeToMealActivity.extractRecipe(data));
+      getPresenter().onRecipeAdded(SuggestedRecipesToMealActivity.extractRecipe(data));
     }
   }
 
@@ -131,7 +131,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
 
   @Override
   public void navigateToAddRecipe() {
-    startActivityForResult(AddRecipeToMealActivity.createIntent(this), ADD_RECIPE_CODE);
+    startActivityForResult(SuggestedRecipesToMealActivity.createIntent(this), ADD_RECIPE_CODE);
   }
 
   @Nullable

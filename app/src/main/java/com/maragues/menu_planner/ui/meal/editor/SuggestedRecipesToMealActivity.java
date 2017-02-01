@@ -22,7 +22,7 @@ import butterknife.OnClick;
 
 import static com.maragues.menu_planner.ui.recipe.editor.EditRecipeActivity.EXTRA_RESULT_RECIPE;
 
-public class AddRecipeToMealActivity
+public class SuggestedRecipesToMealActivity
         extends BaseLoggedInActivity<AddRecipeToMealPresenter, IAddRecipeToMeal>
         implements IAddRecipeToMeal {
 
@@ -36,7 +36,7 @@ public class AddRecipeToMealActivity
   private static final int CREATE_RECIPE_CODE = 5;
 
   public static Intent createIntent(Context context) {
-    return new Intent(context, AddRecipeToMealActivity.class);
+    return new Intent(context, SuggestedRecipesToMealActivity.class);
   }
 
   @Nullable

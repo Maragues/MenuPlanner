@@ -2,7 +2,6 @@ package com.maragues.menu_planner.ui.planner;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.MealInstance;
@@ -35,7 +34,7 @@ class PlannerPresenter extends BaseLoggedInPresenter<IPlanner> {
   private static final int FUTURE_WEEKS_NUMBER = 2;
 
   static final int INITIAL_MEAL_INSTANCES = 7;
-  static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'd");
+  static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'LLL d");
 
   private final BehaviorSubject<Set<MealInstance>> currentWeekMealsSubject = BehaviorSubject
           .createDefault(new HashSet<>(createDefaultMeals()));
