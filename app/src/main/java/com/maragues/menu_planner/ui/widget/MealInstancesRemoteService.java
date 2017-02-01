@@ -34,6 +34,14 @@ public class MealInstancesRemoteService extends RemoteViewsService {
     return new MealInstancesRemoteViewsFactory(getApplicationContext(), intent);
   }
 
+  static LocalDateTime tStart(){
+    return LocalDate.now().atStartOfDay();
+  }
+
+  static LocalDateTime tEnd(){
+    return DateUtils.endOfDay(tStart().plusDays(6));
+  }
+
   static class MealInstancesRemoteViewsFactory implements RemoteViewsFactory {
 
     private final Context appContext;
@@ -49,10 +57,7 @@ public class MealInstancesRemoteService extends RemoteViewsService {
     List<MealInstance> meals;
 
     static Flowable<List<MealInstance>> mealInstanceFlowable() {
-      LocalDateTime start = LocalDate.now().atStartOfDay();
-      LocalDateTime end = DateUtils.endOfDay(start.plusDays(6));
-
-      return App.appComponent.mealInstanceProvider().listBetween(start, end);
+      return App.appComponent.mealInstanceProvider().listBetween(tStart(), tEnd());
     }
 
     private List<MealInstance> getMealInstances() {

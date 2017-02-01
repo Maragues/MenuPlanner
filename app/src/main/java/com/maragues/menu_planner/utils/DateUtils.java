@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.TemporalField;
 import org.threeten.bp.temporal.WeekFields;
 
@@ -16,6 +17,8 @@ import java.util.Locale;
 public abstract class DateUtils {
   private DateUtils() {
   }
+
+  public static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'LLL d");
 
   public static LocalDateTime startOfWeek() {
     return startOfWeek(LocalDate.now());

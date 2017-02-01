@@ -537,7 +537,7 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
   }
 
   private void resetHeaderFormatter() throws NoSuchFieldException, IllegalAccessException {
-    Field field = PlannerPresenter.class.getDeclaredField("HEADER_FORMATTER");
+    Field field = DateUtils.class.getDeclaredField("HEADER_FORMATTER");
     DateTimeFormatter originalFormatter = (DateTimeFormatter) field.get(null);
 
     Field modifiersField = Field.class.getDeclaredField("modifiers");

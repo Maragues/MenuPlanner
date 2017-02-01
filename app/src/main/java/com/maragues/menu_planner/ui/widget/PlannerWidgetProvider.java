@@ -11,9 +11,12 @@ import android.widget.RemoteViews;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.ui.home.HomeActivity;
 import com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity;
 
 import io.reactivex.disposables.Disposable;
+
+import static com.maragues.menu_planner.utils.DateUtils.HEADER_FORMATTER;
 
 /**
  * Implementation of App Widget functionality.
@@ -24,28 +27,43 @@ public class PlannerWidgetProvider extends AppWidgetProvider {
 
   public static final String EXTRA_MEAL_INSTANCE_ID = "extra_meal_instance_id";
   private static final String ACTION_CLICK_MEAL = "click_item_action";
+  private static final String ACTION_CLICK_HEADER = "click_header";
 
   static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                               int appWidgetId) {
     // Construct the RemoteViews object
-    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.planner_widget);
+    RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.planner_widget);
 
     final Intent intent = new Intent(context, MealInstancesRemoteService.class);
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
     intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-    views.setRemoteAdapter(R.id.widget_listview, intent);
+    remoteViews.setRemoteAdapter(R.id.widget_listview, intent);
+
+    String header = HEADER_FORMATTER.format(MealInstancesRemoteService.tStart());
+    header += " - ";
+    header += HEADER_FORMATTER.format(MealInstancesRemoteService.tEnd());
+    remoteViews.setTextViewText(R.id.widget_header, header);
 
     //Enable item clicking
-    final Intent onClickIntent = new Intent(context, PlannerWidgetProvider.class);
-    onClickIntent.setAction(PlannerWidgetProvider.ACTION_CLICK_MEAL);
-    onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-    onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
+    final Intent mealClickIntent = new Intent(context, PlannerWidgetProvider.class);
+    mealClickIntent.setAction(PlannerWidgetProvider.ACTION_CLICK_MEAL);
+    mealClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+    mealClickIntent.setData(Uri.parse(mealClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
     final PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
-            onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    views.setPendingIntentTemplate(R.id.widget_listview, onClickPendingIntent);
+            mealClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    remoteViews.setPendingIntentTemplate(R.id.widget_listview, onClickPendingIntent);
+
+    //Enable header clicking
+    final Intent headerClickIntent = new Intent(context, PlannerWidgetProvider.class);
+    headerClickIntent.setAction(PlannerWidgetProvider.ACTION_CLICK_HEADER);
+    headerClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+    headerClickIntent.setData(Uri.parse(headerClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
+    final PendingIntent headerClickPendingIntent = PendingIntent.getBroadcast(context, 0,
+            headerClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    remoteViews.setOnClickPendingIntent(R.id.widget_header, headerClickPendingIntent);
 
     // Instruct the widget manager to update the widget
-    appWidgetManager.updateAppWidget(appWidgetId, views);
+    appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
   }
 
   @Override
@@ -100,6 +118,9 @@ public class PlannerWidgetProvider extends AppWidgetProvider {
 
         context.startActivity(i);
       }
+    } else if (action.equals(ACTION_CLICK_HEADER)) {
+      // TODO: 1/2/17 make sure we open Planner tab
+      context.startActivity(HomeActivity.createIntent(context));
     }
   }
 }

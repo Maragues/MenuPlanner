@@ -10,7 +10,6 @@ import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 import com.maragues.menu_planner.utils.DateUtils;
 
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +24,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static com.maragues.menu_planner.utils.DateUtils.HEADER_FORMATTER;
+
 /**
  * Created by miguelaragues on 13/1/17.
  */
@@ -34,7 +35,6 @@ class PlannerPresenter extends BaseLoggedInPresenter<IPlanner> {
   private static final int FUTURE_WEEKS_NUMBER = 2;
 
   static final int INITIAL_MEAL_INSTANCES = 7;
-  static final DateTimeFormatter HEADER_FORMATTER = DateTimeFormatter.ofPattern("E', 'LLL d");
 
   private final BehaviorSubject<Set<MealInstance>> currentWeekMealsSubject = BehaviorSubject
           .createDefault(new HashSet<>(createDefaultMeals()));
