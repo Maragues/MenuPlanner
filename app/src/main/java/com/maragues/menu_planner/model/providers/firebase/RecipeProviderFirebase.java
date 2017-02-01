@@ -26,13 +26,24 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     super(Recipe.class);
   }
 
+  @NonNull
   @Override
-  protected Query listQuery() {
+  protected Query createListQuery() {
     return getReference()
             .child(GROUP_RECIPES_KEY)
             .child(App.appComponent.userProvider().getGroupId());
   }
 
+  @NonNull
+  @Override
+  protected Query createGetQuery(String id) {
+    return getReference()
+            .child(GROUP_RECIPES_KEY)
+            .child(App.appComponent.userProvider().getGroupId())
+            .child(id);
+  }
+
+  @NonNull
   @Override
   protected Map<String, Object> synchronizableToMap(@NonNull Recipe recipe) {
     if (App.appComponent.textUtils().isEmpty(recipe.id()))
@@ -53,6 +64,7 @@ public class RecipeProviderFirebase extends BaseListableFirebaseProvider<Recipe>
     return childUpdates;
   }
 
+  @NonNull
   @Override
   protected Recipe snapshotToInstance(DataSnapshot dataSnapshot) {
     return Recipe.create(dataSnapshot);

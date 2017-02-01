@@ -1,7 +1,6 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.Query;
@@ -37,17 +36,16 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
   @NonNull
   @Override
   public Flowable<List<T>> list() {
-    return list(listQuery());
+    return list(createListQuery());
   }
 
   protected final Flowable<List<T>> list(@NonNull Query query) {
     return RxFirebaseDatabase.observeValueEvent(query, listMapper);
   }
 
-  @Nullable
   @Override
   public Single<T> get(@NonNull String id) {
-    return RxFirebaseDatabase.observeSingleValueEvent(getReference(), this::snapshotToInstance)
+    return RxFirebaseDatabase.observeSingleValueEvent(createGetQuery(id), this::snapshotToInstance)
             .singleOrError();
   }
 
@@ -59,10 +57,16 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
     );
   }*/
 
+  @NonNull
   protected abstract Map<String, Object> synchronizableToMap(T item);
 
-  protected abstract Query listQuery();
+  @NonNull
+  protected abstract Query createListQuery();
 
+  @NonNull
+  protected abstract Query createGetQuery(String id);
+
+  @NonNull
   protected abstract T snapshotToInstance(DataSnapshot dataSnapshot);
 
   private static class ListMapper<T extends ISynchronizable> implements Function<DataSnapshot, List<T>> {

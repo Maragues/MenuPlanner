@@ -528,10 +528,12 @@ public class PlannerPresenterTest extends BasePresenterTest<IPlanner, PlannerPre
     return presenter.fullMealsObservable().test().assertValueCount(1).values().get(0);
   }
 
+  private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("LLL", Locale.US);
+
   @NonNull
   private String expectedHeaderForWeek(LocalDateTime week) {
-    return "Sun, " + week.getDayOfMonth()
-            + " - Sat, " + week.plusDays(6).getDayOfMonth();
+    return "Sun, " + MONTH_FORMATTER.format(week) + " " + week.getDayOfMonth()
+            + " - Sat, " + MONTH_FORMATTER.format(week.plusDays(6)) + " " + week.plusDays(6).getDayOfMonth();
   }
 
   private void resetHeaderFormatter() throws NoSuchFieldException, IllegalAccessException {

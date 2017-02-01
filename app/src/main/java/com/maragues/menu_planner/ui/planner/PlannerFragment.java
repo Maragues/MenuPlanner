@@ -170,7 +170,7 @@ public class PlannerFragment extends BaseTiFragment<PlannerPresenter, IPlanner>
 
   @Override
   public void navigateToMealInstanceViewer(@NonNull MealInstance mealInstance) {
-    startActivity(MealInstanceViewerActivity.createIntent(getActivity(), mealInstance));
+    startActivity(MealInstanceViewerActivity.createIntent(getActivity(), mealInstance.id()));
   }
 
   @Override

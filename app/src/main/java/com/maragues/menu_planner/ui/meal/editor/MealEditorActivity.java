@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE;
+import static com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID;
 
 public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter, IMealEditor>
         implements IMealEditor {
@@ -52,7 +52,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
     Intent intent = new Intent(context, MealEditorActivity.class);
 
     if (mealInstance != null)
-      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE, mealInstance);
+      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID, mealInstance);
 
     return intent;
   }
@@ -126,7 +126,7 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
   @NonNull
   @Override
   public MealEditorPresenter providePresenter() {
-    return new MealEditorPresenter(getIntent().getParcelableExtra(EXTRA_MEAL_INSTANCE));
+    return new MealEditorPresenter(getIntent().getParcelableExtra(EXTRA_MEAL_INSTANCE_ID));
   }
 
   @Override

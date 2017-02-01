@@ -12,10 +12,7 @@ public abstract class BasePresenter<V extends IBaseview> extends TiPresenter<V> 
 
   protected CompositeDisposable disposables;
 
-  @Override
-  protected void onCreate() {
-    super.onCreate();
-
+  protected BasePresenter(){
     disposables = new CompositeDisposable();
   }
 

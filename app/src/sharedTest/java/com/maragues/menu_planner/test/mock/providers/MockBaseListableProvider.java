@@ -1,7 +1,7 @@
 package com.maragues.menu_planner.test.mock.providers;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.model.ISynchronizable;
 import com.maragues.menu_planner.model.providers.IListableProvider;
@@ -33,14 +33,13 @@ public abstract class MockBaseListableProvider<T extends ISynchronizable> extend
     return Single.just(item);
   }
 
-  @Nullable
   @Override
   public Single<T> get(@NonNull String id) {
     for (T item : items) {
       if (item.id().equals(id)) return Single.just(item);
     }
 
-    return null;
+    return Single.error(new Resources.NotFoundException());
   }
 
   public void reset() {

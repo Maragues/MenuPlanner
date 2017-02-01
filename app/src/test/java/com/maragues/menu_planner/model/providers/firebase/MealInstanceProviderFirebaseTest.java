@@ -42,7 +42,7 @@ public class MealInstanceProviderFirebaseTest extends BaseProviderFirebaseTest<M
    */
   @Test
   public void listQuery_usesCorrectPath() {
-    provider.listQuery();
+    provider.createListQuery();
 
     verify(databaseReference).child(eq(MealInstanceProviderFirebase.MEAL_INSTANCES_KEY));
     verify(databaseReference).child(eq(GroupFactory.DEFAULT_GROUP_ID));

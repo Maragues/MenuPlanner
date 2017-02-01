@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.ui.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -10,6 +11,7 @@ import android.widget.RemoteViews;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.R;
+import com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity;
 
 import io.reactivex.disposables.Disposable;
 
@@ -21,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 public class PlannerWidgetProvider extends AppWidgetProvider {
 
   public static final String EXTRA_MEAL_INSTANCE_ID = "extra_meal_instance_id";
+  private static final String ACTION_CLICK_MEAL = "click_item_action";
 
   static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                               int appWidgetId) {
@@ -31,6 +34,15 @@ public class PlannerWidgetProvider extends AppWidgetProvider {
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
     intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
     views.setRemoteAdapter(R.id.widget_listview, intent);
+
+    //Enable item clicking
+    final Intent onClickIntent = new Intent(context, PlannerWidgetProvider.class);
+    onClickIntent.setAction(PlannerWidgetProvider.ACTION_CLICK_MEAL);
+    onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+    onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
+    final PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
+            onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    views.setPendingIntentTemplate(R.id.widget_listview, onClickPendingIntent);
 
     // Instruct the widget manager to update the widget
     appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -69,5 +81,26 @@ public class PlannerWidgetProvider extends AppWidgetProvider {
       disposable.dispose();
   }
 
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    super.onReceive(context, intent);
+
+    String action = intent.getAction();
+
+    if (action == null)
+      return;
+
+    if (action.equals(ACTION_CLICK_MEAL)) {
+      String mealId = intent.getStringExtra(EXTRA_MEAL_INSTANCE_ID);
+
+      if (!App.appComponent.textUtils().isEmpty(mealId)) {
+        Intent i = MealInstanceViewerActivity.createIntent(context, mealId);
+
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        context.startActivity(i);
+      }
+    }
+  }
 }
 

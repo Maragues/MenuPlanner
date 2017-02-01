@@ -31,19 +31,31 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
     super(MealInstance.class);
   }
 
+  @NonNull
   @Override
-  protected Query listQuery() {
+  protected Query createListQuery() {
     return getReference()
             .child(MEAL_INSTANCES_KEY)
             .child(App.appComponent.userProvider().getGroupId())
             .orderByKey();
   }
 
+  @NonNull
+  @Override
+  protected Query createGetQuery(String id) {
+    return getReference()
+            .child(MEAL_INSTANCES_KEY)
+            .child(App.appComponent.userProvider().getGroupId())
+            .child(id);
+  }
+
+  @NonNull
   @Override
   protected MealInstance snapshotToInstance(DataSnapshot dataSnapshot) {
     return MealInstance.create(dataSnapshot);
   }
 
+  @NonNull
   @Override
   protected Map<String, Object> synchronizableToMap(MealInstance mealInstance) {
     if (App.appComponent.textUtils().isEmpty(mealInstance.id()))
@@ -81,7 +93,7 @@ public class MealInstanceProviderFirebase extends BaseListableFirebaseProvider<M
 
   Query listBetweenQuery(@NonNull LocalDateTime tStartInclusive,
                                    @NonNull LocalDateTime tEndInclusive) {
-    return listQuery()
+    return createListQuery()
             .startAt(String.valueOf(tStartInclusive.toInstant(ZoneOffset.UTC).toEpochMilli()))
             .endAt(String.valueOf(tEndInclusive.toInstant(ZoneOffset.UTC).toEpochMilli()));
   }

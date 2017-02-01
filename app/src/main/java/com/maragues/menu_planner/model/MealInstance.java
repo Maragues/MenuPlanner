@@ -99,7 +99,9 @@ public abstract class MealInstance implements ISynchronizable<MealInstance> {
   }
 
   public static MealInstance create(DataSnapshot dataSnapshot) {
-    return dataSnapshot.getValue(AutoValue_MealInstance.FirebaseValue.class).toAutoValue();
+    return dataSnapshot.getValue(AutoValue_MealInstance.FirebaseValue.class)
+            .toAutoValue()
+            .withId(dataSnapshot.getKey());
   }
 
   public Object toFirebaseValue() {

@@ -25,18 +25,30 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     super(Meal.class);
   }
 
+  @NonNull
   @Override
-  protected Query listQuery() {
+  protected Query createListQuery() {
     return getReference()
             .child(MEALS_KEY)
             .child(App.appComponent.userProvider().getGroupId());
   }
 
+  @NonNull
+  @Override
+  protected Query createGetQuery(String id) {
+    return getReference()
+            .child(MEALS_KEY)
+            .child(App.appComponent.userProvider().getGroupId())
+            .child(id);
+  }
+
+  @NonNull
   @Override
   protected Meal snapshotToInstance(DataSnapshot dataSnapshot) {
     return Meal.create(dataSnapshot);
   }
 
+  @NonNull
   @Override
   protected Map<String, Object> synchronizableToMap(Meal meal) {
     if (App.appComponent.textUtils().isEmpty(meal.id()))

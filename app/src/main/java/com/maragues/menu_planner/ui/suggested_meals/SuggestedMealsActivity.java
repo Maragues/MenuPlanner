@@ -36,7 +36,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
     Intent intent = new Intent(context, SuggestedMealsActivity.class);
 
     if (mealInstance != null)
-      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE, mealInstance);
+      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID, mealInstance);
 
     return intent;
   }
@@ -66,7 +66,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   @NonNull
   @Override
   public SuggestedMealsPresenter providePresenter() {
-    return new SuggestedMealsPresenter(getIntent().getParcelableExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE));
+    return new SuggestedMealsPresenter(getIntent().getParcelableExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID));
   }
 
   @Override
