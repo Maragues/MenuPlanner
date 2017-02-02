@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Meal;
-import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.Recipe;
 import com.maragues.menu_planner.ui.common.BaseLoggedInPresenter;
 
@@ -17,12 +16,12 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
+  private final String expectedMealId;
+
   Meal meal;
 
-  MealInstance mealInstance;
-
-  MealEditorPresenter(@Nullable MealInstance mealInstance) {
-    this.mealInstance = mealInstance;
+  MealEditorPresenter(@Nullable String expectedMealId) {
+    this.expectedMealId = expectedMealId;
   }
 
   @Override
@@ -30,34 +29,45 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
     super.onAttachView(view);
 
     if (meal == null)
-      loadMeal(getView().getMealId());
+      loadMeal(expectedMealId);
     else
       renderMeal();
   }
 
-  private void loadMeal(@Nullable String mealId) {
+  void loadMeal(@Nullable String mealId) {
     if (App.appComponent.textUtils().isEmpty(mealId)) {
-      onNewMeal();
+      onNewMeal(mealId);
     } else {
-      App.appComponent.mealProvider().get(mealId)
+      //noinspection ConstantConditions
+      disposables.add(App.appComponent.mealProvider().get(mealId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .doOnSuccess(this::onMealLoaded)
-              .doOnError(this::onErrorLoadingMeal);
+              .doFinally(() -> {
+                if (meal != null) {
+                  renderMeal();
+                } else {
+                  onNewMeal(mealId);
+                }
+              })
+              .doOnError(this::onErrorLoadingMeal)
+              .subscribe());
     }
   }
 
-  private void onErrorLoadingMeal(Throwable throwable) {
+  void onNewMeal(String mealId) {
+    meal = Meal.empty().withId(mealId);
+  }
+
+  void onErrorLoadingMeal(Throwable throwable) {
     // TODO: 20/1/17
   }
 
   void onMealLoaded(Meal meal) {
     this.meal = meal;
-
-    renderMeal();
   }
 
-  private void renderMeal() {
+   void renderMeal() {
     if (meal.recipes().isEmpty()) {
       showEmptyLayout();
     } else {
@@ -75,30 +85,13 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
     }
   }
 
-  void onNewMeal() {
-    meal = Meal.empty();
-  }
-
   void onSaveClicked() {
     disposables.add(App.appComponent.mealProvider().create(meal)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onMealSaved)
+            .doOnSuccess(ignored -> finish())
+            .subscribe()
     );
-  }
-
-  private void onMealSaved(Meal meal) {
-    if (mealInstance != null) {
-      disposables.add(App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(mealInstance -> {
-                finish();
-              }))
-      ;
-    } else {
-      finish();
-    }
   }
 
   private void finish() {

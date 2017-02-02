@@ -3,7 +3,9 @@ package com.maragues.menu_planner.model.providers.firebase;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.maragues.menu_planner.model.ISynchronizable;
 import com.maragues.menu_planner.model.providers.IListableProvider;
 
@@ -13,8 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import durdinapps.rxfirebase2.exceptions.RxFirebaseDataException;
 import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.Maybe;
 import io.reactivex.functions.Function;
 
 /**
@@ -44,9 +47,22 @@ public abstract class BaseListableFirebaseProvider<T extends ISynchronizable>
   }
 
   @Override
-  public Single<T> get(@NonNull String id) {
-    return RxFirebaseDatabase.observeSingleValueEvent(createGetQuery(id), this::snapshotToInstance)
-            .singleOrError();
+  public Maybe<T> get(@NonNull String id) {
+    return Maybe.create(emitter ->
+            createGetQuery(id).addListenerForSingleValueEvent(new ValueEventListener() {
+              @Override
+              public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists())
+                  emitter.onSuccess(snapshotToInstance(dataSnapshot));
+
+                emitter.onComplete();
+              }
+
+              @Override
+              public void onCancelled(DatabaseError databaseError) {
+                emitter.onError(new RxFirebaseDataException(databaseError));
+              }
+            }));
   }
 
   /*@Override

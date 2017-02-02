@@ -1,5 +1,6 @@
 package com.maragues.menu_planner.ui.suggested_meals;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.App;
@@ -46,10 +47,11 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
 
   void onMealsReceived(List<Meal> meals) {
     if (meals.isEmpty()) {
+      //if we have 0 meals, automatically do to create meal screen
       onCreateMealClicked();
     }
 
-    extractSuggestedMeals(meals);
+    processMeals(meals);
   }
 
   private void navigateToCreateMeal(String key) {
@@ -58,8 +60,6 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
     } else {
       sendToView(v -> v.navigateToCreateMeal(key));
     }
-
-    finish();
   }
 
   void finish() {
@@ -70,14 +70,35 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
     }
   }
 
-  private void extractSuggestedMeals(List<Meal> meals) {
+  private void processMeals(List<Meal> meals) {
     if (meals != null && !meals.isEmpty()) {
-      // TODO: 17/1/17 extract suggested meals
-      if (getView() != null)
-        getView().showSuggestedMeals(meals);
-      else
-        sendToView(view -> view.showSuggestedMeals(meals));
+      Meal meal = extractMealWithExpectedKey(meals);
+      if (meal != null) {
+        onCreateMealSuccess(meal);
+      } else {
+        // TODO: 17/1/17 extract suggested meals
+        showSuggestedMeals(meals);
+      }
     }
+  }
+
+  @Nullable
+  Meal extractMealWithExpectedKey(List<Meal> meals) {
+    if (App.appComponent.textUtils().isEmpty(expectedKey) || meals.isEmpty())
+      return null;
+
+    for (int i = 0; i < meals.size(); i++) {
+      if (meals.get(i).id().equals(expectedKey)) return meals.get(i);
+    }
+
+    return null;
+  }
+
+  void showSuggestedMeals(List<Meal> meals) {
+    if (getView() != null)
+      getView().showSuggestedMeals(meals);
+    else
+      sendToView(view -> view.showSuggestedMeals(meals));
   }
 
   public void onMealClicked(Meal meal) {
@@ -102,5 +123,23 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
               navigateToCreateMeal(key);
             })
             .subscribe());
+  }
+
+  void onCreateMealSuccess(@NonNull Meal meal) {
+    if (mealInstance != null) {
+      disposables.add(App.appComponent.mealInstanceProvider().create(mealInstance.fromMeal(meal))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(mealInstance -> {
+                finish();
+              }))
+      ;
+    } else {
+      finish();
+    }
+  }
+
+  public void onCreateMealCanceled() {
+    expectedKey = null;
   }
 }

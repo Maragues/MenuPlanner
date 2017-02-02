@@ -10,7 +10,7 @@ import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.Maybe;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -58,7 +58,7 @@ public class MealInstanceViewerPresenterTest extends BasePresenterTest<IMealInst
 
   @Test
   public void errorFetchMeal_invokesShowError() {
-    doReturn(Single.error(new Resources.NotFoundException()))
+    doReturn(Maybe.error(new Resources.NotFoundException()))
             .when(App.appComponent.mealInstanceProvider())
             .get(eq(mealId));
 
@@ -81,7 +81,7 @@ public class MealInstanceViewerPresenterTest extends BasePresenterTest<IMealInst
   @Test
   public void fetchMeal_invokesOnMealFetched() {
     MealInstance expectedMealInstance = MealInstanceFactory.withRecipes();
-    doReturn(Single.just(expectedMealInstance))
+    doReturn(Maybe.just(expectedMealInstance))
             .when(App.appComponent.mealInstanceProvider())
             .get(eq(mealId));
 

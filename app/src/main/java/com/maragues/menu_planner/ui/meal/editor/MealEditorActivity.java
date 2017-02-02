@@ -17,10 +17,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.ui.common.BaseLoggedInActivity;
-import com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +27,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.maragues.menu_planner.ui.meal_instance.MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID;
 
 public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter, IMealEditor>
         implements IMealEditor {
@@ -48,11 +44,11 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
     return createIntent(context, null);
   }
 
-  public static Intent createIntent(Context context, @Nullable MealInstance mealInstance) {
+  public static Intent createIntent(Context context, @Nullable String mealId) {
     Intent intent = new Intent(context, MealEditorActivity.class);
 
-    if (mealInstance != null)
-      intent.putExtra(MealInstanceViewerActivity.EXTRA_MEAL_INSTANCE_ID, mealInstance);
+    if (mealId != null)
+      intent.putExtra(EXTRA_MEAL_ID, mealId);
 
     return intent;
   }
@@ -63,6 +59,12 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
       return null;
 
     return data.getStringExtra(EXTRA_MEAL_ID);
+  }
+
+  @NonNull
+  @Override
+  public MealEditorPresenter providePresenter() {
+    return new MealEditorPresenter(extractMealId(getIntent()));
   }
 
   @Override
@@ -123,21 +125,9 @@ public class MealEditorActivity extends BaseLoggedInActivity<MealEditorPresenter
     return super.onOptionsItemSelected(item);
   }
 
-  @NonNull
-  @Override
-  public MealEditorPresenter providePresenter() {
-    return new MealEditorPresenter(getIntent().getParcelableExtra(EXTRA_MEAL_INSTANCE_ID));
-  }
-
   @Override
   public void navigateToAddRecipe() {
     startActivityForResult(SuggestedRecipesToMealActivity.createIntent(this), ADD_RECIPE_CODE);
-  }
-
-  @Nullable
-  @Override
-  public String getMealId() {
-    return null;
   }
 
   @Override

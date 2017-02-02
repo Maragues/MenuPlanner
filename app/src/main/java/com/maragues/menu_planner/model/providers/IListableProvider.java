@@ -7,7 +7,7 @@ import com.maragues.menu_planner.model.ISynchronizable;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.Maybe;
 
 /**
  * Created by miguelaragues on 17/1/17.
@@ -17,5 +17,5 @@ public interface IListableProvider<T extends ISynchronizable> extends IProvider<
   @NonNull
   Flowable<List<T>> list();
 
-  Single<T> get(@NonNull String id);
+  Maybe<T> get(@NonNull String id);
 }

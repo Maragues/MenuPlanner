@@ -7,27 +7,28 @@ import com.maragues.menu_planner.model.Meal;
 import com.maragues.menu_planner.model.MealInstance;
 import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.test.factories.MealFactory;
+import com.maragues.menu_planner.test.factories.MealInstanceFactory;
 import com.maragues.menu_planner.test.factories.RecipeFactory;
 import com.maragues.menu_planner.test.mock.providers.MockMealProvider;
 import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.threeten.bp.LocalDateTime;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.verify;
  */
 public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, MealEditorPresenter> {
 
-  MealInstance mealInstance;
+  String expectedMealId;
 
   MockMealProvider mockMealProvider;
 
@@ -49,13 +50,84 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   public void setUp() {
     super.setUp();
 
-    mealInstance = null;
+    expectedMealId = null;
   }
 
   @NonNull
   @Override
   protected MealEditorPresenter createPresenter() {
-    return new MealEditorPresenter(mealInstance);
+    return new MealEditorPresenter(expectedMealId);
+  }
+
+  /*
+  LOAD MEAL
+   */
+
+  @Test
+  public void loadMeal_emptyId() {
+    expectedMealId = null;
+
+    initPresenter();
+
+    verify(presenter).loadMeal(isNull());
+  }
+
+  @Test
+  public void loadMeal_attemptsToGetExpectedId() {
+    expectedMealId = "My iddd";
+
+    initPresenter();
+
+    //I'm going to try fetch a non existing id, let's see what Database returns
+    verify(App.appComponent.mealProvider()).get(eq(expectedMealId));
+  }
+
+  @Test
+  public void loadMeal_success_invokesOnMealLoaded() {
+    expectedMealId = "My iddd";
+
+    Maybe<Meal> maybeMeal = Maybe.create(e -> e.onSuccess(MealFactory.base()));
+    doReturn(maybeMeal).when(App.appComponent.mealProvider()).get(eq(expectedMealId));
+
+    initPresenter();
+
+    verify(presenter).onMealLoaded(eq(MealFactory.base()));
+  }
+
+  @Test
+  public void loadMeal_success_rendersMeal() {
+    expectedMealId = "My iddd";
+
+    Maybe<Meal> maybeMeal = Maybe.create(e -> e.onSuccess(MealFactory.base()));
+    doReturn(maybeMeal).when(App.appComponent.mealProvider()).get(eq(expectedMealId));
+
+    initPresenter();
+
+    verify(presenter).renderMeal();
+  }
+
+  @Test
+  public void loadMeal_NoSuccess_completes_invokesOnNewMeal() {
+    expectedMealId = "My iddd";
+
+    Maybe<Meal> maybeMeal = Maybe.create(e -> e.onComplete());
+    doReturn(maybeMeal).when(App.appComponent.mealProvider()).get(eq(expectedMealId));
+
+    initPresenter();
+
+    verify(presenter).onNewMeal(eq(expectedMealId));
+  }
+
+  @Test
+  public void loadMeal_error_invokesError() {
+    expectedMealId = "My iddd";
+
+    Maybe<Meal> maybeMeal = Maybe.create(e -> e.onError(new Exception()));
+    doReturn(maybeMeal).when(App.appComponent.mealProvider()).get(eq(expectedMealId));
+
+    initPresenter();
+
+    verify(presenter).onErrorLoadingMeal(any(Throwable.class));
   }
 
   /*
@@ -71,8 +143,8 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   }
 
   @Test
-  public void save_withMealInstance_usesMealProvider() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
+  public void save_withExpectedMealId_usesMealProvider() {
+    expectedMealId = MealInstanceFactory.MEAL_INSTANCE_ID;
 
     initPresenter();
 
@@ -82,8 +154,23 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   }
 
   @Test
-  public void save_withMealInstance_usesMealInstanceProvider() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
+  public void save_withExpectedMealId_savesMealWithExpectedKey() {
+    expectedMealId = MealInstanceFactory.MEAL_INSTANCE_ID;
+
+    initPresenter();
+
+    presenter.onSaveClicked();
+
+    ArgumentCaptor<Meal> mealArgumentCaptor = ArgumentCaptor.forClass(Meal.class);
+
+    verify(App.appComponent.mealProvider()).create(mealArgumentCaptor.capture());
+
+    assertEquals(MealInstanceFactory.MEAL_INSTANCE_ID, mealArgumentCaptor.getValue().id());
+  }
+
+  @Test
+  public void save_withExpectedMealId_doesNotTouchMealInstanceProvider() { //test no legacy code executed
+    expectedMealId = MealInstanceFactory.MEAL_INSTANCE_ID;
 
     doReturn(Single.just(Meal.empty().withId("mealId")))
             .when(mockMealProvider)
@@ -93,62 +180,7 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
 
     presenter.onSaveClicked();
 
-    verify(App.appComponent.mealInstanceProvider()).create(any(MealInstance.class));
-  }
-
-  @Test
-  public void save_withMealInstance_savesMealInstanceWithCorrectDate() {
-    final LocalDateTime expectedTime = LocalDateTime.now();
-
-    mealInstance = MealInstance.fromLocalDateTime(expectedTime);
-
-    doReturn(Single.just(Meal.empty().withId("mealId")))
-            .when(mockMealProvider)
-            .create(any(Meal.class));
-
-    initPresenter();
-
-    presenter.onSaveClicked();
-
-    ArgumentCaptor<MealInstance> mealInstanceArgumentCaptor = ArgumentCaptor.forClass(MealInstance.class);
-
-    verify(App.appComponent.mealInstanceProvider()).create(mealInstanceArgumentCaptor.capture());
-
-    assertEquals(expectedTime, mealInstanceArgumentCaptor.getValue().dateTime());
-  }
-
-  @Test
-  public void save_withMealInstance_savesMealInstanceWithCorrectMealId() {
-    mealInstance = MealInstance.fromLocalDateTime(LocalDateTime.now());
-
-    String expectedMealId = "myMealId";
-
-    doReturn(Single.just(Meal.empty().withId(expectedMealId)))
-            .when(mockMealProvider)
-            .create(any(Meal.class));
-
-    initPresenter();
-
-    presenter.onSaveClicked();
-
-    ArgumentCaptor<MealInstance> mealInstanceArgumentCaptor = ArgumentCaptor.forClass(MealInstance.class);
-
-    verify(App.appComponent.mealInstanceProvider()).create(mealInstanceArgumentCaptor.capture());
-
-    assertEquals(expectedMealId, mealInstanceArgumentCaptor.getValue().mealId());
-  }
-
-  /*
-  LOAD MEAL ID
-   */
-
-  @Test
-  public void loadMeal_emptyId() {
-    doReturn(null).when(view).getMealId();
-
-    initPresenter();
-
-    verify(presenter).onNewMeal();
+    verify(App.appComponent.mealInstanceProvider(), never()).create(any(MealInstance.class));
   }
 
   @Test
@@ -164,48 +196,59 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
   public void onNewMeal_doesNotHideEmptyLayout() {
     initPresenter();
 
-    presenter.onNewMeal();
+    presenter.onNewMeal("bla");
 
     verify(view, never()).hideEmptyLayout();
   }
 
   @Test
-  public void onNewMeal_createsLocalMeal() {
+  public void onNewMeal_createsLocalMealWithExpectedId() {
+    expectedMealId = "my expectedId";
     initPresenter();
 
-    presenter.onNewMeal();
+    presenter.onNewMeal(expectedMealId);
 
     assertNotNull(presenter.meal);
+    assertEquals(expectedMealId, presenter.meal.id());
   }
 
   @Test
-  public void mealLoaded__doesNotHideEmptyLayout_ifEmpty() {
+  public void mealLoaded_storesMeal() {
     initPresenter();
 
-    Meal mockedMeal = mock(Meal.class);
-    Map<String, RecipeMeal> recipes = new HashMap<>();
-    doReturn(recipes).when(mockedMeal).recipes();
+    Meal meal = MealFactory.withRecipes();
 
-    presenter.onMealLoaded(mockedMeal);
+    presenter.onMealLoaded(meal);
+
+    assertEquals(meal, presenter.meal);
+  }
+
+  @Test
+  public void renderMeal_doesNotHideEmptyLayout_ifEmpty() {
+    initPresenter();
+
+    Meal meal = MealFactory.base();
+
+    presenter.onMealLoaded(meal);
+
+    presenter.renderMeal();
 
     verify(view, never()).hideEmptyLayout();
   }
 
   @Test
-  public void mealLoaded__hidesEmptyLayout_ifNotEmpty() {
+  public void renderMeal_hidesEmptyLayout_ifNotEmpty() {
     initPresenter();
 
-    Meal mockedMeal = mock(Meal.class);
-    Map<String, RecipeMeal> recipes = new HashMap<>();
-    recipes.put(RecipeFactory.RECIPE_ID, mock(RecipeMeal.class));
-    doReturn(recipes).when(mockedMeal).recipes();
-    presenter.onMealLoaded(mockedMeal);
+    presenter.onMealLoaded(MealFactory.withRecipes());
+
+    presenter.renderMeal();
 
     verify(view).hideEmptyLayout();
   }
 
   @Test
-  public void mealLoaded_loadsRecipes(){
+  public void renderMeal_loadsRecipes() {
     initPresenter();
 
     Map<String, RecipeMeal> recipes = new HashMap<>();
@@ -213,6 +256,8 @@ public class MealEditorPresenterTest extends BasePresenterTest<IMealEditor, Meal
     Meal meal = MealFactory.base().withRecipes(recipes);
 
     presenter.onMealLoaded(meal);
+
+    presenter.renderMeal();
 
     verify(view).showRecipes(eq(meal.recipeCollection()));
   }

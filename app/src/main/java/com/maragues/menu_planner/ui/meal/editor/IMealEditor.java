@@ -1,7 +1,5 @@
 package com.maragues.menu_planner.ui.meal.editor;
 
-import android.support.annotation.Nullable;
-
 import com.maragues.menu_planner.model.RecipeMeal;
 import com.maragues.menu_planner.ui.common.IBaseLoggedInView;
 
@@ -17,9 +15,6 @@ import java.util.Collection;
 public interface IMealEditor extends IBaseLoggedInView {
   @CallOnMainThread
   void navigateToAddRecipe();
-
-  @Nullable
-  String getMealId();
 
   @CallOnMainThread
   void hideEmptyLayout();

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -34,12 +35,12 @@ public abstract class MockBaseListableProvider<T extends ISynchronizable> extend
   }
 
   @Override
-  public Single<T> get(@NonNull String id) {
+  public Maybe<T> get(@NonNull String id) {
     for (T item : items) {
-      if (item.id().equals(id)) return Single.just(item);
+      if (item.id().equals(id)) return Maybe.just(item);
     }
 
-    return Single.error(new Resources.NotFoundException());
+    return Maybe.error(new Resources.NotFoundException());
   }
 
   public void reset() {

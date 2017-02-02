@@ -45,6 +45,8 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
   @NonNull
   @Override
   protected Meal snapshotToInstance(DataSnapshot dataSnapshot) {
+    boolean exists = dataSnapshot.exists();
+
     return Meal.create(dataSnapshot);
   }
 
@@ -71,7 +73,7 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     return Single.create(new SingleOnSubscribe<Meal>() {
       @Override
       public void subscribe(SingleEmitter<Meal> e) throws Exception {
-        Meal meal = assignKey(newMeal);
+        Meal meal = assignKeyIfEmpty(newMeal);
 
         getReference().updateChildren(synchronizableToMap(meal), (databaseError, databaseReference) -> {
           if (databaseError != null)
@@ -89,11 +91,14 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
     return Single.just(generateKey());
   }
 
-  Meal assignKey(Meal meal) {
+  Meal assignKeyIfEmpty(Meal meal) {
+    if (!App.appComponent.textUtils().isEmpty(meal.id()))
+      return meal;
+
     return meal.withId(generateKey());
   }
 
-  private String generateKey() {
+  String generateKey() {
     return getReference().child(MEALS_KEY)
             .child(App.appComponent.userProvider().getGroupId())
             .push().getKey();

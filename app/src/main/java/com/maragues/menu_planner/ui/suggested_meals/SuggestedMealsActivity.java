@@ -25,6 +25,8 @@ import butterknife.OnClick;
 public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsPresenter, ISuggestedMeals>
         implements ISuggestedMeals {
 
+  private static final int CREATE_MEAL_REQUEST = 5;
+
   @BindView(R.id.meal_list_suggestions)
   RecyclerView recyclerView;
 
@@ -52,7 +54,7 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   }
 
   @OnClick(R.id.suggested_meals_fab)
-  void onCreateMealFab(){
+  void onCreateMealFab() {
     getPresenter().onCreateMealClicked();
   }
 
@@ -70,8 +72,17 @@ public class SuggestedMealsActivity extends BaseLoggedInActivity<SuggestedMealsP
   }
 
   @Override
-  public void navigateToCreateMeal(String key) {
-    startActivity(MealEditorActivity.createIntent(this));
+  public void navigateToCreateMeal(String expectedMealId) {
+    startActivityForResult(MealEditorActivity.createIntent(this, expectedMealId), CREATE_MEAL_REQUEST);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == CREATE_MEAL_REQUEST)
+      if (resultCode != RESULT_OK)
+        getPresenter().onCreateMealCanceled();
   }
 
   @Override
