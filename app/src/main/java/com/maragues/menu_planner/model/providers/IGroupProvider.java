@@ -15,5 +15,7 @@ import io.reactivex.Single;
 public interface IGroupProvider extends IProvider<Group> {
   Single<Group> create(@NonNull Group group, @NonNull User creator);
 
+  Single<Group> update(@NonNull Group group);
+
   Flowable<Group> getUserGroup();
 }

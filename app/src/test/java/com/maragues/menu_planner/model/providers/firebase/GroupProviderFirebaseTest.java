@@ -1,11 +1,14 @@
 package com.maragues.menu_planner.model.providers.firebase;
 
+import com.google.firebase.database.DatabaseReference;
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.test.factories.GroupFactory;
 import com.maragues.menu_planner.test.factories.UserFactory;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.Map;
 
@@ -14,6 +17,9 @@ import io.reactivex.observers.TestObserver;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * Created by miguelaragues on 23/1/17.
@@ -58,7 +64,7 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
 
     Group createdGroup = observer.values().get(0);
     assertTrue(createdGroup.users().containsKey(userId));
-    assertEquals(Group.OWNER_ROLE, createdGroup.users().get(userId).role());
+    assertEquals(Group.STATUS_OWNER, createdGroup.users().get(userId).status());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -110,17 +116,39 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
     assertNotNull(map.get(expectedPath));
   }
 
-/*
+  /*
+  ADD USER TO GROUP
+   */
   @Test
-  public void synchronizableToMap_groupWithAdmin() {
-    String userId = "userIddd";
-    Group group = Group.empty().withId("bla").withNewRole(User.empty().withId(userId), Group.ADMIN_ROLE);
+  public void update_WithNewUser() {
+    Group group = GroupFactory.baseWithOwner();
 
-    Map<String, Object> map = provider.synchronizableToMap(group);
+    User user = UserFactory.base();
 
-    assertTrue(map.keySet().contains(userId));
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        ((DatabaseReference.CompletionListener) invocation.getArgument(1)).onComplete(null, databaseReference);
 
-    assertEquals(Group.ADMIN_ROLE, map.get(userId));
+        return null;
+      }
+    }).when(databaseReference).updateChildren(anyMap(), any(DatabaseReference.CompletionListener.class));
+
+    TestObserver<Group> observer = new TestObserver<>();
+
+    provider.update(group.withNewStatus(user, Group.STATUS_PENDING)).subscribe(observer);
+
+    observer.assertComplete();
+
+    observer.assertValueCount(1);
+
+    Group receivedGroup = observer.values().get(0);
+
+    assertEquals(2, receivedGroup.users().size());
   }
-*/
+
+  @Test(expected = IllegalArgumentException.class)
+  public void update_withNoId() {
+    provider.update(GroupFactory.base().withId("")).subscribe(new TestObserver<>());
+  }
 }

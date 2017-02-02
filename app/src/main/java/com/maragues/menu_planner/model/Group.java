@@ -1,11 +1,14 @@
 package com.maragues.menu_planner.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.firebase.database.DataSnapshot;
+import com.maragues.menu_planner.App;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
@@ -16,9 +19,10 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 public abstract class Group implements ISynchronizable<Group> {
-  public static final String OWNER_ROLE = "owner";
-  public static final String ADMIN_ROLE = "admin";
-  public static final String USER_ROLE = "user";
+  public static final String STATUS_OWNER = "owner";
+  public static final String STATUS_ADMIN = "admin";
+  public static final String STATUS_USER = "user";
+  public static final String STATUS_PENDING = "pending";
 
   @NonNull
   public abstract Map<String, UserGroup> users();
@@ -27,21 +31,71 @@ public abstract class Group implements ISynchronizable<Group> {
     return new AutoValue_Group.Builder();
   }
 
-  public Group withNewRole(@NonNull User admin, @NonNull String role) {
-    if (!role.equals(ADMIN_ROLE) && !role.equals(USER_ROLE) && !role.equals(OWNER_ROLE))
-      throw new IllegalArgumentException("Role must be " + ADMIN_ROLE
-              + " or " + USER_ROLE
-              + " or " + OWNER_ROLE);
+  public Group withNewStatus(@NonNull User user, @NonNull String role) {
+    if (!role.equals(STATUS_ADMIN)
+            && !role.equals(STATUS_USER)
+            && !role.equals(STATUS_OWNER)
+            && !role.equals(STATUS_PENDING))
+      throw new IllegalArgumentException("Role must be " + STATUS_ADMIN
+              + " or " + STATUS_USER
+              + " or " + STATUS_PENDING
+              + " or " + STATUS_OWNER);
 
     Map<String, UserGroup> users = users();
 
-    users.put(admin.id(), UserGroup.empty(admin.name(), role));
+    users.put(user.id(), UserGroup.fromUser(user, role));
+
+    assertHasSingleOwner(users);
 
     return withUsers(users);
   }
 
+  private void assertHasSingleOwner(@NonNull Map<String, UserGroup> users) {
+    if (!users.isEmpty()) {
+      Iterator<UserGroup> userIt = users.values().iterator();
+
+      boolean hasOwner = false;
+
+      while (userIt.hasNext())
+        if (userIt.next().isOwner()) {
+          if (hasOwner)
+            throw new IllegalStateException("Group can't have two owners");
+
+          hasOwner = true;
+        }
+
+      if (hasOwner)
+        return;
+    }
+
+    throw new IllegalStateException("Group does not have owner");
+  }
+
   public static Group empty() {
     return builder().setUsers(new HashMap<>()).build();
+  }
+
+  @NonNull
+  public UserGroup owner() {
+    Iterator<UserGroup> it = users().values().iterator();
+    if (users().size() == 1)
+      return it.next();
+
+    while (it.hasNext()) {
+      UserGroup candidate = it.next();
+      if (candidate.isOwner()) return candidate;
+    }
+
+    throw new IllegalStateException("Group does not have owner");
+  }
+
+
+  @Nullable
+  public UserGroup getUser(String id) {
+    if (App.appComponent.textUtils().isEmpty(id))
+      return null;
+
+    return users().get(id);
   }
 
   @AutoValue.Builder

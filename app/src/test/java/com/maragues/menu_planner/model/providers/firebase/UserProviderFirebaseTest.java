@@ -95,8 +95,12 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
     verify(App.appComponent.groupProvider()).create(any(Group.class), any(User.class));
   }
 
+  /*
+  WITH GROUP ID
+   */
+
   @Test
-  public void create_withGroupId_doesNotInvokeGroupProvider() {
+  public void create_withGroupId_addsUserToGroup() {
     TestObserver<User> observer = new TestObserver<>();
 
     String expectedGroupId = "myOwnGroupId";
@@ -140,6 +144,10 @@ public class UserProviderFirebaseTest extends BaseProviderFirebaseTest<UserProvi
 
     verify(user, never()).withGroupId(anyString());
   }
+
+  /*
+  WITHOUT GROUP ID
+   */
 
   @Test
   public void create_withEmptyGroupId_assignsGroupIdToUser() {

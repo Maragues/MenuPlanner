@@ -74,7 +74,7 @@ public class TeamPresenterTest extends BasePresenterTest<ITeam, TeamPresenter> {
   @Test
   public void onUsersLoaded_showsUsers() {
     //so that there are no invocations to loadUser
-    doReturn(Flowable.just(GroupFactory.baseWithAdmin())).when(App.appComponent.groupProvider()).getUserGroup();
+    doReturn(Flowable.just(GroupFactory.baseWithOwner())).when(App.appComponent.groupProvider()).getUserGroup();
 
     initPresenter();
 

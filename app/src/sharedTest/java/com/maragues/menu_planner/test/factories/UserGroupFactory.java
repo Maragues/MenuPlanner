@@ -8,12 +8,12 @@ import com.maragues.menu_planner.model.UserGroup;
  */
 
 public abstract class UserGroupFactory {
-  public static final String DEFAULT_ROLE = Group.ADMIN_ROLE;
+  public static final String DEFAULT_ROLE = Group.STATUS_ADMIN;
 
   private UserGroupFactory() {
   }
 
   public static UserGroup base() {
-    return UserGroup.empty(UserFactory.DEFAULT_NAME, DEFAULT_ROLE);
+    return UserGroup.fromUser(UserFactory.base(), DEFAULT_ROLE);
   }
 }

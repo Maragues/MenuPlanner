@@ -16,9 +16,10 @@ public abstract class UserFactory {
   public static final String DEFAULT_EMAIL = "ko@ko.ko";
   public static final String DEFAULT_PROVIDER = "firebase";
 
-  private UserFactory(){}
+  private UserFactory() {
+  }
 
-  public static User base(){
+  public static User base() {
     return User.empty().withId(DEFAULT_UID).withName(DEFAULT_NAME);
   }
 
@@ -32,5 +33,9 @@ public abstract class UserFactory {
     doReturn(UserFactory.DEFAULT_PROVIDER).when(mockedFirebaseUser).getProviderId();
 
     return mockedFirebaseUser;
+  }
+
+  public static User base(String id) {
+    return base().withId(id);
   }
 }
