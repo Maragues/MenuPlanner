@@ -78,7 +78,7 @@ public class MealProviderFirebaseTest extends BaseProviderFirebaseTest<MealProvi
 
     Meal returnedMeal = provider.assignKeyIfEmpty(mockMeal);
 
-    verify(provider, never()).generateKey();
+    verify(provider, never()).createKey();
 
     assertEquals(existingKey, returnedMeal.id());
   }
@@ -96,11 +96,11 @@ public class MealProviderFirebaseTest extends BaseProviderFirebaseTest<MealProvi
     String generatedKey = "generated";
     doReturn(generatedKey)
             .when(provider)
-            .generateKey();
+            .createKey();
 
     provider.assignKeyIfEmpty(mockMeal);
 
-    verify(provider).generateKey();
+    verify(provider).createKey();
     verify(mockMeal).withId(eq(generatedKey));
   }
 

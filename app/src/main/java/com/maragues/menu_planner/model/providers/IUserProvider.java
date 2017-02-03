@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.maragues.menu_planner.model.User;
 
+import net.grandcentrix.thirtyinch.callonmainthread.CallOnMainThread;
+
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
@@ -26,4 +28,6 @@ public interface IUserProvider extends IProvider<User> {
   Single<Boolean> exists(@NonNull User user);
 
   Maybe<User> get(String uid);
+
+  Single<String> generateKey();
 }

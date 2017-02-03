@@ -65,6 +65,11 @@ public class MockUserProvider extends MockBaseProvider<User> implements IUserPro
     });
   }
 
+  @Override
+  public Single<String> generateKey() {
+    return Single.just(DEFAULT_UID);
+  }
+
   public void clear() {
     uuid = null;
     groupId = null;

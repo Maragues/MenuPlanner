@@ -46,4 +46,20 @@ public class TeamPresenter extends BaseLoggedInPresenter<ITeam> {
       sendToView(v -> v.showUsers(users));
     }
   }
+
+  public void onAddToTeamClicked() {
+    disposables.add(App.appComponent.userProvider().generateKey()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess(this::inviteUser)
+            .subscribe());
+  }
+
+  private void inviteUser(String userId) {
+    if (getView() != null) {
+      getView().inviteUserWithId(userId);
+    } else {
+      sendToView(v -> v.inviteUserWithId(userId));
+    }
+  }
 }

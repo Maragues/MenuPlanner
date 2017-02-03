@@ -19,7 +19,7 @@ public abstract class UserGroup implements ISynchronizable<UserGroup> {
   public abstract String name();
 
   @NonNull
-  public abstract String status();
+  public abstract String role();
 
   public static Builder builder() {
     return new AutoValue_UserGroup.Builder();
@@ -34,7 +34,7 @@ public abstract class UserGroup implements ISynchronizable<UserGroup> {
 
     return builder()
             .setName(user.name())
-            .setStatus(status)
+            .setRole(status)
             .setId(user.id())
             .build();
   }
@@ -45,14 +45,14 @@ public abstract class UserGroup implements ISynchronizable<UserGroup> {
 
     public abstract Builder setId(String value);
 
-    public abstract Builder setStatus(String value);
+    public abstract Builder setRole(String value);
 
     public abstract UserGroup build();
   }
 
   public abstract UserGroup withName(String name);
 
-  public abstract UserGroup withStatus(String status);
+  public abstract UserGroup withRole(String role);
 
   public static UserGroup create(DataSnapshot dataSnapshot) {
     return dataSnapshot.getValue(AutoValue_UserGroup.FirebaseValue.class)
@@ -65,18 +65,14 @@ public abstract class UserGroup implements ISynchronizable<UserGroup> {
   }
 
   public boolean isAdmin() {
-    return status().equals(Group.STATUS_ADMIN);
+    return role().equals(Group.ROLE_ADMIN);
   }
 
   public boolean isUser() {
-    return status().equals(Group.STATUS_USER);
+    return role().equals(Group.ROLE_USER);
   }
 
   public boolean isOwner() {
-    return status().equals(Group.STATUS_OWNER);
-  }
-
-  public boolean isPending() {
-    return status().equals(Group.STATUS_PENDING);
+    return role().equals(Group.ROLE_OWNER);
   }
 }

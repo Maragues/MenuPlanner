@@ -64,7 +64,7 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
 
     Group createdGroup = observer.values().get(0);
     assertTrue(createdGroup.users().containsKey(userId));
-    assertEquals(Group.STATUS_OWNER, createdGroup.users().get(userId).status());
+    assertEquals(Group.ROLE_OWNER, createdGroup.users().get(userId).role());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -136,7 +136,7 @@ public class GroupProviderFirebaseTest extends BaseProviderFirebaseTest<GroupPro
 
     TestObserver<Group> observer = new TestObserver<>();
 
-    provider.update(group.withNewStatus(user, Group.STATUS_PENDING)).subscribe(observer);
+    provider.update(group.addWithRole(user, Group.ROLE_ADMIN)).subscribe(observer);
 
     observer.assertComplete();
 

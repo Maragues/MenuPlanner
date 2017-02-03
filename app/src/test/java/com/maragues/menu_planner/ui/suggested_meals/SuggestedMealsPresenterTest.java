@@ -77,7 +77,7 @@ public class SuggestedMealsPresenterTest extends BasePresenterTest<ISuggestedMea
 
     doReturn(Single.just(expectedKey))
             .when(App.appComponent.mealProvider())
-            .getKey();
+            .generateKey();
 
     presenter.onCreateMealClicked();
 
@@ -94,7 +94,7 @@ public class SuggestedMealsPresenterTest extends BasePresenterTest<ISuggestedMea
 
     doReturn(Single.just(expectedKey))
             .when(App.appComponent.mealProvider())
-            .getKey();
+            .generateKey();
 
     presenter.onCreateMealClicked();
 
@@ -111,7 +111,7 @@ public class SuggestedMealsPresenterTest extends BasePresenterTest<ISuggestedMea
 
     doReturn(Single.just(expectedKey))
             .when(App.appComponent.mealProvider())
-            .getKey();
+            .generateKey();
 
     presenter.onCreateMealClicked();
 

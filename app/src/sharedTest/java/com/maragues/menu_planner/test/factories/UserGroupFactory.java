@@ -8,7 +8,7 @@ import com.maragues.menu_planner.model.UserGroup;
  */
 
 public abstract class UserGroupFactory {
-  public static final String DEFAULT_ROLE = Group.STATUS_ADMIN;
+  public static final String DEFAULT_ROLE = Group.ROLE_ADMIN;
 
   private UserGroupFactory() {
   }

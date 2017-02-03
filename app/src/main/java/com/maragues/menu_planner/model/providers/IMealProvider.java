@@ -11,5 +11,5 @@ import io.reactivex.Single;
 public interface IMealProvider extends IListableProvider<Meal>{
   Single<Meal> create(Meal meal);
 
-  Single<String> getKey();
+  Single<String> generateKey();
 }

@@ -17,7 +17,7 @@ import io.reactivex.Single;
 public class MockGroupProvider extends MockBaseProvider<Group> implements IGroupProvider {
   @Override
   public Single<Group> create(@NonNull Group group, @NonNull User creator) {
-    return Single.just(group.withNewStatus(creator, Group.STATUS_ADMIN));
+    return Single.just(group.addWithRole(creator, Group.ROLE_ADMIN));
   }
 
   @Override

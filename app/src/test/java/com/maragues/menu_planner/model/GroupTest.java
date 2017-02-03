@@ -27,55 +27,55 @@ public class GroupTest extends BaseUnitTest {
   @Test
   public void withNewRole_addUser_admin() {
     String uid = "uiddd";
-    Group group = GroupFactory.baseWithOwner().withNewStatus(UserFactory.base().withId(uid), Group.STATUS_ADMIN);
+    Group group = GroupFactory.baseWithOwner().addWithRole(UserFactory.base().withId(uid), Group.ROLE_ADMIN);
 
     assertTrue(group.users().keySet().contains(uid));
-    assertEquals(Group.STATUS_ADMIN, group.users().get(uid).status());
+    assertEquals(Group.ROLE_ADMIN, group.users().get(uid).role());
   }
 
   @Test
   public void withNewRole_addUser_user() {
     String uid = "uiddd";
-    Group group = GroupFactory.baseWithOwner().withNewStatus(UserFactory.base().withId(uid), Group.STATUS_USER);
+    Group group = GroupFactory.baseWithOwner().addWithRole(UserFactory.base().withId(uid), Group.ROLE_USER);
 
     assertTrue(group.users().keySet().contains(uid));
-    assertEquals(Group.STATUS_USER, group.users().get(uid).status());
+    assertEquals(Group.ROLE_USER, group.users().get(uid).role());
   }
 
   @Test
   public void withNewRole_addOwner_owner() {
     String uid = "uiddd";
-    Group group = GroupFactory.base().withNewStatus(UserFactory.base().withId(uid), Group.STATUS_OWNER);
+    Group group = GroupFactory.base().addWithRole(UserFactory.base().withId(uid), Group.ROLE_OWNER);
 
     assertTrue(group.users().keySet().contains(uid));
-    assertEquals(Group.STATUS_OWNER, group.users().get(uid).status());
+    assertEquals(Group.ROLE_OWNER, group.users().get(uid).role());
   }
 
   @Test(expected = IllegalStateException.class)
   public void withNewRole_addOwner_withAlreadyAnOwner() {
-    Group group = GroupFactory.base().withNewStatus(UserFactory.base().withId("ownerId"), Group.STATUS_OWNER);
+    Group group = GroupFactory.base().addWithRole(UserFactory.base().withId("ownerId"), Group.ROLE_OWNER);
 
-    group.withNewStatus(UserFactory.base().withId("perryId"), Group.STATUS_OWNER);
+    group.addWithRole(UserFactory.base().withId("perryId"), Group.ROLE_OWNER);
   }
 
   @Test
   public void withNewRole_addUser() {
-    Group group = GroupFactory.base().withNewStatus(UserFactory.base().withId("ownerId"), Group.STATUS_OWNER);
+    Group group = GroupFactory.base().addWithRole(UserFactory.base().withId("ownerId"), Group.ROLE_OWNER);
 
     assertEquals(1, group.users().size());
 
-    group.withNewStatus(UserFactory.base().withId("perryId"), Group.STATUS_USER);
+    group.addWithRole(UserFactory.base().withId("perryId"), Group.ROLE_USER);
 
     assertEquals(2, group.users().size());
   }
 
   @Test
   public void withNewRole_addAdmin() {
-    Group group = GroupFactory.base().withNewStatus(UserFactory.base().withId("ownerId"), Group.STATUS_OWNER);
+    Group group = GroupFactory.base().addWithRole(UserFactory.base().withId("ownerId"), Group.ROLE_OWNER);
 
     assertEquals(1, group.users().size());
 
-    group.withNewStatus(UserFactory.base().withId("perryId"), Group.STATUS_ADMIN);
+    group.addWithRole(UserFactory.base().withId("perryId"), Group.ROLE_ADMIN);
 
     assertEquals(2, group.users().size());
   }
@@ -88,21 +88,14 @@ public class GroupTest extends BaseUnitTest {
   public void withNewRole_fromOwner_toAdmin() {
     String ownerId = "blabla id";
 
-    GroupFactory.baseWithOwner(ownerId).withNewStatus(UserFactory.base(ownerId), Group.STATUS_ADMIN);
+    GroupFactory.baseWithOwner(ownerId).addWithRole(UserFactory.base(ownerId), Group.ROLE_ADMIN);
   }
 
   @Test(expected = IllegalStateException.class)
   public void withNewRole_fromOwner_toUser() {
     String ownerId = "blabla id";
 
-    GroupFactory.baseWithOwner(ownerId).withNewStatus(UserFactory.base(ownerId), Group.STATUS_USER);
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void withNewRole_fromOwner_toPending() {
-    String ownerId = "blabla id";
-
-    GroupFactory.baseWithOwner(ownerId).withNewStatus(UserFactory.base(ownerId), Group.STATUS_PENDING);
+    GroupFactory.baseWithOwner(ownerId).addWithRole(UserFactory.base(ownerId), Group.ROLE_USER);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -110,8 +103,8 @@ public class GroupTest extends BaseUnitTest {
     User user = UserFactory.base("blabla id");
 
     GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_ADMIN)
-            .withNewStatus(user, Group.STATUS_OWNER);
+            .addWithRole(user, Group.ROLE_ADMIN)
+            .addWithRole(user, Group.ROLE_OWNER);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -119,17 +112,8 @@ public class GroupTest extends BaseUnitTest {
     User user = UserFactory.base("blabla id");
 
     GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_USER)
-            .withNewStatus(user, Group.STATUS_OWNER);
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void withNewRole_fromPending_toOwner() {
-    User user = UserFactory.base("blabla id");
-
-    GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_PENDING)
-            .withNewStatus(user, Group.STATUS_OWNER);
+            .addWithRole(user, Group.ROLE_USER)
+            .addWithRole(user, Group.ROLE_OWNER);
   }
 
   @Test
@@ -138,10 +122,10 @@ public class GroupTest extends BaseUnitTest {
     User user = UserFactory.base(id);
 
     Group group = GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_USER)
-            .withNewStatus(user, Group.STATUS_ADMIN);
+            .addWithRole(user, Group.ROLE_USER)
+            .addWithRole(user, Group.ROLE_ADMIN);
 
-    assertEquals(Group.STATUS_ADMIN, group.getUser(id).status());
+    assertEquals(Group.ROLE_ADMIN, group.getUser(id).role());
   }
 
   @Test
@@ -150,40 +134,16 @@ public class GroupTest extends BaseUnitTest {
     User user = UserFactory.base(id);
 
     Group group = GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_ADMIN)
-            .withNewStatus(user, Group.STATUS_USER);
+            .addWithRole(user, Group.ROLE_ADMIN)
+            .addWithRole(user, Group.ROLE_USER);
 
-    assertEquals(Group.STATUS_USER, group.getUser(id).status());
-  }
-
-  @Test
-  public void withNewRole_fromPending_toUser() {
-    String id = "blabla id";
-    User user = UserFactory.base(id);
-
-    Group group = GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_PENDING)
-            .withNewStatus(user, Group.STATUS_USER);
-
-    assertEquals(Group.STATUS_USER, group.getUser(id).status());
-  }
-
-  @Test
-  public void withNewRole_fromPending_toAdmin() {
-    String id = "blabla id";
-    User user = UserFactory.base(id);
-
-    Group group = GroupFactory.baseWithOwner()
-            .withNewStatus(user, Group.STATUS_PENDING)
-            .withNewStatus(user, Group.STATUS_ADMIN);
-
-    assertEquals(Group.STATUS_ADMIN, group.getUser(id).status());
+    assertEquals(Group.ROLE_USER, group.getUser(id).role());
   }
 
   @Test(expected = IllegalStateException.class)
   public void withoutOwner() {
     User user = UserFactory.base().withId("Weird user");
-    GroupFactory.base().withNewStatus(user, Group.STATUS_USER);
+    GroupFactory.base().addWithRole(user, Group.ROLE_USER);
   }
 
   /*
@@ -192,9 +152,9 @@ public class GroupTest extends BaseUnitTest {
   @Test
   public void testOwner() {
     User owner = UserFactory.base().withId("Weird owner");
-    Group group = GroupFactory.base().withNewStatus(owner, Group.STATUS_OWNER);
+    Group group = GroupFactory.base().addWithRole(owner, Group.ROLE_OWNER);
 
-    assertEquals(UserGroup.fromUser(owner, Group.STATUS_OWNER), group.owner());
+    assertEquals(UserGroup.fromUser(owner, Group.ROLE_OWNER), group.owner());
   }
 
   @Test
@@ -203,15 +163,15 @@ public class GroupTest extends BaseUnitTest {
     User owner = UserFactory.base(ownerID);
     Group group = GroupFactory.baseWithOwner(owner);
 
-    assertEquals(UserGroup.fromUser(owner, Group.STATUS_OWNER), group.getUser(ownerID));
+    assertEquals(UserGroup.fromUser(owner, Group.ROLE_OWNER), group.getUser(ownerID));
   }
 
   @Test
   public void testGetUserById() {
     String userId = "user Id";
     User user = UserFactory.base(userId);
-    Group group = GroupFactory.baseWithOwner().withNewStatus(user, Group.STATUS_USER);
+    Group group = GroupFactory.baseWithOwner().addWithRole(user, Group.ROLE_USER);
 
-    assertEquals(UserGroup.fromUser(user, Group.STATUS_USER), group.getUser(userId));
+    assertEquals(UserGroup.fromUser(user, Group.ROLE_USER), group.getUser(userId));
   }
 }

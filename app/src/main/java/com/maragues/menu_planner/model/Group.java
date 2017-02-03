@@ -19,10 +19,9 @@ import me.mattlogan.auto.value.firebase.annotation.FirebaseValue;
 @AutoValue
 @FirebaseValue
 public abstract class Group implements ISynchronizable<Group> {
-  public static final String STATUS_OWNER = "owner";
-  public static final String STATUS_ADMIN = "admin";
-  public static final String STATUS_USER = "user";
-  public static final String STATUS_PENDING = "pending";
+  public static final String ROLE_OWNER = "owner";
+  public static final String ROLE_ADMIN = "admin";
+  public static final String ROLE_USER = "user";
 
   @NonNull
   public abstract Map<String, UserGroup> users();
@@ -31,15 +30,14 @@ public abstract class Group implements ISynchronizable<Group> {
     return new AutoValue_Group.Builder();
   }
 
-  public Group withNewStatus(@NonNull User user, @NonNull String role) {
-    if (!role.equals(STATUS_ADMIN)
-            && !role.equals(STATUS_USER)
-            && !role.equals(STATUS_OWNER)
-            && !role.equals(STATUS_PENDING))
-      throw new IllegalArgumentException("Role must be " + STATUS_ADMIN
-              + " or " + STATUS_USER
-              + " or " + STATUS_PENDING
-              + " or " + STATUS_OWNER);
+  public Group addWithRole(@NonNull User user, @NonNull String role) {
+    if (!role.equals(ROLE_ADMIN)
+            && !role.equals(ROLE_USER)
+            && !role.equals(ROLE_OWNER)
+            )
+      throw new IllegalArgumentException("Role must be " + ROLE_ADMIN
+              + " or " + ROLE_USER
+              + " or " + ROLE_OWNER);
 
     Map<String, UserGroup> users = users();
 

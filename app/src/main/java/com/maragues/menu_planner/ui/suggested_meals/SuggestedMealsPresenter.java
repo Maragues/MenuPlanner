@@ -114,7 +114,7 @@ public class SuggestedMealsPresenter extends BaseLoggedInPresenter<ISuggestedMea
   }
 
   public void onCreateMealClicked() {
-    disposables.add(App.appComponent.mealProvider().getKey()
+    disposables.add(App.appComponent.mealProvider().generateKey()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess(key -> {

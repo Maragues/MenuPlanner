@@ -87,18 +87,18 @@ public class MealProviderFirebase extends BaseListableFirebaseProvider<Meal> imp
   }
 
   @Override
-  public Single<String> getKey() {
-    return Single.just(generateKey());
+  public Single<String> generateKey() {
+    return Single.just(createKey());
   }
 
   Meal assignKeyIfEmpty(Meal meal) {
     if (!App.appComponent.textUtils().isEmpty(meal.id()))
       return meal;
 
-    return meal.withId(generateKey());
+    return meal.withId(createKey());
   }
 
-  String generateKey() {
+  String createKey() {
     return getReference().child(MEALS_KEY)
             .child(App.appComponent.userProvider().getGroupId())
             .push().getKey();

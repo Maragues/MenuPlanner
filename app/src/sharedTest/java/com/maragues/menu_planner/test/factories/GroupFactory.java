@@ -28,6 +28,6 @@ public abstract class GroupFactory {
   }
 
   public static Group baseWithOwner(User owner) {
-    return base().withNewStatus(owner, Group.STATUS_OWNER);
+    return base().addWithRole(owner, Group.ROLE_OWNER);
   }
 }

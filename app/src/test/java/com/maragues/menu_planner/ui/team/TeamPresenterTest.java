@@ -12,10 +12,12 @@ import org.mockito.ArgumentCaptor;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -79,5 +81,20 @@ public class TeamPresenterTest extends BasePresenterTest<ITeam, TeamPresenter> {
     initPresenter();
 
     verify(presenter).onUsersLoaded(anyList());
+  }
+
+  /*
+  ADD TO TEAM CLICKED
+   */
+  @Test
+  public void addToTeamClicked_requestsNewUserId(){
+    initPresenter();
+
+    String expectedId = "new user id";
+    doReturn(Single.just(expectedId)).when(App.appComponent.userProvider()).generateKey();
+
+    presenter.onAddToTeamClicked();
+
+    verify(view).inviteUserWithId(eq(expectedId));
   }
 }

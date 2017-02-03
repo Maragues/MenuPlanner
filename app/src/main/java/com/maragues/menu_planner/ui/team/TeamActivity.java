@@ -58,14 +58,29 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
 
   @OnClick(R.id.team_activity_fab)
   void onAddToTeamClicked() {
-    // TODO: 28/1/17 Check Jointfully's Utils.shareApp
+    getPresenter().onAddToTeamClicked();
+  }
+
+  @Override
+  public void showUsers(List<UserGroup> users) {
+    teamMembers.clear();
+    teamMembers.addAll(users);
+
+    // TODO: 27/1/17 Use DiffUtil
+    adapter.notifyDataSetChanged();
+  }
+
+  @Override
+  public void inviteUserWithId(String expectedUserId) {
     try {
       Intent sendIntent = new Intent();
       sendIntent.setAction(Intent.ACTION_SEND);
 
       sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invitation_title));
-      sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invitation_message,
-              TeamUtils.inviteUri()));
+      sendIntent.putExtra(
+              Intent.EXTRA_TEXT,
+              getString(R.string.invitation_message, TeamUtils.inviteUri(expectedUserId))
+      );
 
       sendIntent.setType("text/plain");
 
@@ -85,14 +100,5 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public void showUsers(List<UserGroup> users) {
-    teamMembers.clear();
-    teamMembers.addAll(users);
-
-    // TODO: 27/1/17 Use DiffUtil
-    adapter.notifyDataSetChanged();
   }
 }

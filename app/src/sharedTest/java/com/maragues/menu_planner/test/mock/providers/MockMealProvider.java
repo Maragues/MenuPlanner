@@ -19,7 +19,7 @@ public class MockMealProvider extends MockBaseListableProvider<Meal> implements 
   }
 
   @Override
-  public Single<String> getKey() {
+  public Single<String> generateKey() {
     return Single.just(MealFactory.MEAL_ID);
   }
 }

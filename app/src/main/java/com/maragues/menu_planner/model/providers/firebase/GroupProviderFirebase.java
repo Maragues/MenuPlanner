@@ -29,7 +29,7 @@ public class GroupProviderFirebase extends BaseProviderFirebase<Group> implement
       throw new IllegalArgumentException("creator must have an id assigned");
 
     return Single.create(e -> {
-      Group internalGroup = group.withId(creator.id()).withNewStatus(creator, Group.STATUS_OWNER);
+      Group internalGroup = group.withId(creator.id()).addWithRole(creator, Group.ROLE_OWNER);
 
       getReference().updateChildren(synchronizableToMap(internalGroup), (databaseError, databaseReference) -> {
         if (databaseError != null)

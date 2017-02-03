@@ -155,6 +155,11 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
     );
   }
 
+  @Override
+  public Single<String> generateKey() {
+    return Single.just(getReference().child(USERS_KEY).push().getKey());
+  }
+
   private DatabaseReference getUserReference(String uid) {
     return getReference().child(USERS_KEY).child(uid);
   }

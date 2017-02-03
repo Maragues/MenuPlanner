@@ -143,7 +143,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
         GoogleSignInAccount account = result.getSignInAccount();
         firebaseAuthWithGoogle(account);
       } else {
-        Log.d(TAG, "status " + result.getStatus().getStatusCode());
+        Log.d(TAG, "role " + result.getStatus().getStatusCode());
 
         // Google Sign In failed, update UI appropriately
         // ...
