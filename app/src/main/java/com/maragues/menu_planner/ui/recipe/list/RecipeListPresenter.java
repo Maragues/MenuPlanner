@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.firebase.ui.database.ChangeEventListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -121,7 +122,7 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
     if (adapter == null) {
       //TODO should this be static or extracted? It doesn't hold a reference to Context or View. Adapter handles view, it shouldn't be here
       adapter = new FirebaseRecyclerAdapter<Recipe, ViewHolder>(
-              Recipe.class,
+              Recipe::create,
               R.layout.item_recipe_list,
               ViewHolder.class,
               recipesQuery()
@@ -140,20 +141,15 @@ class RecipeListPresenter extends BaseLoggedInPresenter<IRecipeList> {
         }
 
         @Override
-        protected Recipe parseSnapshot(DataSnapshot snapshot) {
-          return Recipe.create(snapshot);
-        }
-
-        @Override
-        protected void onCancelled(DatabaseError error) {
-          super.onCancelled(error);
+        public void onDataChanged() {
+          super.onDataChanged();
 
           isLoadingSubject.onNext(false);
         }
 
         @Override
-        protected void onDataChanged() {
-          super.onDataChanged();
+        public void onCancelled(DatabaseError error) {
+          super.onCancelled(error);
 
           isLoadingSubject.onNext(false);
         }

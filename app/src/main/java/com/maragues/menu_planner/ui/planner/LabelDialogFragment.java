@@ -2,6 +2,7 @@ package com.maragues.menu_planner.ui.planner;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.firebase.ui.database.ChangeEventListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -79,7 +82,7 @@ public class LabelDialogFragment extends BaseDialogFragment {
     isLoadingSubject.onNext(true);
 
     return new FirebaseRecyclerAdapter<MealInstanceLabel, LabelViewHolder>(
-            MealInstanceLabel.class,
+            MealInstanceLabel::create,
             R.layout.item_meal_label,
             LabelViewHolder.class,
             labelQuery()
@@ -97,20 +100,15 @@ public class LabelDialogFragment extends BaseDialogFragment {
       }
 
       @Override
-      protected MealInstanceLabel parseSnapshot(DataSnapshot snapshot) {
-        return MealInstanceLabel.create(snapshot);
-      }
-
-      @Override
-      protected void onCancelled(DatabaseError error) {
-        super.onCancelled(error);
+      public void onDataChanged() {
+        super.onDataChanged();
 
         isLoadingSubject.onNext(false);
       }
 
       @Override
-      protected void onDataChanged() {
-        super.onDataChanged();
+      public void onCancelled(DatabaseError error) {
+        super.onCancelled(error);
 
         isLoadingSubject.onNext(false);
       }
