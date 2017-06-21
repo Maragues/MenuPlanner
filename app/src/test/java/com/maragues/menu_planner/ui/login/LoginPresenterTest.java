@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -38,6 +39,8 @@ import static org.mockito.Mockito.verify;
 public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter> {
   public LoginPresenterTest() {
     super(ILogin.class);
+
+    doReturn(Observable.empty()).when(view).invitationObservable();
   }
 
   @NonNull

@@ -42,7 +42,6 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
       disposables.add(App.appComponent.mealProvider().get(mealId)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
-              .doOnSuccess(this::onMealLoaded)
               .doFinally(() -> {
                 if (meal != null) {
                   renderMeal();
@@ -50,8 +49,7 @@ public class MealEditorPresenter extends BaseLoggedInPresenter<IMealEditor> {
                   onNewMeal(mealId);
                 }
               })
-              .doOnError(this::onErrorLoadingMeal)
-              .subscribe());
+              .subscribe(this::onMealLoaded, this::onErrorLoadingMeal));
     }
   }
 

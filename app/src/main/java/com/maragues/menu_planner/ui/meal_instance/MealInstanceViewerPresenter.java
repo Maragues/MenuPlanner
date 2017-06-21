@@ -38,9 +38,7 @@ public class MealInstanceViewerPresenter extends BaseLoggedInPresenter<IMealInst
     disposables.add(App.appComponent.mealInstanceProvider().get(mealId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(this::onMealInstanceFetched)
-            .doOnError(this::onFetchError)
-            .subscribe());
+            .subscribe(this::onMealInstanceFetched, this::onFetchError));
   }
 
   public void onFetchError(Throwable throwable) {

@@ -52,8 +52,7 @@ public class LoginPresenter extends BasePresenter<ILogin> {
 
   void checkInvites() {
     disposables.add(getView().invitationObservable()
-            .doOnNext(this::onInvitationChecked)
-            .subscribe());
+            .subscribe(this::onInvitationChecked));
 
     getView().checkInvitations();
   }
