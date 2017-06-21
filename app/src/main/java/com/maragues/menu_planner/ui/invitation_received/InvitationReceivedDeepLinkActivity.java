@@ -19,41 +19,13 @@ public class InvitationReceivedDeepLinkActivity extends BaseActivity<InvitationR
         implements IInvitationReceived, GoogleApiClient.OnConnectionFailedListener {
   private static final String TAG = InvitationReceivedDeepLinkActivity.class.getSimpleName();
 
-  private GoogleApiClient googleApiClient;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Log.d(TAG,"Creating deeplink activity navigating");
+
     getPresenter().decideNextScreen(this);
-  }
-
-  private void checkInvites() {
-    googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
-            .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-            .addApi(AppInvite.API)
-            .build();
-
-    boolean autoLaunchDeepLink = false;
-    AppInvite.AppInviteApi.getInvitation(googleApiClient, this, autoLaunchDeepLink)
-            .setResultCallback(
-                    result -> {
-                      if (result.getStatus().isSuccess()) {
-                        // Extract information from the intent
-                        Intent intent = result.getInvitationIntent();
-                        String deepLink = AppInviteReferral.getDeepLink(intent);
-                        String invitationId = AppInviteReferral.getInvitationId(intent);
-
-                        Log.d(TAG, "Deep link. " + deepLink + ", InvitationId " + invitationId);
-
-                        // Because autoLaunchDeepLink = true we don't have to do anything
-                        // here, but we could set that to false and manually choose
-                        // an Activity to launch to handle the deep link here.
-                        // ...
-                      }
-                    });
-
-    googleApiClient.disconnect();
   }
 
   @Override

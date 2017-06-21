@@ -2,6 +2,7 @@ package com.maragues.menu_planner.ui.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,12 +25,17 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.User;
@@ -96,9 +102,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
             .build();
 
     googleApiClient = new GoogleApiClient.Builder(getApplicationContext())
-            .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+            .enableAutoManage(this, this)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-            .addApi(AppInvite.API)
             .build();
 
     mAuth = FirebaseAuth.getInstance();
@@ -196,32 +201,28 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   }
 
   public void checkInvitations() {
-    // Check for App Invite invitations and launch deep-link activity if possible.
-    // Requires that an Activity is registered in AndroidManifest.xml to handle
-    // deep-link URLs.
-    boolean autoLaunchDeepLink = true;
-    AppInvite.AppInviteApi.getInvitation(googleApiClient, this, autoLaunchDeepLink)
-            .setResultCallback(
-                    new ResultCallback<AppInviteInvitationResult>() {
-                      @Override
-                      public void onResult(AppInviteInvitationResult result) {
-                        if (result.getStatus().isSuccess()) {
-                          // Extract information from the intent
-                          Intent intent = result.getInvitationIntent();
-                          String deepLink = AppInviteReferral.getDeepLink(intent);
-                          String invitationId = AppInviteReferral.getInvitationId(intent);
+    FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
+            .addOnSuccessListener(this, data -> {
+              if (data == null) {
+                Log.d(TAG, "getInvitation: no data");
+                return;
+              }
 
-                          Log.d(TAG, "Deep link. " + deepLink + ", InvitationId " + invitationId);
+              // Get the deep link
+              Uri deepLink = data.getLink();
 
-                          // Because autoLaunchDeepLink = true we don't have to do anything
-                          // here, but we could set that to false and manually choose
-                          // an Activity to launch to handle the deep link here.
-                          // ...
-                        } else {
-                          hasInvitationSubject.onNext(false);
-                        }
-                      }
-                    });
+              // Extract invite
+              FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
+              if (invite != null) {
+                String invitationId = invite.getInvitationId();
+
+                Log.d(TAG, "Deep link. " + deepLink + ", InvitationId " + invitationId);
+              }
+
+              // Handle the deep link
+              // ...
+            })
+            .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
   }
 
   @Override

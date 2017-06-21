@@ -58,6 +58,10 @@ android {
             java.srcDir sharedTestDir
         }
     }
+
+    if(project.hasProperty('devBuild')) {
+        aaptOptions.cruncherEnabled = false
+    }
 }
 
 dependencies {

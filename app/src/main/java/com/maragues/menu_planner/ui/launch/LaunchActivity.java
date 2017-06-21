@@ -20,8 +20,6 @@ public class LaunchActivity extends BaseActivity<LaunchPresenter, ILaunch> imple
     return new Intent(context, LaunchActivity.class);
   }
 
-  private GoogleApiClient googleApiClient;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

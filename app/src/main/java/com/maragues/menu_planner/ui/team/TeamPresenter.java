@@ -35,8 +35,7 @@ public class TeamPresenter extends BaseLoggedInPresenter<ITeam> {
 
               return new ArrayList<>(group1.users().values());
             })
-            .doOnNext(this::onUsersLoaded)
-            .subscribe());
+            .subscribe(this::onUsersLoaded));
   }
 
   void onUsersLoaded(List<UserGroup> users) {
@@ -51,8 +50,7 @@ public class TeamPresenter extends BaseLoggedInPresenter<ITeam> {
     disposables.add(App.appComponent.userProvider().generateKey()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess(this::inviteUser)
-            .subscribe());
+            .subscribe(this::inviteUser));
   }
 
   private void inviteUser(String userId) {

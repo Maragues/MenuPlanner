@@ -1,6 +1,7 @@
 package com.maragues.menu_planner.ui.launch;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.ui.common.BasePresenter;
@@ -16,6 +17,8 @@ import java.lang.ref.WeakReference;
  */
 
 public class LaunchPresenter extends BasePresenter<ILaunch> {
+  private static final String TAG = LaunchPresenter.class.getSimpleName();
+
   @Override
   protected void onCreate() {
     super.onCreate();
@@ -31,12 +34,14 @@ public class LaunchPresenter extends BasePresenter<ILaunch> {
   void decideNextScreen(@NonNull ILaunch view) {
     if (App.appComponent.textUtils().isEmpty(App.appComponent.userProvider().getUid())
             || App.appComponent.textUtils().isEmpty(App.appComponent.userProvider().getGroupId())) {
+      Log.d(TAG,"Launch navigating to login");
       if (view != null) {
         view.navigateToLogin();
       } else if (weakView.get() != null) {
         weakView.get().navigateToLogin();
       }
     } else {
+      Log.d(TAG,"Launch navigating to home");
       if (view != null) {
         view.navigateToHome();
       } else if (weakView.get() != null) {
