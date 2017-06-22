@@ -6,6 +6,8 @@ import android.util.Log;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
+import timber.log.Timber;
+
 /**
  * Created by miguelaragues on 28/1/17.
  */
@@ -21,14 +23,14 @@ public class InvitationReceivedPresenter extends BasePresenter<IInvitationReceiv
   void decideNextScreen(@NonNull IInvitationReceived view) {
     String invitedByUserId = view.getInvitedByUserId();
     if (invitedByUserId == null) {
-      Log.d(TAG,"InvitationReceivedPresenter navigating to launcher");
+      Timber.d("InvitationReceivedPresenter navigating to launcher");
       view.navigateToLauncher();
     } else {
       if (App.appComponent.signInPreferences().hasGroupId()) {
-        Log.d(TAG,"InvitationReceivedPresenter navigating to accept invitation");
+        Timber.d("InvitationReceivedPresenter navigating to accept invitation");
         view.navigateToAcceptInvitation(invitedByUserId);
       }else {
-        Log.d(TAG,"InvitationReceivedPresenter navigating to login");
+        Timber.d("InvitationReceivedPresenter navigating to login");
         view.navigateToLogin(invitedByUserId);
       }
     }

@@ -9,7 +9,7 @@ import com.maragues.menu_planner.ui.common.IBaseview;
 import net.grandcentrix.thirtyinch.callonmainthread.CallOnMainThread;
 import net.grandcentrix.thirtyinch.distinctuntilchanged.DistinctUntilChanged;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -23,15 +23,10 @@ public interface ILogin extends IBaseview {
 
   void finish();
 
-  Observable<Boolean> invitationObservable();
-
-  void checkInvitations();
+  Single<String> invitationGroupIdObservable();
 
   void addAuthListener();
 
   @Nullable
   String getInvitedByUserId();
-
-  @CallOnMainThread
-  void showInvitationLayout(@NonNull User invitedByUser);
 }

@@ -86,16 +86,14 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
 
   private void createGroupForUser(User createdUser, SingleEmitter<User> e) {
     App.appComponent.groupProvider().create(Group.empty(), createdUser)
-            .doOnSuccess(group -> {
-                      Map<String, Object> userGroupIdMap = new HashMap<>();
-                      userGroupIdMap.put(BaseFirebaseKeys.GROUP_ID_KEY, group.id());
+            .subscribe(group -> {
+              Map<String, Object> userGroupIdMap = new HashMap<>();
+              userGroupIdMap.put(BaseFirebaseKeys.GROUP_ID_KEY, group.id());
 
-                      getUserReference(createdUser.id())
-                              .updateChildren(userGroupIdMap)
-                              .addOnCompleteListener(task1 -> e.onSuccess(createdUser.withGroupId(group.id())));
-                    }
-            )
-            .subscribe();
+              getUserReference(createdUser.id())
+                      .updateChildren(userGroupIdMap)
+                      .addOnCompleteListener(task1 -> e.onSuccess(createdUser.withGroupId(group.id())));
+            });
   }
 
   @Override

@@ -2,7 +2,6 @@ package com.maragues.menu_planner.ui.login;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,9 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteInvitationResult;
-import com.google.android.gms.appinvite.AppInviteReferral;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -23,10 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.AuthCredential;
@@ -35,7 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
 import com.maragues.menu_planner.model.User;
@@ -45,8 +37,7 @@ import com.maragues.menu_planner.ui.team.TeamUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.Single;
 
 /**
  * Created by miguelaragues on 28/12/16.
@@ -84,9 +75,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @BindView(R.id.sign_in_button)
   SignInButton signInButton;
 
-  @BindView(R.id.login_invitedByLayout)
-  ViewGroup invitedByLayout;
-
   @BindView(R.id.login_invitedBy_name)
   TextView invitedByName;
 
@@ -116,14 +104,14 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   }
 
   @OnClick(R.id.sign_in_button)
-  void onStandardSignInClicked(){
+  void onStandardSignInClicked() {
     getPresenter().userClickedOnStandardSignIn();
 
     onSignInClicked();
   }
 
   @OnClick(R.id.login_invitedBy_button)
-  void onWantsToJoinTeamClicked(){
+  void onWantsToJoinTeamClicked() {
     getPresenter().userClickedOnJoinTeam();
 
     onSignInClicked();
@@ -178,13 +166,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   }
 
   @Override
-  public void showInvitationLayout(@NonNull User invitedByUser) {
-    invitedByLayout.setVisibility(View.VISIBLE);
-
-    invitedByName.setText(invitedByUser.name()+" wants you to join his kitchen");
-  }
-
-  @Override
   public void onStop() {
     super.onStop();
 
@@ -193,42 +174,27 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
     }
   }
 
-  private BehaviorSubject<Boolean> hasInvitationSubject = BehaviorSubject.create();
-
   @Override
-  public Observable<Boolean> invitationObservable() {
-    return hasInvitationSubject;
-  }
-
-  public void checkInvitations() {
-    FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
-            .addOnSuccessListener(this, data -> {
-              if (data == null) {
-                Log.d(TAG, "getInvitation: no data");
-                return;
+  public Single<String> invitationGroupIdObservable() {
+    return Single.create(emitter -> FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
+            .addOnSuccessListener(LoginActivity.this, data -> {
+              String invitationId = "";
+              if (data != null) {
+                // Extract invite
+                FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
+                if (invite != null) {
+                  invitationId = invite.getInvitationId();
+                }
               }
 
-              // Get the deep link
-              Uri deepLink = data.getLink();
-
-              // Extract invite
-              FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
-              if (invite != null) {
-                String invitationId = invite.getInvitationId();
-
-                Log.d(TAG, "Deep link. " + deepLink + ", InvitationId " + invitationId);
-              }
-
-              // Handle the deep link
-              // ...
+              emitter.onSuccess(invitationId);
             })
-            .addOnFailureListener(this, e -> Log.w(TAG, "getDynamicLink:onFailure", e));
+            .addOnFailureListener(LoginActivity.this, emitter::onError));
   }
 
   @Override
   public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
     // TODO: 30/1/17 Determine if it was the invitations connection check or login
-    hasInvitationSubject.onNext(false);
   }
 
   private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {

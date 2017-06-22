@@ -3,10 +3,13 @@ package com.maragues.menu_planner.ui.launch;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
 import java.lang.ref.WeakReference;
+
+import timber.log.Timber;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -32,16 +35,18 @@ public class LaunchPresenter extends BasePresenter<ILaunch> {
   WeakReference<ILaunch> weakView;
 
   void decideNextScreen(@NonNull ILaunch view) {
+    String uid = App.appComponent.userProvider().getUid();
+    String gid = App.appComponent.userProvider().getGroupId();
     if (App.appComponent.textUtils().isEmpty(App.appComponent.userProvider().getUid())
             || App.appComponent.textUtils().isEmpty(App.appComponent.userProvider().getGroupId())) {
-      Log.d(TAG,"Launch navigating to login");
+      Timber.d("Launch navigating to login");
       if (view != null) {
         view.navigateToLogin();
       } else if (weakView.get() != null) {
         weakView.get().navigateToLogin();
       }
     } else {
-      Log.d(TAG,"Launch navigating to home");
+      Timber.d("Launch navigating to home");
       if (view != null) {
         view.navigateToHome();
       } else if (weakView.get() != null) {

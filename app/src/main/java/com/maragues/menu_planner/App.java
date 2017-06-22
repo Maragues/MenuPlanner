@@ -20,6 +20,8 @@ import net.grandcentrix.thirtyinch.TiPresenter;
 
 import java.lang.ref.WeakReference;
 
+import timber.log.Timber;
+
 /**
  * Created by maragues on 05/12/2016.
  */
@@ -43,6 +45,8 @@ public class App extends Application {
     initDagger();
 
     initThirtyInch();
+
+    Timber.plant(new Timber.DebugTree());
   }
 
   private void initFirebase() {

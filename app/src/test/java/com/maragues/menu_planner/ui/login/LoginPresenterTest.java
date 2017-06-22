@@ -32,6 +32,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by miguelaragues on 24/1/17.
@@ -40,7 +41,7 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
   public LoginPresenterTest() {
     super(ILogin.class);
 
-    doReturn(Observable.empty()).when(view).invitationObservable();
+    doReturn(Single.just("")).when(view).invitationGroupIdObservable();
   }
 
   @NonNull
@@ -80,208 +81,49 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
   }
 
   /*
-  INVITES
+  ON INVITED TO GROUP LOADED
    */
-
   @Test
-  public void noInvites_addsAuthListener() {
-    doReturn(null).when(view).getInvitedByUserId();
-    App.appComponent.signInPreferences().touchFirstLaunch();
-
+  public void onInvitedToGroupLoaded_storesGroupId(){
     initPresenter();
 
-    verify(view).addAuthListener();
+    String expected = "dads";
+    presenter.onInvitedToGroupLoaded(expected);
+
+    assertEquals(expected, presenter.invitedToGroupId);
   }
 
+  /*
+  NUMBER OF TIMES LAUNCHED
+   */
   @Test
-  public void firstLaunch_subscribesToInvitationObservable() {
-    App.appComponent.signInPreferences().clear();
-
-    initPresenter();
-
-    verify(view).invitationObservable();
-  }
-
-  @Test
-  public void firstLaunch_checksForInvites() {
-    App.appComponent.signInPreferences().clear();
-
-    initPresenter();
-
-    verify(view).checkInvitations();
-  }
-
-  @Test
-  public void firstLaunch_invitesTrue_doesNotNavigateAnywhere() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    initPresenter();
-
-    invitesSubject.onNext(true);
-
-    verify(view, never()).navigateToHome();
-  }
-
-  @Test
-  public void firstLaunch_invitesTrue_touchesFirstAccess() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    initPresenter();
-
-    invitesSubject.onNext(true);
-
-    verify(App.appComponent.signInPreferences()).touchFirstLaunch();
-  }
-
-  @Test
-  public void firstLaunch_invitesFalse() {
-    //in this case, Android takes care and launches our DeepLinkActivity
+  public void firstLaunch_invokesInvitationGroupIdObservable(){
     App.appComponent.signInPreferences().clear();
     ((MockUserProvider) App.appComponent.userProvider()).setUid(null);
 
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
     initPresenter();
 
-    verify(presenter).checkInvites();
-
-    invitesSubject.onNext(false);
-
-    verify(presenter).onInvitationChecked(eq(false));
+    verify(view).invitationGroupIdObservable();
   }
 
   @Test
-  public void firstLaunch_invitesFalse_touchesFirstAccess() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    initPresenter();
-
-    invitesSubject.onNext(false);
-
-    verify(App.appComponent.signInPreferences()).touchFirstLaunch();
-  }
-
-  @Test
-  public void firstLaunch_invitesFalse_addsAuthListener() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    initPresenter();
-
-    invitesSubject.onNext(false);
-
-    verify(view).addAuthListener();
-  }
-
-  @Test
-  public void firstLaunch_invitationPresent_loadsUser() {
+  public void firstLaunch_invokesonInvitedToGroupLoadedWithValueFromSingle() {
     String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
 
     initPresenter();
 
-    verify(App.appComponent.userProvider()).get(eq(invitedByUserId));
+    verify(presenter).onInvitedToGroupLoaded(eq(invitedByUserId));
   }
 
   @Test
-  public void firstLaunch_invitationPresent_showsInvitationLayout() {
-    String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
-
-    User expectedUser = UserFactory.base().withId(invitedByUserId);
-    doReturn(Maybe.just(expectedUser))
-            .when(App.appComponent.userProvider())
-            .get(eq(invitedByUserId));
-
-    initPresenter();
-
-    verify(view).showInvitationLayout(eq(expectedUser));
-  }
-
-  @Test
-  public void firstLaunch_invitationPresent_userNotPresent_checksInvitations() {
-    String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
-
-    //we also need to fake that there are no invitations
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    doAnswer(new Answer<Maybe<User>>() {
-      @Override
-      public Maybe<User> answer(InvocationOnMock invocation) throws Throwable {
-        return Maybe.create(MaybeEmitter::onComplete);
-      }
-    })
-            .when(App.appComponent.userProvider())
-            .get(anyString());
-
-    initPresenter();
-
-    verify(App.appComponent.userProvider()).get(eq(invitedByUserId));
-
-    verify(presenter).checkInvites();
-  }
-
-  @Test
-  public void firstLaunch_invitationPresent_userNotPresent_addsAuthListener() {
-    String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
-
-    //we also need to fake that there are no invitations
-    BehaviorSubject<Boolean> invitesSubject = BehaviorSubject.create();
-    doReturn(invitesSubject).when(view).invitationObservable();
-
-    doAnswer(new Answer<Maybe<User>>() {
-      @Override
-      public Maybe<User> answer(InvocationOnMock invocation) throws Throwable {
-        return Maybe.create(MaybeEmitter::onComplete);
-      }
-    })
-            .when(App.appComponent.userProvider())
-            .get(anyString());
-
-    initPresenter();
-
-    verify(App.appComponent.userProvider()).get(eq(invitedByUserId));
-
-    invitesSubject.onNext(false);
-
-    verify(view).addAuthListener();
-  }
-
-  @Test
-  public void secondLaunch_doesNotCheckForInvites() {
+  public void secondLaunch_neverInvokesInvitationGroupIdObservable(){
     App.appComponent.signInPreferences().touchFirstLaunch();
+    ((MockUserProvider) App.appComponent.userProvider()).setUid("das");
 
     initPresenter();
 
-    verify(view, never()).checkInvitations();
-  }
-
-  @Test
-  public void secondLaunch_doesNotSubscribeForInvites() {
-    App.appComponent.signInPreferences().touchFirstLaunch();
-
-    initPresenter();
-
-    verify(view, never()).invitationObservable();
+    verify(view, never()).invitationGroupIdObservable();
   }
 
   @Test
@@ -293,29 +135,46 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
     verify(view).addAuthListener();
   }
 
+  /*
+  1st launch, NOT INVITED
+   */
+
   @Test
-  public void secondLaunch_invitationPresent_loadsUser() {
-    String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
+  public void firstLaunch_invitesFalse_touchesFirstAccess() {
+    //in this case, Android takes care and launches our DeepLinkActivity
+    App.appComponent.signInPreferences().clear();
+
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(""));
 
     initPresenter();
 
-    verify(App.appComponent.userProvider()).get(eq(invitedByUserId));
+    verify(App.appComponent.signInPreferences()).touchFirstLaunch();
   }
 
   @Test
-  public void secondLaunch_invitationPresent_showsInvitationLayout() {
-    String invitedByUserId = "invited id";
-    doReturn(invitedByUserId).when(view).getInvitedByUserId();
+  public void firstLaunch_invitesFalse_addsAuthListener() {
+    //in this case, Android takes care and launches our DeepLinkActivity
+    App.appComponent.signInPreferences().clear();
 
-    User expectedUser = UserFactory.base().withId(invitedByUserId);
-    doReturn(Maybe.just(expectedUser))
-            .when(App.appComponent.userProvider())
-            .get(eq(invitedByUserId));
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(""));
 
     initPresenter();
 
-    verify(view).showInvitationLayout(eq(expectedUser));
+    verify(view).addAuthListener();
+  }
+
+  /*
+  1st launch, INVITED
+   */
+
+  @Test
+  public void firstLaunch_invitationPresent_addsAuthListener() {
+    String invitedByUserId = "invited id";
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
+
+    initPresenter();
+
+    verify(view).addAuthListener();
   }
 
   /*
@@ -375,9 +234,8 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
     doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(any(User.class));
 
     String expectedGroupId = "Rockeros ko";
-    User invitedBy = UserFactory.base().withGroupId(expectedGroupId);
 
-    presenter.onInvitedByUserLoaded(invitedBy);
+    presenter.onInvitedToGroupLoaded(expectedGroupId);
 
     presenter.userClickedOnJoinTeam();
 
@@ -398,9 +256,8 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
     doReturn(Single.just(false)).when(App.appComponent.userProvider()).exists(any(User.class));
 
     String expectedGroupId = "Rockeros ko";
-    User invitedBy = UserFactory.base().withGroupId(expectedGroupId);
 
-    presenter.onInvitedByUserLoaded(invitedBy);
+    presenter.onInvitedToGroupLoaded(expectedGroupId);
 
     presenter.userClickedOnStandardSignIn();
 

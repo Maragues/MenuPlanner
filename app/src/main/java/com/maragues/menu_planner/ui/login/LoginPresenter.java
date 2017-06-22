@@ -8,10 +8,15 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
+import io.reactivex.MaybeSource;
+import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by miguelaragues on 13/1/17.
@@ -21,64 +26,48 @@ public class LoginPresenter extends BasePresenter<ILogin> {
   private static final String TAG = LoginPresenter.class.getSimpleName();
   private boolean userWantsToJoinTeam;
 
+  String invitedToGroupId;
+
   @Override
   protected void onAttachView(@NonNull ILogin view) {
     super.onAttachView(view);
 
-    if (!isHandlingInvitesScenario())
-      getView().addAuthListener();
+    /*
+    * Checks if it's the first launch
+    *
+    * If it is, it checks if there's a pending invitation and stores the group id, which might be
+    * an empty string
+    *
+    * In any case, it adds an auth listener and touches the first launch
+    *
+     */
+    Single.just(App.appComponent.signInPreferences().isFirstLaunch())
+            .subscribeOn(Schedulers.io())
+            .doOnSuccess(ignore -> {
+              App.appComponent.signInPreferences().touchFirstLaunch();
 
-    App.appComponent.signInPreferences().touchFirstLaunch();
+              addAuthListener();
+            })
+            .flatMap(firstLaunch -> {
+              if (firstLaunch) return view.invitationGroupIdObservable();
+
+              return Single.just("");
+            })
+            .subscribe(this::onInvitedToGroupLoaded, Throwable::printStackTrace);
   }
 
-  boolean isHandlingInvitesScenario() {
-    if (getView().getInvitedByUserId() != null) {
-      disposables.add(App.appComponent.userProvider().get(getView().getInvitedByUserId())
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .doOnSuccess(this::onInvitedByUserLoaded)
-              .doOnComplete(this::checkInvites)
-              .subscribe());
+  void onInvitedToGroupLoaded(String groupId) {
+    Timber.i("Loaded GroupId: " + groupId);
 
-      return true;
-    } else if (App.appComponent.signInPreferences().isFirstLaunch()) {
-      checkInvites();
-
-      return true;
-    }
-
-    return false;
+    invitedToGroupId = groupId;
   }
 
-  void checkInvites() {
-    disposables.add(getView().invitationObservable()
-            .subscribe(this::onInvitationChecked));
-
-    getView().checkInvitations();
-  }
-
-  private User invitedByUser;
-
-  void onInvitedByUserLoaded(User user) {
-    invitedByUser = user;
-
+  private void addAuthListener() {
     if (getView() != null) {
-      getView().showInvitationLayout(user);
+      getView().addAuthListener();
     } else {
-      sendToView(v -> v.showInvitationLayout(user));
+      sendToView(ILogin::addAuthListener);
     }
-  }
-
-  void onInvitationChecked(Boolean hasInvitation) {
-    if (!hasInvitation) {
-      if (getView() != null) {
-        getView().addAuthListener();
-      } else {
-        sendToView(ILogin::addAuthListener);
-      }
-    }
-
-    //else no need for, App Invites takes care of launching the activity
   }
 
   public void onFirebaseUserArrived(@Nullable UserInfo userInfo) {
@@ -87,29 +76,23 @@ public class LoginPresenter extends BasePresenter<ILogin> {
 
       disposables.add(App.appComponent.userProvider().exists(firebaseUser)
               .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .flatMap(new Function<Boolean, SingleSource<User>>() {
-                @Override
-                public SingleSource<User> apply(Boolean userExists) throws Exception {
-                  if (userExists) {
-                    //supposedly we have assured that the user exists, thus toSingle is safe
-                    return App.appComponent.userProvider().get(userInfo.getUid()).toSingle();
-                  }
-
-                  User userToCreate = firebaseUser;
-                  if (invitedByUser != null && userWantsToJoinTeam)
-                    userToCreate = firebaseUser.withGroupId(invitedByUser.groupId());
-
-                  return App.appComponent.userProvider().create(userToCreate);
+              .flatMap(userExists -> {
+                if (userExists) {
+                  //supposedly we have assured that the user exists, thus toSingle is safe
+                  return App.appComponent.userProvider().get(userInfo.getUid()).toSingle();
                 }
-              })
-              .map(user -> {
-                App.appComponent.signInPreferences().saveGroupId(user.groupId());
 
-                return user;
+                User userToCreate = firebaseUser;
+                if (invitedToGroupId != null && userWantsToJoinTeam)
+                  userToCreate = firebaseUser.withGroupId(invitedToGroupId);
+
+                return App.appComponent.userProvider().create(userToCreate);
               })
-              .doOnSuccess(this::onUserSignedIn)
-              .subscribe()
+              .doOnSuccess(user -> {
+                App.appComponent.signInPreferences().saveGroupId(user.groupId());
+              })
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(this::onUserSignedIn)
       );
     } else {
       // User is signed out
