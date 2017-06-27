@@ -31,16 +31,6 @@ public class MockSignInPreferences implements ISignInPreferences {
   }
 
   @Override
-  public boolean isFirstLaunch() {
-    return firstLaunch;
-  }
-
-  @Override
-  public void touchFirstLaunch() {
-    firstLaunch = false;
-  }
-
-  @Override
   public void clear() {
     groupId = null;
     firstLaunch = true;

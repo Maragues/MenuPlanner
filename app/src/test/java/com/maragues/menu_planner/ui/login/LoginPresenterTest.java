@@ -12,22 +12,19 @@ import com.maragues.menu_planner.ui.test.BasePresenterTest;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import io.reactivex.Maybe;
-import io.reactivex.MaybeEmitter;
-import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.subjects.BehaviorSubject;
 
 import static com.maragues.menu_planner.test.factories.UserFactory.mockFirebaseUser;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -84,97 +81,13 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
   ON INVITED TO GROUP LOADED
    */
   @Test
-  public void onInvitedToGroupLoaded_storesGroupId(){
+  public void onInvitedToGroupLoaded_storesGroupId() {
     initPresenter();
 
     String expected = "dads";
     presenter.onInvitedToGroupLoaded(expected);
 
     assertEquals(expected, presenter.invitedToGroupId);
-  }
-
-  /*
-  NUMBER OF TIMES LAUNCHED
-   */
-  @Test
-  public void firstLaunch_invokesInvitationGroupIdObservable(){
-    App.appComponent.signInPreferences().clear();
-    ((MockUserProvider) App.appComponent.userProvider()).setUid(null);
-
-    initPresenter();
-
-    verify(view).invitationGroupIdObservable();
-  }
-
-  @Test
-  public void firstLaunch_invokesonInvitedToGroupLoadedWithValueFromSingle() {
-    String invitedByUserId = "invited id";
-    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
-
-    initPresenter();
-
-    verify(presenter).onInvitedToGroupLoaded(eq(invitedByUserId));
-  }
-
-  @Test
-  public void secondLaunch_neverInvokesInvitationGroupIdObservable(){
-    App.appComponent.signInPreferences().touchFirstLaunch();
-    ((MockUserProvider) App.appComponent.userProvider()).setUid("das");
-
-    initPresenter();
-
-    verify(view, never()).invitationGroupIdObservable();
-  }
-
-  @Test
-  public void secondLaunch_addsAuthListener() {
-    App.appComponent.signInPreferences().touchFirstLaunch();
-
-    initPresenter();
-
-    verify(view).addAuthListener();
-  }
-
-  /*
-  1st launch, NOT INVITED
-   */
-
-  @Test
-  public void firstLaunch_invitesFalse_touchesFirstAccess() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    when(view.invitationGroupIdObservable()).thenReturn(Single.just(""));
-
-    initPresenter();
-
-    verify(App.appComponent.signInPreferences()).touchFirstLaunch();
-  }
-
-  @Test
-  public void firstLaunch_invitesFalse_addsAuthListener() {
-    //in this case, Android takes care and launches our DeepLinkActivity
-    App.appComponent.signInPreferences().clear();
-
-    when(view.invitationGroupIdObservable()).thenReturn(Single.just(""));
-
-    initPresenter();
-
-    verify(view).addAuthListener();
-  }
-
-  /*
-  1st launch, INVITED
-   */
-
-  @Test
-  public void firstLaunch_invitationPresent_addsAuthListener() {
-    String invitedByUserId = "invited id";
-    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
-
-    initPresenter();
-
-    verify(view).addAuthListener();
   }
 
   /*
@@ -237,7 +150,7 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
 
     presenter.onInvitedToGroupLoaded(expectedGroupId);
 
-    presenter.userClickedOnJoinTeam();
+    presenter.userWantsToJoinTeam = true;
 
     presenter.onFirebaseUserArrived(firebaseUserMock);
 
@@ -259,7 +172,7 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
 
     presenter.onInvitedToGroupLoaded(expectedGroupId);
 
-    presenter.userClickedOnStandardSignIn();
+    presenter.onUserClickedSignIn();
 
     presenter.onFirebaseUserArrived(firebaseUserMock);
 
@@ -286,5 +199,169 @@ public class LoginPresenterTest extends BasePresenterTest<ILogin, LoginPresenter
     presenter.onFirebaseUserArrived(null);
 
     verify(view, never()).finish();
+  }
+
+  /*
+  ON USER CLICKED SIGN IN
+   */
+  @Test
+  public void onUserClickedSignIn_noInvitation_invokesOnSignInClicked() {
+    initPresenter();
+
+    assertNull(presenter.invitedToGroupId);
+
+    presenter.onUserClickedSignIn();
+
+    verify(view).signIn();
+  }
+
+  @Test
+  public void onUserClickedSignIn_noInvitation_neverinvokesShowJoinTeamDialog() {
+    initPresenter();
+
+    assertNull(presenter.invitedToGroupId);
+
+    presenter.onUserClickedSignIn();
+
+    verify(view, never()).showJoinTeamDialog(anyString());
+  }
+
+  @Test
+  public void onUserClickedSignIn_invitation_invokesShowJoinTeamDialog() {
+    initPresenter();
+
+    String groupId = "dadas";
+    presenter.invitedToGroupId = groupId;
+
+    presenter.onUserClickedSignIn();
+
+    verify(view).showJoinTeamDialog(eq(groupId));
+  }
+
+  @Test
+  public void onUserClickedSignIn_invitation_neverinvokesOnSignInClicked() {
+    initPresenter();
+
+    String groupId = "dadas";
+    presenter.invitedToGroupId = groupId;
+
+    presenter.onUserClickedSignIn();
+
+    verify(view, never()).signIn();
+  }
+
+  /*
+  ATTACH VIEW
+   */
+  @Test
+  public void attachView_checksForInvitationCode() {
+    initPresenter(false);
+
+    doNothing().when(presenter).checkForInvitation();
+
+    attachView();
+
+    verify(presenter).checkForInvitation();
+  }
+
+  /*
+  DETACH VIEW
+   */
+  @Test
+  public void detachView_removesAuthListener() {
+    initPresenter();
+
+    verify(presenter, never()).removeAuthListener();
+
+    presenter.detachView();
+
+    verify(presenter).removeAuthListener();
+  }
+
+  /*
+  NUMBER OF TIMES LAUNCHED
+   */
+  @Test
+  public void checkForInvitation_invokesInvitationGroupIdObservable() {
+    App.appComponent.signInPreferences().clear();
+    ((MockUserProvider) App.appComponent.userProvider()).setUid(null);
+
+    initPresenter(false);
+
+    /*
+    this is ugly, since we depend on implementation details of attachView to invoke checkForInvitation
+     */
+    doNothing().when(presenter).addAuthListener();
+    attachView();
+
+    verify(view).invitationGroupIdObservable();
+  }
+
+  @Test
+  public void checkForInvitation_firstPresenterLaunch_nonEmptyValue_invokesonInvitedToGroupLoadedWithValueFromSingle() {
+    String invitedByUserId = "invited id";
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
+
+    initPresenter(false);
+
+    presenter.isFirstPresenterLaunch = true;
+
+    doNothing().when(presenter).onInvitedToGroupLoaded(anyString());
+    doNothing().when(presenter).addAuthListener();
+    attachView();
+
+    verify(presenter).onInvitedToGroupLoaded(eq(invitedByUserId));
+  }
+
+  @Test
+  public void checkForInvitation_notFirstPresenterLaunch_nonEmptyValue_neverInvokesonInvitedToGroupLoadedWithValueFromSingle() {
+    String invitedByUserId = "invited id";
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
+
+    initPresenter(false);
+
+    presenter.isFirstPresenterLaunch = false;
+
+    doNothing().when(presenter).addAuthListener();
+    attachView();
+
+    verify(presenter, never()).onInvitedToGroupLoaded(anyString());
+  }
+
+  @Test
+  public void checkForInvitation_FirstPresenterLaunch_EmptyValue_neverInvokesOnInvitedToGroupLoadedWithValueFromSingle() {
+    String invitedByUserId = "";
+    when(view.invitationGroupIdObservable()).thenReturn(Single.just(invitedByUserId));
+
+    initPresenter(false);
+
+    presenter.isFirstPresenterLaunch = false;
+
+    doNothing().when(presenter).addAuthListener();
+    attachView();
+
+    verify(presenter, never()).onInvitedToGroupLoaded(anyString());
+  }
+
+  @Test
+  public void checkForInvitation_firstLaunch_addsAuthListener() {
+    initPresenter(false);
+
+    doNothing().when(presenter).addAuthListener();
+    presenter.isFirstPresenterLaunch = true;
+    attachView();
+
+    verify(presenter).addAuthListener();
+  }
+
+  @Test
+  public void checkForInvitation_secondLaunch_addsAuthListener() {
+    initPresenter(false);
+
+    doNothing().when(presenter).addAuthListener();
+    presenter.isFirstPresenterLaunch = false;
+    attachView();
+
+    verify(presenter).addAuthListener();
   }
 }

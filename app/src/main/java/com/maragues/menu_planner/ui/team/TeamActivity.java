@@ -79,7 +79,7 @@ public class TeamActivity extends BaseLoggedInActivity<TeamPresenter, ITeam>
       sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invitation_title));
       sendIntent.putExtra(
               Intent.EXTRA_TEXT,
-              getString(R.string.invitation_message, TeamUtils.inviteUri(expectedUserId))
+              getString(R.string.invitation_message, TeamUtils.standardInviteUri(expectedUserId))
       );
 
       sendIntent.setType("text/plain");

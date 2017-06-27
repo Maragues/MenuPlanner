@@ -2,6 +2,9 @@ package com.maragues.menu_planner.model.providers.firebase;
 
 import android.support.annotation.NonNull;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
@@ -12,6 +15,7 @@ import java.util.Map;
 
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -21,6 +25,28 @@ import io.reactivex.Single;
 public class GroupProviderFirebase extends BaseProviderFirebase<Group> implements IGroupProvider {
   public GroupProviderFirebase() {
     super(Group.class);
+  }
+
+  @Override
+  public Single<Group> get(String uid) {
+    return Single.create(e ->
+            getReference().child(GROUPS_KEY).child(uid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists())
+                          e.onSuccess(Group.create(dataSnapshot));
+                        else
+                          e.onError(new Throwable("Group does not exist"));
+                      }
+
+                      @Override
+                      public void onCancelled(DatabaseError databaseError) {
+                        if (!handleDatabasError(databaseError))
+                          e.onError(databaseError.toException());
+                      }
+                    })
+    );
   }
 
   @Override

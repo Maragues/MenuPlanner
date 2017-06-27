@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,18 +18,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.maragues.menu_planner.BuildConfig;
 import com.maragues.menu_planner.R;
-import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.common.BaseActivity;
 import com.maragues.menu_planner.ui.home.HomeActivity;
 import com.maragues.menu_planner.ui.team.TeamUtils;
@@ -44,9 +39,10 @@ import io.reactivex.Single;
  */
 
 public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
-        implements ILogin, GoogleApiClient.OnConnectionFailedListener {
+        implements ILogin, GoogleApiClient.OnConnectionFailedListener, JoinTeamFragment.OnJoinTeamInteractionListener {
   private static final String TAG = LoginActivity.class.getSimpleName();
   private static final String EXTRA_INVITEDBY_UID = "extra_invited_by";
+  private static final String JOIN_TAG = "fragment_join_tag";
 
   public static Intent createIntent(@NonNull Context context) {
     return createIntent(context, null);
@@ -105,23 +101,26 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
 
   @OnClick(R.id.sign_in_button)
   void onStandardSignInClicked() {
-    getPresenter().userClickedOnStandardSignIn();
+    getPresenter().onUserClickedSignIn();
 
-    onSignInClicked();
   }
 
   @OnClick(R.id.login_invitedBy_button)
   void onWantsToJoinTeamClicked() {
-    getPresenter().userClickedOnJoinTeam();
-
-    onSignInClicked();
+//    getPresenter().userClickedOnJoinTeam();
   }
 
-  private void onSignInClicked() {
+  @Override
+  public void signIn() {
     progressBar.setVisibility(View.VISIBLE);
 
     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
     startActivityForResult(signInIntent, RC_SIGN_IN);
+  }
+
+  @Override
+  public void showJoinTeamDialog(String groupName) {
+    JoinTeamFragment.Companion.newInstance(groupName).show(getSupportFragmentManager(), JOIN_TAG);
   }
 
   @Override
@@ -145,30 +144,12 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-
-//    addAuthListener();
-  }
-
-  @Override
   public void addAuthListener() {
     mAuth.addAuthStateListener(mAuthListener);
   }
 
-  @Nullable
   @Override
-  public String getInvitedByUserId() {
-    if (getIntent().getData() == null)
-      return null;
-
-    return TeamUtils.extractUserId(getIntent().getData());
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-
+  public void removeAuthListener() {
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
     }
@@ -183,7 +164,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
                 // Extract invite
                 FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
                 if (invite != null) {
-                  invitationId = invite.getInvitationId();
+                  //this tells us whether there's an invite
+                  invitationId = TeamUtils.extractGroupId(data.getLink());
                 }
               }
 
@@ -200,22 +182,19 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
     AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
     mAuth.signInWithCredential(credential)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-              @Override
-              public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-                //AuthStateListener has been invoked at this point or after
+            .addOnCompleteListener(this, task -> {
+              Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+              //AuthStateListener has been invoked at this point or after
 
-                // If sign in fails, display a message to the user. If sign in succeeds
-                // the auth state listener will be notified and logic to handle the
-                // signed in user can be handled in the listener.
-                if (!task.isSuccessful()) {
-                  Log.w(TAG, "signInWithCredential", task.getException());
-                  Toast.makeText(LoginActivity.this, "Authentication failed.",
-                          Toast.LENGTH_SHORT).show();
-                }
-                // ...
+              // If sign in fails, display a message to the user. If sign in succeeds
+              // the auth state listener will be notified and logic to handle the
+              // signed in user can be handled in the listener.
+              if (!task.isSuccessful()) {
+                Log.w(TAG, "signInWithCredential", task.getException());
+                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
               }
+              // ...
             });
   }
 
@@ -233,5 +212,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter, ILogin>
   @Override
   public void navigateToHome() {
     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+  }
+
+  @Override
+  public void onUserAcceptedInvitation(boolean accepted) {
+    getPresenter().onUserAcceptedInvitation(accepted);
   }
 }

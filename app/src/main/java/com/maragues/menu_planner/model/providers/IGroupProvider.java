@@ -6,6 +6,7 @@ import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -13,6 +14,9 @@ import io.reactivex.Single;
  */
 
 public interface IGroupProvider extends IProvider<Group> {
+
+  Single<Group> get(String uid);
+
   Single<Group> create(@NonNull Group group, @NonNull User creator);
 
   Single<Group> update(@NonNull Group group);

@@ -140,7 +140,7 @@
     <string name="add_widget">Add widget</string>
 
     <!-- INVITES -->
-    <string name="invites_deeplink">https://djvv8.app.goo.gl/?apn=com.maragues.menu_planner&amp;link=%1$s</string>
+    <string name="invites_deeplink">https://djvv8.app.goo.gl/?apn=com.maragues.menu_planner&amp;%1$s</string>
     <string name="invites_deeplink_inner">https://menu_planner/invite?%1$s</string>
     <string name="action_team">Team</string>
     <string name="title_activity_team">TeamActivity</string>
@@ -150,4 +150,9 @@
     <string name="invitation_ca">Join</string>
     <string name="invite_through_jointfully">Invite to team</string>
     <string name="invitedBy_join">Join his kitchen</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_join_team_decline">decline</string>
+    <string name="fragment_join_team_join">join</string>
 </resources>

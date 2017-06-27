@@ -13,8 +13,4 @@ public interface ISignInPreferences extends IPreferencesProvider {
   String getGroupId();
 
   boolean hasGroupId();
-
-  boolean isFirstLaunch();
-
-  void touchFirstLaunch();
 }

@@ -16,6 +16,8 @@ import com.maragues.menu_planner.model.Group;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.model.providers.IUserProvider;
 
+import org.reactivestreams.Publisher;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,9 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -74,7 +79,7 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
               if (App.appComponent.textUtils().isEmpty(user.groupId())) {
                 createGroupForUser(user, e);
               } else {
-                e.onSuccess(user);
+                addUserToGroup(user, e);
               }
             }
           }
@@ -82,6 +87,13 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
       }
     })
             .subscribeOn(Schedulers.io());
+  }
+
+  private void addUserToGroup(User user, SingleEmitter<User> e) {
+    App.appComponent.groupProvider().get(user.groupId())
+            .map(group -> group.addWithRole(user, Group.ROLE_USER))
+            .flatMap(group -> App.appComponent.groupProvider().update(group))
+            .subscribe(ignore -> e.onSuccess(user), e::onError);
   }
 
   private void createGroupForUser(User createdUser, SingleEmitter<User> e) {
@@ -160,27 +172,6 @@ public class UserProviderFirebase extends BaseProviderFirebase<User> implements 
 
   private DatabaseReference getUserReference(String uid) {
     return getReference().child(USERS_KEY).child(uid);
-  }
-
-  private boolean handleDatabasError(DatabaseError databaseError) {
-    switch (databaseError.getCode()) {
-      case DatabaseError.DATA_STALE:
-      case DatabaseError.OPERATION_FAILED:
-      case DatabaseError.PERMISSION_DENIED:
-      case DatabaseError.DISCONNECTED:
-      case DatabaseError.EXPIRED_TOKEN:
-      case DatabaseError.INVALID_TOKEN:
-      case DatabaseError.UNAVAILABLE:
-      case DatabaseError.OVERRIDDEN_BY_SET:
-      case DatabaseError.WRITE_CANCELED:
-      case DatabaseError.UNKNOWN_ERROR:
-      case DatabaseError.MAX_RETRIES:
-        return false;
-      case DatabaseError.USER_CODE_EXCEPTION:
-      case DatabaseError.NETWORK_ERROR:
-    }
-
-    return true;
   }
 
   static final String USERS_KEY = "users";

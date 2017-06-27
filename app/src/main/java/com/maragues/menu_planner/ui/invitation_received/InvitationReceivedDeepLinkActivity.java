@@ -1,13 +1,10 @@
 package com.maragues.menu_planner.ui.invitation_received;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.appinvite.AppInvite;
-import com.google.android.gms.appinvite.AppInviteReferral;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.maragues.menu_planner.ui.common.BaseActivity;
@@ -45,7 +42,7 @@ public class InvitationReceivedDeepLinkActivity extends BaseActivity<InvitationR
     if (getIntent().getData() == null)
       return null;
 
-    return TeamUtils.extractUserId(getIntent().getData());
+    return TeamUtils.extractGroupId(getIntent().getData());
   }
 
   @Override

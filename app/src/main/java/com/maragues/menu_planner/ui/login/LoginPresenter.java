@@ -8,13 +8,9 @@ import com.maragues.menu_planner.App;
 import com.maragues.menu_planner.model.User;
 import com.maragues.menu_planner.ui.common.BasePresenter;
 
-import io.reactivex.MaybeSource;
 import io.reactivex.Single;
-import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -24,7 +20,7 @@ import timber.log.Timber;
 
 public class LoginPresenter extends BasePresenter<ILogin> {
   private static final String TAG = LoginPresenter.class.getSimpleName();
-  private boolean userWantsToJoinTeam;
+  boolean isFirstPresenterLaunch = true, userWantsToJoinTeam;
 
   String invitedToGroupId;
 
@@ -32,28 +28,32 @@ public class LoginPresenter extends BasePresenter<ILogin> {
   protected void onAttachView(@NonNull ILogin view) {
     super.onAttachView(view);
 
-    /*
-    * Checks if it's the first launch
-    *
-    * If it is, it checks if there's a pending invitation and stores the group id, which might be
-    * an empty string
-    *
-    * In any case, it adds an auth listener and touches the first launch
-    *
-     */
-    Single.just(App.appComponent.signInPreferences().isFirstLaunch())
+    checkForInvitation();
+  }
+
+  /**
+   * Reads the invitedToGroupId from the View, and if it exists it stores it.
+   *
+   * If it's not the first launch of the presenter or if the invitedToGroupId is empty, we ignore
+   * the returned value.
+   *
+   * In any case, we add the auth listener
+   */
+  void checkForInvitation() {
+    getView().invitationGroupIdObservable()
             .subscribeOn(Schedulers.io())
-            .doOnSuccess(ignore -> {
-              App.appComponent.signInPreferences().touchFirstLaunch();
-
-              addAuthListener();
-            })
-            .flatMap(firstLaunch -> {
-              if (firstLaunch) return view.invitationGroupIdObservable();
-
-              return Single.just("");
-            })
+            .doOnSuccess(ignore -> addAuthListener())
+            .doAfterSuccess(ignore -> isFirstPresenterLaunch = false)
+            .filter(invitedToGroupId -> isFirstPresenterLaunch
+                    && !App.appComponent.textUtils().isEmpty(invitedToGroupId))
             .subscribe(this::onInvitedToGroupLoaded, Throwable::printStackTrace);
+  }
+
+  @Override
+  protected void onDetachView() {
+    super.onDetachView();
+
+    removeAuthListener();
   }
 
   void onInvitedToGroupLoaded(String groupId) {
@@ -62,11 +62,19 @@ public class LoginPresenter extends BasePresenter<ILogin> {
     invitedToGroupId = groupId;
   }
 
-  private void addAuthListener() {
+  void addAuthListener() {
     if (getView() != null) {
       getView().addAuthListener();
     } else {
       sendToView(ILogin::addAuthListener);
+    }
+  }
+
+  void removeAuthListener() {
+    if (getView() != null) {
+      getView().removeAuthListener();
+    } else {
+      sendToView(ILogin::removeAuthListener);
     }
   }
 
@@ -131,11 +139,27 @@ public class LoginPresenter extends BasePresenter<ILogin> {
     }
   }
 
-  public void userClickedOnJoinTeam() {
-    userWantsToJoinTeam = true;
+  void onUserClickedSignIn() {
+    if (getView() != null) {
+      if (App.appComponent.textUtils().isEmpty(invitedToGroupId)) {
+        signIn();
+      } else {
+        getView().showJoinTeamDialog(invitedToGroupId);
+      }
+    }
   }
 
-  public void userClickedOnStandardSignIn() {
-    userWantsToJoinTeam = false;
+  private void signIn() {
+    if (getView() != null) {
+      getView().signIn();
+    } else {
+      sendToView(ILogin::signIn);
+    }
+  }
+
+  public void onUserAcceptedInvitation(boolean accepted) {
+    userWantsToJoinTeam = accepted;
+
+    signIn();
   }
 }

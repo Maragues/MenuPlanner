@@ -27,6 +27,9 @@ public interface ILogin extends IBaseview {
 
   void addAuthListener();
 
-  @Nullable
-  String getInvitedByUserId();
+  void removeAuthListener();
+
+  void signIn();
+
+  void showJoinTeamDialog(String groupName);
 }

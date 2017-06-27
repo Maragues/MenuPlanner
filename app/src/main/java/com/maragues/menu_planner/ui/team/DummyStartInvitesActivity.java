@@ -22,14 +22,13 @@ public final class DummyStartInvitesActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-
-    Uri deepLinkPlus = Uri.withAppendedPath(
-            Uri.parse(getString(R.string.invites_deeplink)),
-            App.appComponent.userProvider().getGroupId());
-
     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-            .setMessage(getString(R.string.invitation_message))
-            .setDeepLink(deepLinkPlus)
+            .setMessage(getString(R.string.invitation_title))
+            .setDeepLink(Uri.parse(
+                    TeamUtils.invitesDeeplinkUri(R.string.invites_deeplink,
+                            App.appComponent.userProvider().getGroupId()
+                    )
+            ))
             .setCallToActionText(getString(R.string.invitation_ca))
             .build();
 

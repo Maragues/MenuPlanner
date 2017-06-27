@@ -36,12 +36,21 @@ public abstract class BasePresenterTest<V extends IBaseview, P extends BasePrese
   }
 
   protected void initPresenter() {
+    initPresenter(true);
+  }
+
+  protected void initPresenter(boolean autoAttach) {
     presenter = spy(createPresenter());
 
     onPresenterCreated();
 
     presenter.create();
 
+    if (autoAttach)
+      attachView();
+  }
+
+  protected void attachView() {
     presenter.attachView(view);
   }
 
